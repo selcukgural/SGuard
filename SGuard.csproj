@@ -3,12 +3,12 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <PackageVersion>2.0.1</PackageVersion>
+	  <PackageVersion>2.0.2</PackageVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackAsTool>True</PackAsTool>
-    <AssemblyVersion>2.0.1</AssemblyVersion>
+    <AssemblyVersion>2.0.2</AssemblyVersion>
     <PackageProjectUrl>https://github.com/selcukgural/sguard</PackageProjectUrl>
-    <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/selcukgural/sguard</RepositoryUrl>
       <PackageTags>Guard;Is;ThrowIf;Validation;Preconditions;Contracts;Exceptions;CallerArgumentExpression;dotnet;csharp</PackageTags>
@@ -19,14 +19,35 @@
     <Authors>Selçuk Güral</Authors>
     <RepositoryType>git</RepositoryType>
       <PackageReleaseNotes>
-          v1.0.0 (breaking)
-          - Redesigned callback model: GuardCallback/GuardOutcome
-          - Naming standardized: GreaterThanOrEqualException
-          - Exceptions enriched with CallerArgumentExpression (expressions in Message/Data)
-          - NullOrEmpty semantics clarified (plain non-null reference types are not empty)
+          - Version: 2.0.2
+          Highlights
+          - License update: Project is now licensed under the GNU General Public License v3.0 (GPL-3.0).
+
+          Details
+          - Changed: The project’s distribution license has been updated to GPL-3.0.
+          - Rationale: Align with copyleft distribution requirements and ensure contributions remain under the same license terms.
+          - Scope: The license change applies to this and future releases. Previous releases remain under their original licenses.
+
+          Impact
+          - For developers and distributors:
+          - Ensure the GPL-3.0 license text is included in redistributions.
+          - Derivative works and redistributions must comply with GPL-3.0 terms.
+
+          - For users and integrators:
+          - Update your dependency license inventories to GPL-3.0.
+          - Consult your compliance/legal teams as needed.
+
+          Breaking Changes
+          - None. No API or behavioral changes; this is a licensing update only.
+
+          Migration Notes
+          - No code changes required. Review and update any license notices or documentation in your downstream projects to reflect GPL-3.0.
+
+          Legal Notice
+          - This release note is for informational purposes and does not constitute legal advice. Please consult your legal counsel for compliance guidance.
       </PackageReleaseNotes>
       <PackageIcon>icon.png</PackageIcon>
-      <FileVersion>2.0.1</FileVersion>
+      <FileVersion>2.0.2</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
