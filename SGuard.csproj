@@ -3,10 +3,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <PackageVersion>2.0.2</PackageVersion>
+	  <PackageVersion>2.0.3</PackageVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackAsTool>True</PackAsTool>
-    <AssemblyVersion>2.0.2</AssemblyVersion>
+    <AssemblyVersion>2.0.3</AssemblyVersion>
     <PackageProjectUrl>https://github.com/selcukgural/sguard</PackageProjectUrl>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -19,7 +18,7 @@
     <Authors>Selçuk Güral</Authors>
     <RepositoryType>git</RepositoryType>
       <PackageReleaseNotes>
-          - Version: 2.0.2
+          - Version: 2.0.3
           Highlights
           - License update: Project is now licensed under the GNU General Public License v3.0 (GPL-3.0).
 
