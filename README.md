@@ -63,6 +63,9 @@ ThrowIf.Between<string, string, string, MyCustomException>(value, min, max, new 
 ThrowIf.NullOrEmpty(str);
 ThrowIf.NullOrEmpty(obj, x => x.Property);
 ```
+## Build & Test Status
+
+![Build & Test](https://github.com/selcukgural/SGuard/actions/workflows/blank.yml/badge.svg)
 
 ## 📄 License
 
