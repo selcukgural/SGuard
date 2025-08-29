@@ -66,7 +66,7 @@ ThrowIf.NullOrEmpty(obj, x => x.Property);
 
 ## Build & Test Status
 
-![Build & Test](https://github.com/selcukgural/SGuard/actions/workflows/ci.yml/badge.svg)
+![Build & Test](https://github.com/selcukgural/SGuard.Tests/blob/master/.github/workflows/blank.yml/badge.svg)
 
 
 ## 📄 License
