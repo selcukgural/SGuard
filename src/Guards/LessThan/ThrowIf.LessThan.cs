@@ -20,24 +20,10 @@ public sealed partial class ThrowIf
     public static void LessThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
-        var isLess = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-
-            isLess = Is.LessThan(lValue, rValue);
-
-            if (isLess)
-            {
-                Throw.LessThanException(lValue, rValue);
-            }
-        }
-        finally
-        {
-            callback?.Invoke(isLess ? GuardOutcome.Failure : GuardOutcome.Success);       
-        }
+        SGuard.Guard(Is.LessThan(lValue, rValue), () => Throw.LessThanException(lValue, rValue), callback);
     }
 
 
@@ -54,27 +40,14 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException">Thrown when any of the arguments are null.</exception>
     /// <exception cref="TException">Thrown when <paramref name="lValue"/> is less than <paramref name="rValue"/>.</exception>
     public static void LessThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, [NotNull] TException exception,
-                                                           SGuardCallback? callback = null) where TLeft : IComparable<TRight> where TException : Exception
+                                                           SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception
     {
-        var isLess = false;
-
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-            ArgumentNullException.ThrowIfNull(exception);
-
-            isLess = Is.LessThan(lValue, rValue);
-
-            if (isLess)
-            {
-                Throw.That(exception);
-            }
-        }
-        finally
-        {
-            callback?.Invoke(isLess ? GuardOutcome.Failure : GuardOutcome.Success);      
-        }
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        ArgumentNullException.ThrowIfNull(exception);
+        
+        SGuard.Guard(Is.LessThan(lValue, rValue), () => Throw.That(exception), callback);
     }
 
 
@@ -96,24 +69,10 @@ public sealed partial class ThrowIf
     public static void LessThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
-        var isLessOrEqual = false;
-
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-
-            isLessOrEqual = Is.LessThanOrEqual(lValue, rValue);
-
-            if (isLessOrEqual)
-            {
-                Throw.LessThanOrEqualException(lValue, rValue);
-            }
-        }
-        finally
-        {
-            callback?.Invoke(isLessOrEqual ? GuardOutcome.Failure : GuardOutcome.Success);      
-        }
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.LessThanOrEqualException(lValue, rValue), callback);
     }
 
 
@@ -133,24 +92,64 @@ public sealed partial class ThrowIf
                                                                   SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
     {
-        var isLessOrEqual = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        ArgumentNullException.ThrowIfNull(exception);
+        
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.That(exception), callback);
+    }
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-            ArgumentNullException.ThrowIfNull(exception);
+    /// <summary>
+    /// Throws an exception if the left value is less than or equal to the right value.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left value.</typeparam>
+    /// <typeparam name="TRight">The type of the right value.</typeparam>
+    ///  <typeparam name="TException">The type of the exception to be thrown if the condition is met.</typeparam>
+    /// <param name="lValue">The left value to compare. Must not be null.</param>
+    /// <param name="rValue">The right value to compare against. Must not be null.</param>
+    /// <param name="callback">
+    /// An optional delegate that is invoked with the outcome of the guard.
+    /// The outcome indicates whether the left value was less than or equal to the right value.
+    /// </param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.</exception>
+    /// <exception cref="TException">
+    /// Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.
+    /// The exception instance is created using the specified constructor arguments.
+    /// </exception>
+    public static void LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception, new()
+    {
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+    }
 
-            isLessOrEqual = Is.LessThanOrEqual(lValue, rValue);
-
-            if (isLessOrEqual)
-            {
-                Throw.That(exception);
-            }
-        }
-        finally
-        {
-            callback?.Invoke(isLessOrEqual ? GuardOutcome.Failure : GuardOutcome.Success);      
-        }
+    /// <summary>
+    /// Throws an exception if the left value is less than or equal to the right value.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left value.</typeparam>
+    /// <typeparam name="TRight">The type of the right value.</typeparam>
+    /// <typeparam name="TException">The type of the exception to be thrown if the condition is met.</typeparam>
+    /// <param name="lValue">The left value to compare. Must not be null.</param>
+    /// <param name="rValue">The right value to compare against. Must not be null.</param>
+    /// <param name="constructorArgs">Optional array of arguments to construct the exception.</param>
+    /// <param name="callback">
+    /// An optional delegate that is invoked with the outcome of the guard.
+    /// The outcome indicates whether the left value was less than or equal to the right value.
+    /// </param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.</exception>
+    /// <exception cref="TException">
+    /// Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.
+    /// The exception instance is created using the specified constructor arguments.
+    /// </exception>
+    public static void LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, object[]? constructorArgs,
+                                                                  SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
     }
 }

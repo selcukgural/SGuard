@@ -19,24 +19,50 @@ public sealed partial class ThrowIf
     public static void GreaterThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
-        var isGreater = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.GreaterThanException(lValue, rValue), callback);
+    }
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
+    /// <summary>
+    /// Throws an exception of type <typeparamref name="TException"/> if the left value is greater than the right value.
+    /// The exception is created using its default constructor.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left value, which implements IComparable.</typeparam>
+    /// <typeparam name="TRight">The type of the right value, which is comparable to TLeft.</typeparam>
+    /// <typeparam name="TException">The type of the exception to be thrown if the condition is met. Must have a parameterless constructor.</typeparam>
+    /// <param name="lValue">The left value to evaluate.</param>
+    /// <param name="rValue">The right value to evaluate against.</param>
+    /// <param name="callback">Optional guard callback that receives the outcome of the evaluation.</param>
+    public static void GreaterThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception, new()
+    {
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+    }
 
-            isGreater = Is.GreaterThan(lValue, rValue);
-
-            if (isGreater)
-            {
-                Throw.GreaterThanException(lValue, rValue);
-            }
-        }
-        finally
-        {
-            callback?.Invoke(isGreater ? GuardOutcome.Failure : GuardOutcome.Success);
-        }
+    /// <summary>
+    /// Throws an exception of type <typeparamref name="TException"/> if the left value is greater than the right value.
+    /// The exception is created using the provided constructor arguments.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left value, which implements IComparable.</typeparam>
+    /// <typeparam name="TRight">The type of the right value, which is comparable to TLeft.</typeparam>
+    /// <typeparam name="TException">The type of the exception to be thrown if the condition is met.</typeparam>
+    /// <param name="lValue">The left value to evaluate.</param>
+    /// <param name="rValue">The right value to evaluate against.</param>
+    /// <param name="constructorArgs">The arguments to pass to the constructor of the exception.</param>
+    /// <param name="callback">Optional guard callback that receives the outcome of the evaluation.</param>
+    public static void GreaterThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, object[]? constructorArgs,
+                                                              SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
     }
 
     /// <summary>
@@ -53,27 +79,13 @@ public sealed partial class ThrowIf
     /// <exception cref="TException">Thrown when <paramref name="lValue"/> is greater than <paramref name="rValue"/>.</exception>
     public static void GreaterThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, [NotNull] TException exception,
                                                               SGuardCallback? callback = null) where TLeft : IComparable<TRight>
-                                                                                              where TException : Exception
+                                                                                               where TException : Exception
     {
-        var isGreater = false;
-
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-            ArgumentNullException.ThrowIfNull(exception);
-
-            isGreater = Is.GreaterThan(lValue, rValue);
-
-            if (isGreater)
-            {
-                Throw.That(exception);
-            }
-        }
-        finally
-        {
-            callback?.Invoke(isGreater ? GuardOutcome.Failure : GuardOutcome.Success);
-        }
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        ArgumentNullException.ThrowIfNull(exception);
+        
+        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.That(exception), callback);
     }
 
     /// <summary>
@@ -89,24 +101,10 @@ public sealed partial class ThrowIf
     public static void GreaterThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
-        var isGreaterOrEqual = false;
-
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-
-            isGreaterOrEqual = Is.GreaterThanOrEqual(lValue, rValue);
-
-            if (isGreaterOrEqual)
-            {
-                Throw.GreaterThanOrEqualException(lValue, rValue);
-            }
-        }
-        finally
-        {
-            callback?.Invoke(isGreaterOrEqual ? GuardOutcome.Failure : GuardOutcome.Success);
-        }
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.GreaterThanOrEqualException(lValue, rValue), callback);
     }
 
 
@@ -124,24 +122,51 @@ public sealed partial class ThrowIf
                                                                      SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
     {
-        var isGreaterOrEqual = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        ArgumentNullException.ThrowIfNull(exception);
+        
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.That(exception), callback);
+    }
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-            ArgumentNullException.ThrowIfNull(exception);
 
-            isGreaterOrEqual = Is.GreaterThanOrEqual(lValue, rValue);
+    /// <summary>
+    /// Throws an exception of type <typeparamref name="TException"/> if the left value is greater than or equal to the right value.
+    /// The exception is created using its default constructor.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left value, which implements IComparable.</typeparam>
+    /// <typeparam name="TRight">The type of the right value, which is comparable to TLeft.</typeparam>
+    /// <typeparam name="TException">The type of the exception to be thrown if the condition is met. Must have a parameterless constructor.</typeparam>
+    /// <param name="lValue">The left value to evaluate.</param>
+    /// <param name="rValue">The right value to evaluate against.</param>
+    /// <param name="callback">Optional guard callback that receives the outcome of the evaluation.</param>
+    public static void GreaterThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception, new()
+    {
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+    }
 
-            if (isGreaterOrEqual)
-            {
-                Throw.That(exception);
-            }
-        }
-        finally
-        {
-            callback?.Invoke(isGreaterOrEqual ? GuardOutcome.Failure : GuardOutcome.Success);
-        }
+    /// <summary>
+    /// Throws an exception of type <typeparamref name="TException"/> if the left value is greater than or equal to the right value.
+    /// The exception is created using the provided constructor arguments.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left value, which implements IComparable.</typeparam>
+    /// <typeparam name="TRight">The type of the right value, which is comparable to TLeft.</typeparam>
+    /// <typeparam name="TException">The type of the exception to be thrown if the condition is met.</typeparam>
+    /// <param name="lValue">The left value to evaluate.</param>
+    /// <param name="rValue">The right value to evaluate against.</param>
+    /// <param name="constructorArgs">The arguments to pass to the constructor of the exception.</param>
+    /// <param name="callback">Optional guard callback that receives the outcome of the evaluation.</param>
+    public static void GreaterThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, object[]? constructorArgs,
+                                                                     SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
     }
 }

@@ -21,21 +21,14 @@ public sealed partial class Is
     /// </exception>
     public static bool LessThan<TLeft, TRight>(TLeft lValue, TRight rValue, SGuardCallback? callback = null) where TLeft : IComparable<TRight>
     {
-        var isLessThan = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-
-            isLessThan = lValue.CompareTo(rValue) < 0;
-
-            return isLessThan;
-        }
-        finally
-        {
-            callback?.Invoke(isLessThan ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        var isLessThan = lValue.CompareTo(rValue) < 0;
+        
+        SGuard.InvokeCallbackSafely(isLessThan, callback);
+        
+        return isLessThan;
     }
     
     /// <summary>
@@ -49,21 +42,14 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">Thrown if lValue or rValue is null.</exception>
     public static bool LessThan(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
-        var isLessThan = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        var isLessThan = string.Compare(lValue, rValue, comparison) < 0;
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-
-            isLessThan = string.Compare(lValue, rValue, comparison) < 0;
-
-            return isLessThan;
-        }
-        finally
-        {
-            callback?.Invoke(isLessThan ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        SGuard.InvokeCallbackSafely(isLessThan, callback);
+        
+        return isLessThan;
     }
 
 
@@ -87,21 +73,14 @@ public sealed partial class Is
     /// </exception>
     public static bool LessThanOrEqual<TLeft, TRight>(TLeft lValue, TRight rValue, SGuardCallback? callback = null) where TLeft : IComparable<TRight>
     {
-        var isLessThanOrEqual = false;
-
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-
-            isLessThanOrEqual = lValue.CompareTo(rValue) <= 0;
-
-            return isLessThanOrEqual;
-        }
-        finally
-        {
-            callback?.Invoke(isLessThanOrEqual ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        var isLessThanOrEqual = lValue.CompareTo(rValue) <= 0;
+        
+        SGuard.InvokeCallbackSafely(isLessThanOrEqual, callback);
+        
+        return isLessThanOrEqual;
     }
     
     /// <summary>
@@ -115,20 +94,13 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">Thrown if lValue or rValue is null.</exception>
     public static bool LessThanOrEqual(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
-        var isLessThanOrEqual = false;
-
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-
-            isLessThanOrEqual = string.Compare(lValue, rValue, comparison) <= 0;
-
-            return isLessThanOrEqual;
-        }
-        finally
-        {
-            callback?.Invoke(isLessThanOrEqual ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        var isLessThanOrEqual = string.Compare(lValue, rValue, comparison) <= 0;
+        
+        SGuard.InvokeCallbackSafely(isLessThanOrEqual, callback);
+        
+        return isLessThanOrEqual;
     }
 }

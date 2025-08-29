@@ -24,23 +24,16 @@ public sealed partial class Is
     public static bool GreaterThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
-        var isGreater = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
+        var isGreater = lValue.CompareTo(rValue) > 0;
 
-            isGreater = lValue.CompareTo(rValue) > 0;
+        SGuard.InvokeCallbackSafely(isGreater, callback);
 
-            return isGreater;
-        }
-        finally
-        {
-            callback?.Invoke(isGreater ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        return isGreater;
     }
-    
+
     /// <summary>
     /// Determines whether the left string is greater than the right string using the specified StringComparison.
     /// </summary>
@@ -52,21 +45,14 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">Thrown if lValue or rValue is null.</exception>
     public static bool GreaterThan(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
-        var isGreater = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
+        var isGreater = string.Compare(lValue, rValue, comparison) > 0;
 
-            isGreater = string.Compare(lValue, rValue, comparison) > 0;
+        SGuard.InvokeCallbackSafely(isGreater, callback);
 
-            return isGreater;
-        }
-        finally
-        {
-            callback?.Invoke(isGreater ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        return isGreater;
     }
 
     /// <summary>
@@ -89,23 +75,16 @@ public sealed partial class Is
     public static bool GreaterThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
-        var isGreaterOrEqual = false;
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
+        var isGreaterOrEqual = lValue.CompareTo(rValue) >= 0;
 
-            isGreaterOrEqual = lValue.CompareTo(rValue) >= 0;
-
-            return isGreaterOrEqual;
-        }
-        finally
-        {
-            callback?.Invoke(isGreaterOrEqual ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        SGuard.InvokeCallbackSafely(isGreaterOrEqual, callback);
+        
+        return isGreaterOrEqual;
     }
-    
+
     /// <summary>
     /// Determines whether the left string is greater than or equal to the right string using the specified StringComparison.
     /// </summary>
@@ -117,20 +96,13 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">Thrown if lValue or rValue is null.</exception>
     public static bool GreaterThanOrEqual(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
-        var isGreaterOrEqual = false;
-
-        try
-        {
-            ArgumentNullException.ThrowIfNull(lValue);
-            ArgumentNullException.ThrowIfNull(rValue);
-
-            isGreaterOrEqual = string.Compare(lValue, rValue, comparison) >= 0;
-
-            return isGreaterOrEqual;
-        }
-        finally
-        {
-            callback?.Invoke(isGreaterOrEqual ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        ArgumentNullException.ThrowIfNull(lValue);
+        ArgumentNullException.ThrowIfNull(rValue);
+        
+        var isGreaterOrEqual = string.Compare(lValue, rValue, comparison) >= 0;
+        
+        SGuard.InvokeCallbackSafely(isGreaterOrEqual, callback);
+        
+        return isGreaterOrEqual;
     }
 }

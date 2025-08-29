@@ -31,7 +31,7 @@ internal static class Throw
     /// Throws a <see cref="NullOrEmptyException"/> with a predefined message indicating that the value is null or empty.
     /// </summary>
     /// <exception cref="NullOrEmptyException">
-    /// Always thrown with a message stating "Value is null or empty".
+    /// Always thrown with a message stating, "Value is null or empty".
     /// </exception>
     [DoesNotReturn]
     public static void NullOrEmptyException<T>(T value)

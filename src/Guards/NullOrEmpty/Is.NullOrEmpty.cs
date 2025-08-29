@@ -25,8 +25,7 @@ public sealed partial class Is
     {
         var result = InternalIsNullOrEmpty(value);
 
-        // true => empty => Failure, false => Success
-        callback?.Invoke(result ? GuardOutcome.Failure : GuardOutcome.Success);
+        SGuard.InvokeCallbackSafely(result, callback);
 
         return result;
     }
@@ -43,27 +42,21 @@ public sealed partial class Is
     /// </returns>
     public static bool NullOrEmpty<T>(T? value, Expression<Func<T, object>> selector, SGuardCallback? callback = null)
     {
-        var isNullOrEmpty = false;
-
-        try
+        ArgumentNullException.ThrowIfNull(selector);
+        
+        if (value is null)
         {
-            if (value is null)
-            {
-                return true;
-            }
-
-            ArgumentNullException.ThrowIfNull(selector);
-
-            var expression = NullOrEmptyVisitor.Visit(selector) as Expression<Func<T, object>>;
-
-            isNullOrEmpty = expression?.Compile().Invoke(value) is null;
-
-            return isNullOrEmpty;
+            SGuard.InvokeCallbackSafely(true, callback);
+            return true;
         }
-        finally
-        {
-            callback?.Invoke(isNullOrEmpty ? GuardOutcome.Failure : GuardOutcome.Success);
-        }
+        
+        var expression = NullOrEmptyVisitor.Visit(selector) as Expression<Func<T, object>>;
+
+        var isNullOrEmpty = expression?.Compile().Invoke(value) is null;
+
+        SGuard.InvokeCallbackSafely(isNullOrEmpty, callback);
+        
+        return isNullOrEmpty;
     }
 
     /// <summary>
@@ -90,12 +83,12 @@ public sealed partial class Is
 
             var valueType = value.GetType();
             var properties = valueType.GetProperties();
-            
+
             if (properties.Length == 0)
             {
                 return false;
             }
-            
+
             return (valueType is { IsValueType: true, IsEnum: false } || valueType.IsClass || IsClassOrAnonymousType(valueType)) &&
                    !properties.Any(e => e.CanRead && !string.IsNullOrEmpty(e.GetValue(value)?.ToString()));
 

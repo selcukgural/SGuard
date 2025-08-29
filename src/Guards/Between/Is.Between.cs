@@ -10,8 +10,8 @@ namespace SGuard;
 public sealed partial class Is
 {
     /// <summary>
-    /// Determines whether the specified value lies within the inclusive range defined
-    /// by the provided minimum and maximum values.
+    /// Throws an exception if value is less than or equal to min, or greater than or equal to max.
+    /// Boundaries are exclusive.
     /// </summary>
     /// <typeparam name="TValue">The type of the value being checked.</typeparam>
     /// <typeparam name="TMin">The type of the minimum boundary value.</typeparam>
@@ -27,29 +27,23 @@ public sealed partial class Is
     /// Returns <c>true</c> if the value is greater than or equal to the minimum
     /// and less than or equal to the maximum; otherwise, <c>false</c>.
     /// </returns>
-    public static bool Between<TValue, TMin, TMax>([NotNull] TValue value, [NotNull]TMin min, [NotNull]TMax max, SGuardCallback? callback = null)
+    public static bool Between<TValue, TMin, TMax>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax>
     {
-        var isBetween = false;
+        ArgumentNullException.ThrowIfNull(min);
+        ArgumentNullException.ThrowIfNull(max);
+        ArgumentNullException.ThrowIfNull(value);
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(min);
-            ArgumentNullException.ThrowIfNull(max);
-            ArgumentNullException.ThrowIfNull(value);
-            
-            isBetween = value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0;
-            return isBetween;
-        }
-        finally
-        {
-            callback?.Invoke(isBetween ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        var isBetween = value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0;
+
+        SGuard.InvokeCallbackSafely(isBetween, callback);
+
+        return isBetween;
     }
-    
+
     /// <summary>
-    /// Determines whether the specified string lies within the inclusive range defined
-    /// by the provided minimum and maximum values using the given StringComparison.
+    /// Throws an exception if value is less than or equal to min, or greater than or equal to max.
+    /// Boundaries are exclusive using the given StringComparison.
     /// </summary>
     /// <param name="value">The string value to be checked.</param>
     /// <param name="min">The minimum boundary (inclusive).</param>
@@ -57,25 +51,16 @@ public sealed partial class Is
     /// <param name="comparison">The string comparison rule to use.</param>
     /// <param name="callback">Optional callback invoked with the outcome.</param>
     /// <returns>true if the value is between min and max (inclusive) under the specified comparison; otherwise false.</returns>
-    public static bool Between(string value, string min, string max,
-                               StringComparison comparison, SGuardCallback? callback = null)
+    public static bool Between(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null)
     {
-        var isBetween = false;
+        ArgumentNullException.ThrowIfNull(min);
+        ArgumentNullException.ThrowIfNull(max);
+        ArgumentNullException.ThrowIfNull(value);
 
-        try
-        {
-            ArgumentNullException.ThrowIfNull(value);
-            ArgumentNullException.ThrowIfNull(min);
-            ArgumentNullException.ThrowIfNull(max);
+        var isBetween = string.Compare(value, min, comparison) >= 0 && string.Compare(value, max, comparison) <= 0;
 
-            isBetween = string.Compare(value, min, comparison) >= 0
-                        && string.Compare(value, max, comparison) <= 0;
+        SGuard.InvokeCallbackSafely(isBetween, callback);
 
-            return isBetween;
-        }
-        finally
-        {
-            callback?.Invoke(isBetween ? GuardOutcome.Success : GuardOutcome.Failure);
-        }
+        return isBetween;
     }
 }
