@@ -15,21 +15,16 @@ SGuard is a lightweight, extensible guard clause library for .NET, providing exp
 - **Rich Exception Messages**: Informative diagnostics using `CallerArgumentExpression`.
 - **Multi-targeting**: Supports .NET 6, 7, 8, and 9.
 
-## 🆕 What's New in 2.0.4
+## 🆕 What's New in 2.1.0
 
-- Added `LessThan` and `LessThanOrEqual` guards for generics and strings.
-- Added `Any<T>` and `All<T>` guards with predicate support.
-- String guards now support `StringComparison` for culture-aware checks.
-- Unified callback support across all guards.
-- Custom exception overloads and constructor argument support.
-- Generic exception creation with `ExceptionActivator.Create<T>`, supporting both parameterless and parameterized constructors.
-- Expression caching for improved performance in null/empty checks.
-- Improved documentation and XML comments.
+- **License Change:** Project license changed from GPL-3.0-or-later to MIT for .NET Foundation compatibility and broader commercial use.
+- All features from previous versions remain available.
+- See release notes for details.
 
 ## 📦 Installation
 
 ```
-dotnet add package SGuard --version 2.0.4
+dotnet add package SGuard
 ```
 
 ## 📝 Usage Examples
@@ -64,12 +59,18 @@ ThrowIf.NullOrEmpty(str);
 ThrowIf.NullOrEmpty(obj, x => x.Property);
 ```
 
-## 📄 License
+## 🤝 Contributing
 
-This project is licensed under the GPL-3.0-or-later license. See the [LICENSE](./LICENSE) file for details.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## 🌐 Code of Conduct
+
+This project adheres to the [.NET Foundation Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+
+## 📜 License
+
+This project is licensed under the MIT License, a permissive open source license. See the [LICENSE](LICENSE) file for details.
 
 ## 🔗 Links
 
 - [NuGet Package](https://www.nuget.org/packages/SGuard)
-- [GitHub Repository](https://github.com/selcukgural/sguard)
-
