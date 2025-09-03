@@ -1,48 +1,68 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	  <PackageVersion>2.0.4</PackageVersion>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <AssemblyVersion>2.0.4</AssemblyVersion>
-    <PackageProjectUrl>https://github.com/selcukgural/sguard</PackageProjectUrl>
-    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/selcukgural/sguard</RepositoryUrl>
-      <PackageTags>Guard;Is;ThrowIf;Any;All;Validation;Preconditions;Contracts;Exceptions;CallerArgumentExpression;dotnet;csharp</PackageTags>
-      <Description>SGuard is a lightweight guard library for .NET that offers explicit boolean checks (Is.*) and throwing guards (ThrowIf.*), a unified GuardCallback/GuardOutcome model, and richly-informative exceptions via CallerArgumentExpression for easier diagnostics. Targets net6.0/net7.0/net8.0/net9.0.
-      </Description>
-      <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
-    <Title>SGuard</Title>
-    <Authors>Selçuk Güral</Authors>
-    <RepositoryType>git</RepositoryType>
-      <PackageReleaseNotes>
-          - Version: 2.0.4
-          Highlights
-          - Any&lt;T&gt; and All&lt;T&gt; guards with predicate support
-          - Support for IComparable&lt;T&gt; types with generic comparison
-          - String comparison with StringComparison parameter for culture-specific comparisons
-          - Culture-aware string comparisons for Between, LessThan, and LessThanOrEqual operations
-          - Consistent callback support across all comparison methods
-          - Multiple overloads for custom exception types
-          - Constructor argument support for exception instantiation
-          - Generic exception creation with ExceptionActivator.Create&lt;T&gt;
-          - Support for both parameterless and parameterized exception constructors
-          - Expression Caching: Implemented ConcurrentDictionary for compiled expression caching
-          - Reduced compilation overhead for repeated null/empty checks with selectors
-          - Thread-safe expression evaluation
-      </PackageReleaseNotes>
-      <PackageIcon>icon.png</PackageIcon>
-      <FileVersion>2.0.4</FileVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <PackageVersion>2.1.0</PackageVersion>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+        <PackageProjectUrl>https://github.com/selcukgural/sguard</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/selcukgural/sguard</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>guard;is;throwIf;sguard;validation;dotnet;csharp;callbacks</PackageTags>
+        <Description>SGuard is a lightweight guard library for .NET that offers explicit boolean checks (Is.*) and throwing guards (ThrowIf.*), a unified GuardCallback/GuardOutcome model, and richly-informative exceptions via CallerArgumentExpression for easier diagnostics. Targets net6.0/net7.0/net8.0/net9.0.
+        </Description>
+        <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+        <Title>SGuard</Title>
+        <Authors>Selçuk Güral</Authors>
+        <Company>Selçuk Güral</Company>
+        <RepositoryType>git</RepositoryType>
+        <PackageReleaseNotes>
+            # Release Notes - Version 2.1.0
 
-  <ItemGroup>
-    <None Update="LICENSE">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-      <None Include="icon.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
+            ## 🔄 **License Change**
+            - **BREAKING**: Changed license from GPL-3.0-or-later to **MIT License**
+            - This change makes the library more permissive and suitable for commercial use
+            - All previous functionality remains unchanged
+
+            ## 📋 **Previous Features (Still Available)**
+            - Any&lt;T&gt; and All&lt;T&gt; guards with predicate support
+            - Support for IComparable&lt;T&gt; types with generic comparison
+            - String comparison with StringComparison parameter for culture-specific comparisons
+            - Culture-aware string comparisons for Between, LessThan, and LessThanOrEqual operations
+            - Consistent callback support across all comparison methods
+            - Multiple overloads for custom exception types
+            - Constructor argument support for exception instantiation
+            - Generic exception creation with ExceptionActivator.Create&lt;T&gt;
+            - Support for both parameterless and parameterized exception constructors
+            - Expression Caching: Implemented ConcurrentDictionary for compiled expression caching
+            - Reduced compilation overhead for repeated null/empty checks with selectors
+            - Thread-safe expression evaluation
+
+            ## ⚠️ **Migration Notice**
+            No code changes are required. This is purely a licensing change that provides more flexibility for users of the library.
+        </PackageReleaseNotes>
+        <PackageIcon>icon.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Update="LICENSE">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include=".github\pull_request_template.md" />
+        <None Include=".github\CODEOWNERS.md" />
+        <None Include=".github\ISSUE_TEMPLATE\bug_report.md" />
+        <None Include=".github\ISSUE_TEMPLATE\feature_request.md" />
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+        <None Include="icon.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include=".github\workflows\ci.yml" />
+      <Content Include=".github\workflows\publish.yml" />
+    </ItemGroup>
 
 </Project>
