@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SGuard", "SGuard.csproj", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E3D72975-DE5C-4AE4-923F-A689A6C9596A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGuard.Tests", "..\SGuard.Tests\SGuard.Tests\SGuard.Tests.csproj", "{39386FE7-E8B1-4D64-8103-BE9491096CB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGuard.Tests", "..\SGuard.Tests\SGuard.Tests.csproj", "{39386FE7-E8B1-4D64-8103-BE9491096CB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
