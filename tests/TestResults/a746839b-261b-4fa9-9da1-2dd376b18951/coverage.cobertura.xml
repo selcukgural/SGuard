@@ -1,0 +1,2020 @@
+<?xml version="1.0" encoding="utf-8"?>
+<coverage line-rate="0.8604999999999999" branch-rate="0.8303" version="1.9" timestamp="1756930525" lines-covered="469" lines-valid="545" branches-covered="93" branches-valid="112">
+  <sources>
+    <source>/Users/selcuk/RiderProjects/sguard/src/</source>
+  </sources>
+  <packages>
+    <package name="SGuard" line-rate="0.8604999999999999" branch-rate="0.8303" complexity="185">
+      <classes>
+        <class name="SGuard.SGuardCallbacks" filename="Callbacks/SGuardCallback.cs" line-rate="0" branch-rate="1" complexity="2">
+          <methods>
+            <method name="OnSuccess" signature="(System.Action)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="27" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name="OnFailure" signature="(System.Action)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="33" hits="0" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="27" hits="0" branch="False" />
+            <line number="33" hits="0" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Is" filename="Guards/All/Is.All.cs" line-rate="1" branch-rate="1" complexity="1">
+          <methods>
+            <method name="All" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Func`2&lt;T,System.Boolean&gt;,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="19" hits="8" branch="False" />
+                <line number="20" hits="8" branch="False" />
+                <line number="21" hits="7" branch="False" />
+                <line number="23" hits="6" branch="False" />
+                <line number="25" hits="6" branch="False" />
+                <line number="27" hits="6" branch="False" />
+                <line number="28" hits="6" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="19" hits="8" branch="False" />
+            <line number="20" hits="8" branch="False" />
+            <line number="21" hits="7" branch="False" />
+            <line number="23" hits="6" branch="False" />
+            <line number="25" hits="6" branch="False" />
+            <line number="27" hits="6" branch="False" />
+            <line number="28" hits="6" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Is" filename="Guards/Any/Is.Any.cs" line-rate="1" branch-rate="1" complexity="1">
+          <methods>
+            <method name="Any" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Func`2&lt;T,System.Boolean&gt;,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="23" hits="55" branch="False" />
+                <line number="24" hits="55" branch="False" />
+                <line number="25" hits="53" branch="False" />
+                <line number="27" hits="52" branch="False" />
+                <line number="29" hits="52" branch="False" />
+                <line number="31" hits="52" branch="False" />
+                <line number="32" hits="52" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="23" hits="55" branch="False" />
+            <line number="24" hits="55" branch="False" />
+            <line number="25" hits="53" branch="False" />
+            <line number="27" hits="52" branch="False" />
+            <line number="29" hits="52" branch="False" />
+            <line number="31" hits="52" branch="False" />
+            <line number="32" hits="52" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Is" filename="Guards/Between/Is.Between.cs" line-rate="1" branch-rate="1" complexity="4">
+          <methods>
+            <method name="Between" signature="(TValue,TMin,TMax,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="32" hits="100047" branch="False" />
+                <line number="33" hits="100047" branch="False" />
+                <line number="34" hits="100047" branch="False" />
+                <line number="35" hits="100047" branch="False" />
+                <line number="37" hits="100047" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="67" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="39" hits="100047" branch="False" />
+                <line number="41" hits="100047" branch="False" />
+                <line number="42" hits="100047" branch="False" />
+              </lines>
+            </method>
+            <method name="Between" signature="(System.String,System.String,System.String,System.StringComparison,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="55" hits="11" branch="False" />
+                <line number="56" hits="11" branch="False" />
+                <line number="57" hits="11" branch="False" />
+                <line number="58" hits="11" branch="False" />
+                <line number="60" hits="11" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="46" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="62" hits="11" branch="False" />
+                <line number="64" hits="11" branch="False" />
+                <line number="65" hits="11" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="32" hits="100047" branch="False" />
+            <line number="33" hits="100047" branch="False" />
+            <line number="34" hits="100047" branch="False" />
+            <line number="35" hits="100047" branch="False" />
+            <line number="37" hits="100047" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="67" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="39" hits="100047" branch="False" />
+            <line number="41" hits="100047" branch="False" />
+            <line number="42" hits="100047" branch="False" />
+            <line number="55" hits="11" branch="False" />
+            <line number="56" hits="11" branch="False" />
+            <line number="57" hits="11" branch="False" />
+            <line number="58" hits="11" branch="False" />
+            <line number="60" hits="11" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="46" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="62" hits="11" branch="False" />
+            <line number="64" hits="11" branch="False" />
+            <line number="65" hits="11" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Is" filename="Guards/GreaterThan/Is.GreaterThan.cs" line-rate="1" branch-rate="1" complexity="4">
+          <methods>
+            <method name="GreaterThan" signature="(TLeft,TRight,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="26" hits="22" branch="False" />
+                <line number="27" hits="22" branch="False" />
+                <line number="28" hits="22" branch="False" />
+                <line number="30" hits="22" branch="False" />
+                <line number="32" hits="22" branch="False" />
+                <line number="34" hits="22" branch="False" />
+                <line number="35" hits="22" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThan" signature="(System.String,System.String,System.StringComparison,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="47" hits="11" branch="False" />
+                <line number="48" hits="11" branch="False" />
+                <line number="49" hits="10" branch="False" />
+                <line number="51" hits="9" branch="False" />
+                <line number="53" hits="9" branch="False" />
+                <line number="55" hits="9" branch="False" />
+                <line number="56" hits="9" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThanOrEqual" signature="(TLeft,TRight,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="77" hits="20" branch="False" />
+                <line number="78" hits="20" branch="False" />
+                <line number="79" hits="20" branch="False" />
+                <line number="81" hits="20" branch="False" />
+                <line number="83" hits="20" branch="False" />
+                <line number="85" hits="20" branch="False" />
+                <line number="86" hits="20" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThanOrEqual" signature="(System.String,System.String,System.StringComparison,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="98" hits="7" branch="False" />
+                <line number="99" hits="7" branch="False" />
+                <line number="100" hits="6" branch="False" />
+                <line number="102" hits="5" branch="False" />
+                <line number="104" hits="5" branch="False" />
+                <line number="106" hits="5" branch="False" />
+                <line number="107" hits="5" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="26" hits="22" branch="False" />
+            <line number="27" hits="22" branch="False" />
+            <line number="28" hits="22" branch="False" />
+            <line number="30" hits="22" branch="False" />
+            <line number="32" hits="22" branch="False" />
+            <line number="34" hits="22" branch="False" />
+            <line number="35" hits="22" branch="False" />
+            <line number="47" hits="11" branch="False" />
+            <line number="48" hits="11" branch="False" />
+            <line number="49" hits="10" branch="False" />
+            <line number="51" hits="9" branch="False" />
+            <line number="53" hits="9" branch="False" />
+            <line number="55" hits="9" branch="False" />
+            <line number="56" hits="9" branch="False" />
+            <line number="77" hits="20" branch="False" />
+            <line number="78" hits="20" branch="False" />
+            <line number="79" hits="20" branch="False" />
+            <line number="81" hits="20" branch="False" />
+            <line number="83" hits="20" branch="False" />
+            <line number="85" hits="20" branch="False" />
+            <line number="86" hits="20" branch="False" />
+            <line number="98" hits="7" branch="False" />
+            <line number="99" hits="7" branch="False" />
+            <line number="100" hits="6" branch="False" />
+            <line number="102" hits="5" branch="False" />
+            <line number="104" hits="5" branch="False" />
+            <line number="106" hits="5" branch="False" />
+            <line number="107" hits="5" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Is" filename="Guards/LessThan/Is.LessThan.cs" line-rate="1" branch-rate="1" complexity="4">
+          <methods>
+            <method name="LessThan" signature="(TLeft,TRight,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="23" hits="56" branch="False" />
+                <line number="24" hits="56" branch="False" />
+                <line number="25" hits="56" branch="False" />
+                <line number="27" hits="56" branch="False" />
+                <line number="29" hits="56" branch="False" />
+                <line number="31" hits="56" branch="False" />
+                <line number="32" hits="56" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThan" signature="(System.String,System.String,System.StringComparison,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="44" hits="24" branch="False" />
+                <line number="45" hits="24" branch="False" />
+                <line number="46" hits="23" branch="False" />
+                <line number="48" hits="22" branch="False" />
+                <line number="50" hits="22" branch="False" />
+                <line number="52" hits="22" branch="False" />
+                <line number="53" hits="22" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThanOrEqual" signature="(TLeft,TRight,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="75" hits="52" branch="False" />
+                <line number="76" hits="52" branch="False" />
+                <line number="77" hits="52" branch="False" />
+                <line number="79" hits="52" branch="False" />
+                <line number="81" hits="52" branch="False" />
+                <line number="83" hits="52" branch="False" />
+                <line number="84" hits="52" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThanOrEqual" signature="(System.String,System.String,System.StringComparison,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="96" hits="22" branch="False" />
+                <line number="97" hits="22" branch="False" />
+                <line number="98" hits="21" branch="False" />
+                <line number="100" hits="20" branch="False" />
+                <line number="102" hits="20" branch="False" />
+                <line number="104" hits="20" branch="False" />
+                <line number="105" hits="20" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="23" hits="56" branch="False" />
+            <line number="24" hits="56" branch="False" />
+            <line number="25" hits="56" branch="False" />
+            <line number="27" hits="56" branch="False" />
+            <line number="29" hits="56" branch="False" />
+            <line number="31" hits="56" branch="False" />
+            <line number="32" hits="56" branch="False" />
+            <line number="44" hits="24" branch="False" />
+            <line number="45" hits="24" branch="False" />
+            <line number="46" hits="23" branch="False" />
+            <line number="48" hits="22" branch="False" />
+            <line number="50" hits="22" branch="False" />
+            <line number="52" hits="22" branch="False" />
+            <line number="53" hits="22" branch="False" />
+            <line number="75" hits="52" branch="False" />
+            <line number="76" hits="52" branch="False" />
+            <line number="77" hits="52" branch="False" />
+            <line number="79" hits="52" branch="False" />
+            <line number="81" hits="52" branch="False" />
+            <line number="83" hits="52" branch="False" />
+            <line number="84" hits="52" branch="False" />
+            <line number="96" hits="22" branch="False" />
+            <line number="97" hits="22" branch="False" />
+            <line number="98" hits="21" branch="False" />
+            <line number="100" hits="20" branch="False" />
+            <line number="102" hits="20" branch="False" />
+            <line number="104" hits="20" branch="False" />
+            <line number="105" hits="20" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Is" filename="Guards/NullOrEmpty/Is.NullOrEmpty.cs" line-rate="1" branch-rate="0.875" complexity="10">
+          <methods>
+            <method name="NullOrEmpty" signature="(T,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="25" hits="102" branch="False" />
+                <line number="26" hits="102" branch="False" />
+                <line number="28" hits="102" branch="False" />
+                <line number="30" hits="102" branch="False" />
+                <line number="31" hits="102" branch="False" />
+              </lines>
+            </method>
+            <method name="NullOrEmpty" signature="(T,System.Linq.Expressions.Expression`1&lt;System.Func`2&lt;T,System.Object&gt;&gt;,SGuard.SGuardCallback)" line-rate="1" branch-rate="0.75" complexity="4">
+              <lines>
+                <line number="44" hits="50" branch="False" />
+                <line number="45" hits="50" branch="False" />
+                <line number="47" hits="48" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="24" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="48" hits="2" branch="False" />
+                <line number="49" hits="2" branch="False" />
+                <line number="50" hits="2" branch="False" />
+                <line number="53" hits="46" branch="False" />
+                <line number="55" hits="46" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="57" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="57" hits="46" branch="False" />
+                <line number="59" hits="46" branch="False" />
+                <line number="60" hits="48" branch="False" />
+              </lines>
+            </method>
+            <method name="InternalIsNullOrEmpty" signature="(T)" line-rate="1" branch-rate="1" complexity="4">
+              <lines>
+                <line number="71" hits="130" branch="False" />
+                <line number="72" hits="130" branch="True" condition-coverage="100% (4/4)">
+                  <conditions>
+                    <condition number="7" type="jump" coverage="100%" />
+                    <condition number="15" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="207" hits="130" branch="False" />
+              </lines>
+            </method>
+            <method name=".cctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="13" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="25" hits="102" branch="False" />
+            <line number="26" hits="102" branch="False" />
+            <line number="28" hits="102" branch="False" />
+            <line number="30" hits="102" branch="False" />
+            <line number="31" hits="102" branch="False" />
+            <line number="44" hits="50" branch="False" />
+            <line number="45" hits="50" branch="False" />
+            <line number="47" hits="48" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="24" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="48" hits="2" branch="False" />
+            <line number="49" hits="2" branch="False" />
+            <line number="50" hits="2" branch="False" />
+            <line number="53" hits="46" branch="False" />
+            <line number="55" hits="46" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="57" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="57" hits="46" branch="False" />
+            <line number="59" hits="46" branch="False" />
+            <line number="60" hits="48" branch="False" />
+            <line number="71" hits="130" branch="False" />
+            <line number="72" hits="130" branch="True" condition-coverage="100% (4/4)">
+              <conditions>
+                <condition number="7" type="jump" coverage="100%" />
+                <condition number="15" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="207" hits="130" branch="False" />
+            <line number="13" hits="1" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.ThrowIf" filename="Guards/All/ThrowIf.All.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name="Any" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Func`2&lt;T,System.Boolean&gt;,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="16" hits="16" branch="False" />
+                <line number="17" hits="16" branch="False" />
+                <line number="18" hits="6" branch="False" />
+              </lines>
+            </method>
+            <method name="Any" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Func`2&lt;T,System.Boolean&gt;,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="33" hits="20" branch="False" />
+                <line number="34" hits="20" branch="False" />
+                <line number="35" hits="19" branch="False" />
+                <line number="36" hits="18" branch="False" />
+                <line number="38" hits="17" branch="False" />
+                <line number="39" hits="7" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="16" hits="16" branch="False" />
+            <line number="17" hits="16" branch="False" />
+            <line number="18" hits="6" branch="False" />
+            <line number="33" hits="20" branch="False" />
+            <line number="34" hits="20" branch="False" />
+            <line number="35" hits="19" branch="False" />
+            <line number="36" hits="18" branch="False" />
+            <line number="38" hits="17" branch="False" />
+            <line number="39" hits="7" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.ThrowIf" filename="Guards/Any/ThrowIf.Any.cs" line-rate="0" branch-rate="1" complexity="2">
+          <methods>
+            <method name="All" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Func`2&lt;T,System.Boolean&gt;,SGuard.SGuardCallback)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="23" hits="0" branch="False" />
+                <line number="24" hits="0" branch="False" />
+                <line number="25" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name="All" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Func`2&lt;T,System.Boolean&gt;,TException,SGuard.SGuardCallback)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="42" hits="0" branch="False" />
+                <line number="43" hits="0" branch="False" />
+                <line number="44" hits="0" branch="False" />
+                <line number="45" hits="0" branch="False" />
+                <line number="47" hits="0" branch="False" />
+                <line number="48" hits="0" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="23" hits="0" branch="False" />
+            <line number="24" hits="0" branch="False" />
+            <line number="25" hits="0" branch="False" />
+            <line number="42" hits="0" branch="False" />
+            <line number="43" hits="0" branch="False" />
+            <line number="44" hits="0" branch="False" />
+            <line number="45" hits="0" branch="False" />
+            <line number="47" hits="0" branch="False" />
+            <line number="48" hits="0" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.ThrowIf" filename="Guards/Between/ThrowIf.Between.cs" line-rate="1" branch-rate="1" complexity="8">
+          <methods>
+            <method name="Between" signature="(TValue,TMin,TMax,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="25" hits="5" branch="False" />
+                <line number="26" hits="5" branch="False" />
+                <line number="27" hits="5" branch="False" />
+                <line number="28" hits="5" branch="False" />
+                <line number="30" hits="5" branch="False" />
+                <line number="31" hits="2" branch="False" />
+                <line number="112" hits="2" branch="False" />
+                <line number="113" hits="2" branch="False" />
+                <line number="114" hits="2" branch="False" />
+                <line number="115" hits="2" branch="False" />
+                <line number="117" hits="2" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="67" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="118" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="Between" signature="(TValue,TMin,TMax,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="50" hits="3" branch="False" />
+                <line number="51" hits="3" branch="False" />
+                <line number="52" hits="3" branch="False" />
+                <line number="53" hits="3" branch="False" />
+                <line number="54" hits="3" branch="False" />
+                <line number="56" hits="2" branch="False" />
+                <line number="57" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="Between" signature="(System.String,System.String,System.String,System.StringComparison,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="68" hits="8" branch="False" />
+                <line number="69" hits="8" branch="False" />
+                <line number="70" hits="7" branch="False" />
+                <line number="71" hits="6" branch="False" />
+                <line number="73" hits="5" branch="False" />
+                <line number="74" hits="2" branch="False" />
+                <line number="159" hits="2" branch="False" />
+                <line number="160" hits="2" branch="False" />
+                <line number="161" hits="2" branch="False" />
+                <line number="162" hits="2" branch="False" />
+                <line number="164" hits="2" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="53" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="165" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="Between" signature="(System.String,System.String,System.String,System.StringComparison,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="87" hits="3" branch="False" />
+                <line number="88" hits="3" branch="False" />
+                <line number="89" hits="3" branch="False" />
+                <line number="90" hits="3" branch="False" />
+                <line number="91" hits="3" branch="False" />
+                <line number="93" hits="2" branch="False" />
+                <line number="94" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="Between" signature="(TValue,TMin,TMax,System.Object[],SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="137" hits="2" branch="False" />
+                <line number="138" hits="2" branch="False" />
+                <line number="139" hits="2" branch="False" />
+                <line number="140" hits="2" branch="False" />
+                <line number="142" hits="2" branch="False" />
+                <line number="143" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="Between" signature="(System.String,System.String,System.String,System.StringComparison,System.Object[],SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="181" hits="2" branch="False" />
+                <line number="182" hits="2" branch="False" />
+                <line number="183" hits="2" branch="False" />
+                <line number="184" hits="2" branch="False" />
+                <line number="186" hits="2" branch="False" />
+                <line number="187" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="25" hits="5" branch="False" />
+            <line number="26" hits="5" branch="False" />
+            <line number="27" hits="5" branch="False" />
+            <line number="28" hits="5" branch="False" />
+            <line number="30" hits="5" branch="False" />
+            <line number="31" hits="2" branch="False" />
+            <line number="112" hits="2" branch="False" />
+            <line number="113" hits="2" branch="False" />
+            <line number="114" hits="2" branch="False" />
+            <line number="115" hits="2" branch="False" />
+            <line number="117" hits="2" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="67" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="118" hits="1" branch="False" />
+            <line number="50" hits="3" branch="False" />
+            <line number="51" hits="3" branch="False" />
+            <line number="52" hits="3" branch="False" />
+            <line number="53" hits="3" branch="False" />
+            <line number="54" hits="3" branch="False" />
+            <line number="56" hits="2" branch="False" />
+            <line number="57" hits="1" branch="False" />
+            <line number="68" hits="8" branch="False" />
+            <line number="69" hits="8" branch="False" />
+            <line number="70" hits="7" branch="False" />
+            <line number="71" hits="6" branch="False" />
+            <line number="73" hits="5" branch="False" />
+            <line number="74" hits="2" branch="False" />
+            <line number="159" hits="2" branch="False" />
+            <line number="160" hits="2" branch="False" />
+            <line number="161" hits="2" branch="False" />
+            <line number="162" hits="2" branch="False" />
+            <line number="164" hits="2" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="53" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="165" hits="1" branch="False" />
+            <line number="87" hits="3" branch="False" />
+            <line number="88" hits="3" branch="False" />
+            <line number="89" hits="3" branch="False" />
+            <line number="90" hits="3" branch="False" />
+            <line number="91" hits="3" branch="False" />
+            <line number="93" hits="2" branch="False" />
+            <line number="94" hits="1" branch="False" />
+            <line number="137" hits="2" branch="False" />
+            <line number="138" hits="2" branch="False" />
+            <line number="139" hits="2" branch="False" />
+            <line number="140" hits="2" branch="False" />
+            <line number="142" hits="2" branch="False" />
+            <line number="143" hits="1" branch="False" />
+            <line number="181" hits="2" branch="False" />
+            <line number="182" hits="2" branch="False" />
+            <line number="183" hits="2" branch="False" />
+            <line number="184" hits="2" branch="False" />
+            <line number="186" hits="2" branch="False" />
+            <line number="187" hits="1" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.ThrowIf" filename="Guards/GreaterThan/ThrowIf.GreaterThan.cs" line-rate="1" branch-rate="1" complexity="8">
+          <methods>
+            <method name="GreaterThan" signature="(TLeft,TRight,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="21" hits="6" branch="False" />
+                <line number="22" hits="6" branch="False" />
+                <line number="23" hits="6" branch="False" />
+                <line number="25" hits="6" branch="False" />
+                <line number="26" hits="2" branch="False" />
+                <line number="40" hits="2" branch="False" />
+                <line number="41" hits="2" branch="False" />
+                <line number="42" hits="2" branch="False" />
+                <line number="44" hits="2" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="49" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="45" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThan" signature="(TLeft,TRight,System.Object[],SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="61" hits="2" branch="False" />
+                <line number="62" hits="2" branch="False" />
+                <line number="63" hits="2" branch="False" />
+                <line number="65" hits="2" branch="False" />
+                <line number="66" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThan" signature="(TLeft,TRight,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="83" hits="3" branch="False" />
+                <line number="84" hits="3" branch="False" />
+                <line number="85" hits="3" branch="False" />
+                <line number="86" hits="3" branch="False" />
+                <line number="88" hits="2" branch="False" />
+                <line number="89" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThanOrEqual" signature="(TLeft,TRight,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="103" hits="6" branch="False" />
+                <line number="104" hits="6" branch="False" />
+                <line number="105" hits="6" branch="False" />
+                <line number="107" hits="6" branch="False" />
+                <line number="108" hits="3" branch="False" />
+                <line number="145" hits="2" branch="False" />
+                <line number="146" hits="2" branch="False" />
+                <line number="147" hits="2" branch="False" />
+                <line number="149" hits="2" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="49" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="150" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThanOrEqual" signature="(TLeft,TRight,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="124" hits="2" branch="False" />
+                <line number="125" hits="2" branch="False" />
+                <line number="126" hits="2" branch="False" />
+                <line number="127" hits="2" branch="False" />
+                <line number="129" hits="2" branch="False" />
+                <line number="130" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThanOrEqual" signature="(TLeft,TRight,System.Object[],SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="166" hits="2" branch="False" />
+                <line number="167" hits="2" branch="False" />
+                <line number="168" hits="2" branch="False" />
+                <line number="170" hits="2" branch="False" />
+                <line number="171" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="21" hits="6" branch="False" />
+            <line number="22" hits="6" branch="False" />
+            <line number="23" hits="6" branch="False" />
+            <line number="25" hits="6" branch="False" />
+            <line number="26" hits="2" branch="False" />
+            <line number="40" hits="2" branch="False" />
+            <line number="41" hits="2" branch="False" />
+            <line number="42" hits="2" branch="False" />
+            <line number="44" hits="2" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="49" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="45" hits="1" branch="False" />
+            <line number="61" hits="2" branch="False" />
+            <line number="62" hits="2" branch="False" />
+            <line number="63" hits="2" branch="False" />
+            <line number="65" hits="2" branch="False" />
+            <line number="66" hits="1" branch="False" />
+            <line number="83" hits="3" branch="False" />
+            <line number="84" hits="3" branch="False" />
+            <line number="85" hits="3" branch="False" />
+            <line number="86" hits="3" branch="False" />
+            <line number="88" hits="2" branch="False" />
+            <line number="89" hits="1" branch="False" />
+            <line number="103" hits="6" branch="False" />
+            <line number="104" hits="6" branch="False" />
+            <line number="105" hits="6" branch="False" />
+            <line number="107" hits="6" branch="False" />
+            <line number="108" hits="3" branch="False" />
+            <line number="145" hits="2" branch="False" />
+            <line number="146" hits="2" branch="False" />
+            <line number="147" hits="2" branch="False" />
+            <line number="149" hits="2" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="49" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="150" hits="1" branch="False" />
+            <line number="124" hits="2" branch="False" />
+            <line number="125" hits="2" branch="False" />
+            <line number="126" hits="2" branch="False" />
+            <line number="127" hits="2" branch="False" />
+            <line number="129" hits="2" branch="False" />
+            <line number="130" hits="1" branch="False" />
+            <line number="166" hits="2" branch="False" />
+            <line number="167" hits="2" branch="False" />
+            <line number="168" hits="2" branch="False" />
+            <line number="170" hits="2" branch="False" />
+            <line number="171" hits="1" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.ThrowIf" filename="Guards/LessThan/ThrowIf.LessThan.cs" line-rate="1" branch-rate="1" complexity="6">
+          <methods>
+            <method name="LessThan" signature="(TLeft,TRight,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="22" hits="6" branch="False" />
+                <line number="23" hits="6" branch="False" />
+                <line number="24" hits="6" branch="False" />
+                <line number="26" hits="6" branch="False" />
+                <line number="27" hits="2" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThan" signature="(TLeft,TRight,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="45" hits="2" branch="False" />
+                <line number="46" hits="2" branch="False" />
+                <line number="47" hits="2" branch="False" />
+                <line number="48" hits="2" branch="False" />
+                <line number="50" hits="2" branch="False" />
+                <line number="51" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThanOrEqual" signature="(TLeft,TRight,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="71" hits="5" branch="False" />
+                <line number="72" hits="5" branch="False" />
+                <line number="73" hits="5" branch="False" />
+                <line number="75" hits="5" branch="False" />
+                <line number="76" hits="3" branch="False" />
+                <line number="121" hits="2" branch="False" />
+                <line number="122" hits="2" branch="False" />
+                <line number="123" hits="2" branch="False" />
+                <line number="125" hits="2" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="49" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="126" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThanOrEqual" signature="(TLeft,TRight,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="94" hits="2" branch="False" />
+                <line number="95" hits="2" branch="False" />
+                <line number="96" hits="2" branch="False" />
+                <line number="97" hits="2" branch="False" />
+                <line number="99" hits="2" branch="False" />
+                <line number="100" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThanOrEqual" signature="(TLeft,TRight,System.Object[],SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="149" hits="2" branch="False" />
+                <line number="150" hits="2" branch="False" />
+                <line number="151" hits="2" branch="False" />
+                <line number="153" hits="2" branch="False" />
+                <line number="154" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="22" hits="6" branch="False" />
+            <line number="23" hits="6" branch="False" />
+            <line number="24" hits="6" branch="False" />
+            <line number="26" hits="6" branch="False" />
+            <line number="27" hits="2" branch="False" />
+            <line number="45" hits="2" branch="False" />
+            <line number="46" hits="2" branch="False" />
+            <line number="47" hits="2" branch="False" />
+            <line number="48" hits="2" branch="False" />
+            <line number="50" hits="2" branch="False" />
+            <line number="51" hits="1" branch="False" />
+            <line number="71" hits="5" branch="False" />
+            <line number="72" hits="5" branch="False" />
+            <line number="73" hits="5" branch="False" />
+            <line number="75" hits="5" branch="False" />
+            <line number="76" hits="3" branch="False" />
+            <line number="121" hits="2" branch="False" />
+            <line number="122" hits="2" branch="False" />
+            <line number="123" hits="2" branch="False" />
+            <line number="125" hits="2" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="49" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="126" hits="1" branch="False" />
+            <line number="94" hits="2" branch="False" />
+            <line number="95" hits="2" branch="False" />
+            <line number="96" hits="2" branch="False" />
+            <line number="97" hits="2" branch="False" />
+            <line number="99" hits="2" branch="False" />
+            <line number="100" hits="1" branch="False" />
+            <line number="149" hits="2" branch="False" />
+            <line number="150" hits="2" branch="False" />
+            <line number="151" hits="2" branch="False" />
+            <line number="153" hits="2" branch="False" />
+            <line number="154" hits="1" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.ThrowIf" filename="Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" line-rate="0.9512" branch-rate="0.8887999999999999" complexity="19">
+          <methods>
+            <method name="NullOrEmpty" signature="(T,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="37" hits="8" branch="False" />
+                <line number="38" hits="8" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="25" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="39" hits="8" branch="False" />
+                <line number="40" hits="4" branch="False" />
+              </lines>
+            </method>
+            <method name="NullOrEmpty" signature="(T,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="54" hits="4" branch="False" />
+                <line number="55" hits="4" branch="False" />
+                <line number="57" hits="3" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="42" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="59" hits="3" branch="False" />
+                <line number="60" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="NullOrEmpty" signature="(T,System.Object[],SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="74" hits="2" branch="False" />
+                <line number="75" hits="2" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="20" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="77" hits="2" branch="False" />
+                <line number="78" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="NullOrEmpty" signature="(TValue,System.Linq.Expressions.Expression`1&lt;System.Func`2&lt;TValue,System.Object&gt;&gt;,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="4">
+              <lines>
+                <line number="90" hits="4" branch="False" />
+                <line number="91" hits="4" branch="False" />
+                <line number="92" hits="2" branch="False" />
+                <line number="128" hits="9" branch="False" />
+                <line number="129" hits="9" branch="False" />
+                <line number="131" hits="7" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="19" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="133" hits="7" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="39" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="134" hits="2" branch="False" />
+              </lines>
+            </method>
+            <method name="NullOrEmpty" signature="(TValue,System.Linq.Expressions.Expression`1&lt;System.Func`2&lt;TValue,System.Object&gt;&gt;,TException,SGuard.SGuardCallback)" line-rate="1" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="108" hits="8" branch="False" />
+                <line number="109" hits="8" branch="False" />
+                <line number="110" hits="7" branch="False" />
+                <line number="112" hits="6" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="54" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="114" hits="6" branch="False" />
+                <line number="115" hits="3" branch="False" />
+              </lines>
+            </method>
+            <method name="NullOrEmpty" signature="(TValue,System.Linq.Expressions.Expression`1&lt;System.Func`2&lt;TValue,System.Object&gt;&gt;,System.Object[],SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="148" hits="7" branch="False" />
+                <line number="149" hits="7" branch="False" />
+                <line number="151" hits="7" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="32" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="153" hits="7" branch="False" />
+                <line number="154" hits="2" branch="False" />
+              </lines>
+            </method>
+            <method name="CheckNullOrEmpty" signature="(TValue,System.Linq.Expressions.Expression`1&lt;System.Func`2&lt;TValue,System.Object&gt;&gt;)" line-rate="0.7142000000000001" branch-rate="0.75" complexity="4">
+              <lines>
+                <line number="165" hits="18" branch="False" />
+                <line number="166" hits="18" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="27" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="167" hits="0" branch="False" />
+                <line number="168" hits="0" branch="False" />
+                <line number="171" hits="18" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="53" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="173" hits="18" branch="False" />
+                <line number="174" hits="18" branch="False" />
+              </lines>
+            </method>
+            <method name=".cctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="15" hits="1" branch="False" />
+                <line number="25" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="37" hits="8" branch="False" />
+            <line number="38" hits="8" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="25" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="39" hits="8" branch="False" />
+            <line number="40" hits="4" branch="False" />
+            <line number="54" hits="4" branch="False" />
+            <line number="55" hits="4" branch="False" />
+            <line number="57" hits="3" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="42" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="59" hits="3" branch="False" />
+            <line number="60" hits="1" branch="False" />
+            <line number="74" hits="2" branch="False" />
+            <line number="75" hits="2" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="20" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="77" hits="2" branch="False" />
+            <line number="78" hits="1" branch="False" />
+            <line number="90" hits="4" branch="False" />
+            <line number="91" hits="4" branch="False" />
+            <line number="92" hits="2" branch="False" />
+            <line number="128" hits="9" branch="False" />
+            <line number="129" hits="9" branch="False" />
+            <line number="131" hits="7" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="19" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="133" hits="7" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="39" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="134" hits="2" branch="False" />
+            <line number="108" hits="8" branch="False" />
+            <line number="109" hits="8" branch="False" />
+            <line number="110" hits="7" branch="False" />
+            <line number="112" hits="6" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="54" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="114" hits="6" branch="False" />
+            <line number="115" hits="3" branch="False" />
+            <line number="148" hits="7" branch="False" />
+            <line number="149" hits="7" branch="False" />
+            <line number="151" hits="7" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="32" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="153" hits="7" branch="False" />
+            <line number="154" hits="2" branch="False" />
+            <line number="165" hits="18" branch="False" />
+            <line number="166" hits="18" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="27" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="167" hits="0" branch="False" />
+            <line number="168" hits="0" branch="False" />
+            <line number="171" hits="18" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="53" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="173" hits="18" branch="False" />
+            <line number="174" hits="18" branch="False" />
+            <line number="15" hits="1" branch="False" />
+            <line number="25" hits="1" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.ExceptionActivator" filename="Internal/ExceptionActivator.cs" line-rate="1" branch-rate="0.75" complexity="4">
+          <methods>
+            <method name="Create" signature="(System.Object[])" line-rate="1" branch-rate="0.75" complexity="4">
+              <lines>
+                <line number="16" hits="23" branch="False" />
+                <line number="18" hits="23" branch="False" />
+                <line number="19" hits="23" branch="True" condition-coverage="75% (3/4)">
+                  <conditions>
+                    <condition number="14" type="jump" coverage="100%" />
+                    <condition number="38" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="20" hits="23" branch="False" />
+                <line number="22" hits="2" branch="False" />
+                <line number="23" hits="2" branch="False" />
+                <line number="24" hits="2" branch="False" />
+                <line number="25" hits="2" branch="False" />
+                <line number="27" hits="20" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="16" hits="23" branch="False" />
+            <line number="18" hits="23" branch="False" />
+            <line number="19" hits="23" branch="True" condition-coverage="75% (3/4)">
+              <conditions>
+                <condition number="14" type="jump" coverage="100%" />
+                <condition number="38" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="20" hits="23" branch="False" />
+            <line number="22" hits="2" branch="False" />
+            <line number="23" hits="2" branch="False" />
+            <line number="24" hits="2" branch="False" />
+            <line number="25" hits="2" branch="False" />
+            <line number="27" hits="20" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.SGuard" filename="Internal/SGuard.cs" line-rate="0.95" branch-rate="1" complexity="7">
+          <methods>
+            <method name="Guard" signature="(System.Boolean,System.Action,SGuard.SGuardCallback)" line-rate="0.909" branch-rate="1" complexity="2">
+              <lines>
+                <line number="21" hits="115" branch="False" />
+                <line number="23" hits="115" branch="False" />
+                <line number="24" hits="115" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="5" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="25" hits="65" branch="False" />
+                <line number="26" hits="65" branch="False" />
+                <line number="27" hits="0" branch="False" />
+                <line number="28" hits="50" branch="False" />
+                <line number="30" hits="115" branch="False" />
+                <line number="31" hits="115" branch="False" />
+                <line number="32" hits="115" branch="False" />
+                <line number="33" hits="50" branch="False" />
+              </lines>
+            </method>
+            <method name="InvokeCallbackSafely" signature="(System.Boolean,SGuard.SGuardCallback)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="41" hits="100472" branch="False" />
+              </lines>
+            </method>
+            <method name="InvokeCallbackSafely" signature="(System.Boolean,SGuard.SGuardCallback,SGuard.GuardOutcome,SGuard.GuardOutcome)" line-rate="1" branch-rate="1" complexity="4">
+              <lines>
+                <line number="52" hits="100587" branch="False" />
+                <line number="54" hits="100587" branch="False" />
+                <line number="55" hits="100587" branch="True" condition-coverage="100% (4/4)">
+                  <conditions>
+                    <condition number="3" type="jump" coverage="100%" />
+                    <condition number="9" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="56" hits="100569" branch="False" />
+                <line number="57" hits="18" branch="False" />
+                <line number="58" hits="18" branch="False" />
+                <line number="60" hits="18" branch="False" />
+                <line number="61" hits="100587" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="21" hits="115" branch="False" />
+            <line number="23" hits="115" branch="False" />
+            <line number="24" hits="115" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="5" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="25" hits="65" branch="False" />
+            <line number="26" hits="65" branch="False" />
+            <line number="27" hits="0" branch="False" />
+            <line number="28" hits="50" branch="False" />
+            <line number="30" hits="115" branch="False" />
+            <line number="31" hits="115" branch="False" />
+            <line number="32" hits="115" branch="False" />
+            <line number="33" hits="50" branch="False" />
+            <line number="41" hits="100472" branch="False" />
+            <line number="52" hits="100587" branch="False" />
+            <line number="54" hits="100587" branch="False" />
+            <line number="55" hits="100587" branch="True" condition-coverage="100% (4/4)">
+              <conditions>
+                <condition number="3" type="jump" coverage="100%" />
+                <condition number="9" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="56" hits="100569" branch="False" />
+            <line number="57" hits="18" branch="False" />
+            <line number="58" hits="18" branch="False" />
+            <line number="60" hits="18" branch="False" />
+            <line number="61" hits="100587" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Throw" filename="Internal/Throw.cs" line-rate="1" branch-rate="1" complexity="7">
+          <methods>
+            <method name="BetweenException" signature="(TValue,TMin,TMax)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="25" hits="7" branch="False" />
+                <line number="26" hits="7" branch="False" />
+              </lines>
+            </method>
+            <method name="NullOrEmptyException" signature="(T)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="38" hits="5" branch="False" />
+                <line number="39" hits="5" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThanException" signature="(TLeft,TRight)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="54" hits="5" branch="False" />
+                <line number="55" hits="5" branch="False" />
+              </lines>
+            </method>
+            <method name="GreaterThanOrEqualException" signature="(TLeft,TRight)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="71" hits="4" branch="False" />
+                <line number="72" hits="4" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThanException" signature="(TLeft,TRight)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="88" hits="5" branch="False" />
+                <line number="89" hits="5" branch="False" />
+              </lines>
+            </method>
+            <method name="LessThanOrEqualException" signature="(TLeft,TRight)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="105" hits="3" branch="False" />
+                <line number="106" hits="3" branch="False" />
+              </lines>
+            </method>
+            <method name="That" signature="(TException)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="119" hits="42" branch="False" />
+                <line number="120" hits="42" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="25" hits="7" branch="False" />
+            <line number="26" hits="7" branch="False" />
+            <line number="38" hits="5" branch="False" />
+            <line number="39" hits="5" branch="False" />
+            <line number="54" hits="5" branch="False" />
+            <line number="55" hits="5" branch="False" />
+            <line number="71" hits="4" branch="False" />
+            <line number="72" hits="4" branch="False" />
+            <line number="88" hits="5" branch="False" />
+            <line number="89" hits="5" branch="False" />
+            <line number="105" hits="3" branch="False" />
+            <line number="106" hits="3" branch="False" />
+            <line number="119" hits="42" branch="False" />
+            <line number="120" hits="42" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Visitor.NullOrEmptyVisitor" filename="Internal/Visitor/NullOrEmptyVisitor.cs" line-rate="0.6818000000000001" branch-rate="0.758" complexity="62">
+          <methods>
+            <method name="VisitMember" signature="(System.Linq.Expressions.MemberExpression)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="17" hits="64" branch="False" />
+                <line number="21" hits="64" branch="False" />
+                <line number="24" hits="64" branch="False" />
+                <line number="26" hits="280" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="73" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="27" hits="76" branch="False" />
+                <line number="28" hits="76" branch="False" />
+                <line number="29" hits="76" branch="False" />
+                <line number="31" hits="64" branch="False" />
+                <line number="34" hits="64" branch="False" />
+                <line number="36" hits="64" branch="False" />
+                <line number="61" hits="64" branch="False" />
+              </lines>
+            </method>
+            <method name="BuildNullOrEmptyCheckExpression" signature="(System.Linq.Expressions.Expression,System.Type)" line-rate="0.6459999999999999" branch-rate="0.7777" complexity="54">
+              <lines>
+                <line number="71" hits="64" branch="False" />
+                <line number="72" hits="64" branch="False" />
+                <line number="73" hits="64" branch="False" />
+                <line number="77" hits="64" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="61" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="78" hits="24" branch="False" />
+                <line number="79" hits="24" branch="False" />
+                <line number="80" hits="24" branch="False" />
+                <line number="81" hits="24" branch="False" />
+                <line number="82" hits="40" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="130" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="83" hits="9" branch="False" />
+                <line number="84" hits="9" branch="False" />
+                <line number="85" hits="9" branch="False" />
+                <line number="86" hits="9" branch="False" />
+                <line number="87" hits="31" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="197" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="88" hits="11" branch="False" />
+                <line number="89" hits="11" branch="False" />
+                <line number="90" hits="11" branch="False" />
+                <line number="91" hits="11" branch="False" />
+                <line number="92" hits="11" branch="False" />
+                <line number="93" hits="20" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="294" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="94" hits="4" branch="False" />
+                <line number="95" hits="4" branch="False" />
+                <line number="96" hits="4" branch="False" />
+                <line number="97" hits="4" branch="False" />
+                <line number="98" hits="4" branch="False" />
+                <line number="99" hits="16" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="373" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="100" hits="0" branch="False" />
+                <line number="101" hits="0" branch="False" />
+                <line number="102" hits="0" branch="False" />
+                <line number="103" hits="0" branch="False" />
+                <line number="104" hits="0" branch="False" />
+                <line number="105" hits="16" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="470" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="106" hits="0" branch="False" />
+                <line number="107" hits="0" branch="False" />
+                <line number="108" hits="0" branch="False" />
+                <line number="109" hits="0" branch="False" />
+                <line number="110" hits="0" branch="False" />
+                <line number="111" hits="16" branch="True" condition-coverage="100% (4/4)">
+                  <conditions>
+                    <condition number="545" type="jump" coverage="100%" />
+                    <condition number="570" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="112" hits="4" branch="False" />
+                <line number="113" hits="4" branch="False" />
+                <line number="115" hits="4" branch="True" condition-coverage="100% (6/6)">
+                  <conditions>
+                    <condition number="591" type="jump" coverage="100%" />
+                    <condition number="615" type="jump" coverage="100%" />
+                    <condition number="637" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="116" hits="2" branch="False" />
+                <line number="117" hits="2" branch="False" />
+                <line number="118" hits="2" branch="False" />
+                <line number="119" hits="2" branch="False" />
+                <line number="121" hits="2" branch="False" />
+                <line number="122" hits="2" branch="False" />
+                <line number="123" hits="2" branch="False" />
+                <line number="125" hits="2" branch="False" />
+                <line number="126" hits="2" branch="False" />
+                <line number="128" hits="2" branch="False" />
+                <line number="129" hits="2" branch="False" />
+                <line number="130" hits="2" branch="False" />
+                <line number="131" hits="2" branch="False" />
+                <line number="132" hits="2" branch="False" />
+                <line number="133" hits="4" branch="False" />
+                <line number="134" hits="12" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="878" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="135" hits="2" branch="False" />
+                <line number="136" hits="2" branch="False" />
+                <line number="137" hits="2" branch="False" />
+                <line number="138" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="925" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="139" hits="0" branch="False" />
+                <line number="140" hits="0" branch="False" />
+                <line number="141" hits="0" branch="False" />
+                <line number="142" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="973" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="143" hits="0" branch="False" />
+                <line number="144" hits="0" branch="False" />
+                <line number="145" hits="0" branch="False" />
+                <line number="146" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="1020" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="147" hits="0" branch="False" />
+                <line number="148" hits="0" branch="False" />
+                <line number="149" hits="0" branch="False" />
+                <line number="150" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="1067" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="151" hits="0" branch="False" />
+                <line number="152" hits="0" branch="False" />
+                <line number="153" hits="0" branch="False" />
+                <line number="154" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="1114" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="155" hits="0" branch="False" />
+                <line number="156" hits="0" branch="False" />
+                <line number="157" hits="0" branch="False" />
+                <line number="158" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="1161" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="159" hits="0" branch="False" />
+                <line number="160" hits="0" branch="False" />
+                <line number="161" hits="0" branch="False" />
+                <line number="162" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="1208" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="163" hits="0" branch="False" />
+                <line number="164" hits="0" branch="False" />
+                <line number="165" hits="0" branch="False" />
+                <line number="166" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="1256" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="167" hits="0" branch="False" />
+                <line number="168" hits="0" branch="False" />
+                <line number="169" hits="0" branch="False" />
+                <line number="170" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="1307" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="171" hits="0" branch="False" />
+                <line number="172" hits="0" branch="False" />
+                <line number="173" hits="0" branch="False" />
+                <line number="174" hits="10" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="1362" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="175" hits="2" branch="False" />
+                <line number="176" hits="2" branch="False" />
+                <line number="177" hits="2" branch="False" />
+                <line number="178" hits="8" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="1410" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="179" hits="0" branch="False" />
+                <line number="180" hits="0" branch="False" />
+                <line number="181" hits="0" branch="False" />
+                <line number="182" hits="8" branch="True" condition-coverage="100% (8/8)">
+                  <conditions>
+                    <condition number="1435" type="jump" coverage="100%" />
+                    <condition number="1443" type="jump" coverage="100%" />
+                    <condition number="1451" type="jump" coverage="100%" />
+                    <condition number="1476" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="183" hits="6" branch="False" />
+                <line number="184" hits="6" branch="False" />
+                <line number="185" hits="6" branch="False" />
+                <line number="187" hits="2" branch="False" />
+                <line number="188" hits="2" branch="False" />
+                <line number="191" hits="62" branch="False" />
+                <line number="193" hits="62" branch="False" />
+                <line number="209" hits="64" branch="False" />
+              </lines>
+            </method>
+            <method name="VisitUnary" signature="(System.Linq.Expressions.UnaryExpression)" line-rate="0.75" branch-rate="0.5" complexity="6">
+              <lines>
+                <line number="217" hits="10" branch="False" />
+                <line number="218" hits="10" branch="True" condition-coverage="50% (2/4)">
+                  <conditions>
+                    <condition number="9" type="jump" coverage="50%" />
+                    <condition number="37" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="219" hits="10" branch="False" />
+                <line number="220" hits="10" branch="False" />
+                <line number="222" hits="10" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="74" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="225" hits="0" branch="False" />
+                <line number="227" hits="0" branch="False" />
+                <line number="228" hits="10" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="17" hits="64" branch="False" />
+            <line number="21" hits="64" branch="False" />
+            <line number="24" hits="64" branch="False" />
+            <line number="26" hits="280" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="73" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="27" hits="76" branch="False" />
+            <line number="28" hits="76" branch="False" />
+            <line number="29" hits="76" branch="False" />
+            <line number="31" hits="64" branch="False" />
+            <line number="34" hits="64" branch="False" />
+            <line number="36" hits="64" branch="False" />
+            <line number="61" hits="64" branch="False" />
+            <line number="71" hits="64" branch="False" />
+            <line number="72" hits="64" branch="False" />
+            <line number="73" hits="64" branch="False" />
+            <line number="77" hits="64" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="61" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="78" hits="24" branch="False" />
+            <line number="79" hits="24" branch="False" />
+            <line number="80" hits="24" branch="False" />
+            <line number="81" hits="24" branch="False" />
+            <line number="82" hits="40" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="130" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="83" hits="9" branch="False" />
+            <line number="84" hits="9" branch="False" />
+            <line number="85" hits="9" branch="False" />
+            <line number="86" hits="9" branch="False" />
+            <line number="87" hits="31" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="197" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="88" hits="11" branch="False" />
+            <line number="89" hits="11" branch="False" />
+            <line number="90" hits="11" branch="False" />
+            <line number="91" hits="11" branch="False" />
+            <line number="92" hits="11" branch="False" />
+            <line number="93" hits="20" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="294" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="94" hits="4" branch="False" />
+            <line number="95" hits="4" branch="False" />
+            <line number="96" hits="4" branch="False" />
+            <line number="97" hits="4" branch="False" />
+            <line number="98" hits="4" branch="False" />
+            <line number="99" hits="16" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="373" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="100" hits="0" branch="False" />
+            <line number="101" hits="0" branch="False" />
+            <line number="102" hits="0" branch="False" />
+            <line number="103" hits="0" branch="False" />
+            <line number="104" hits="0" branch="False" />
+            <line number="105" hits="16" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="470" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="106" hits="0" branch="False" />
+            <line number="107" hits="0" branch="False" />
+            <line number="108" hits="0" branch="False" />
+            <line number="109" hits="0" branch="False" />
+            <line number="110" hits="0" branch="False" />
+            <line number="111" hits="16" branch="True" condition-coverage="100% (4/4)">
+              <conditions>
+                <condition number="545" type="jump" coverage="100%" />
+                <condition number="570" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="112" hits="4" branch="False" />
+            <line number="113" hits="4" branch="False" />
+            <line number="115" hits="4" branch="True" condition-coverage="100% (6/6)">
+              <conditions>
+                <condition number="591" type="jump" coverage="100%" />
+                <condition number="615" type="jump" coverage="100%" />
+                <condition number="637" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="116" hits="2" branch="False" />
+            <line number="117" hits="2" branch="False" />
+            <line number="118" hits="2" branch="False" />
+            <line number="119" hits="2" branch="False" />
+            <line number="121" hits="2" branch="False" />
+            <line number="122" hits="2" branch="False" />
+            <line number="123" hits="2" branch="False" />
+            <line number="125" hits="2" branch="False" />
+            <line number="126" hits="2" branch="False" />
+            <line number="128" hits="2" branch="False" />
+            <line number="129" hits="2" branch="False" />
+            <line number="130" hits="2" branch="False" />
+            <line number="131" hits="2" branch="False" />
+            <line number="132" hits="2" branch="False" />
+            <line number="133" hits="4" branch="False" />
+            <line number="134" hits="12" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="878" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="135" hits="2" branch="False" />
+            <line number="136" hits="2" branch="False" />
+            <line number="137" hits="2" branch="False" />
+            <line number="138" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="925" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="139" hits="0" branch="False" />
+            <line number="140" hits="0" branch="False" />
+            <line number="141" hits="0" branch="False" />
+            <line number="142" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="973" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="143" hits="0" branch="False" />
+            <line number="144" hits="0" branch="False" />
+            <line number="145" hits="0" branch="False" />
+            <line number="146" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="1020" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="147" hits="0" branch="False" />
+            <line number="148" hits="0" branch="False" />
+            <line number="149" hits="0" branch="False" />
+            <line number="150" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="1067" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="151" hits="0" branch="False" />
+            <line number="152" hits="0" branch="False" />
+            <line number="153" hits="0" branch="False" />
+            <line number="154" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="1114" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="155" hits="0" branch="False" />
+            <line number="156" hits="0" branch="False" />
+            <line number="157" hits="0" branch="False" />
+            <line number="158" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="1161" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="159" hits="0" branch="False" />
+            <line number="160" hits="0" branch="False" />
+            <line number="161" hits="0" branch="False" />
+            <line number="162" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="1208" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="163" hits="0" branch="False" />
+            <line number="164" hits="0" branch="False" />
+            <line number="165" hits="0" branch="False" />
+            <line number="166" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="1256" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="167" hits="0" branch="False" />
+            <line number="168" hits="0" branch="False" />
+            <line number="169" hits="0" branch="False" />
+            <line number="170" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="1307" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="171" hits="0" branch="False" />
+            <line number="172" hits="0" branch="False" />
+            <line number="173" hits="0" branch="False" />
+            <line number="174" hits="10" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="1362" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="175" hits="2" branch="False" />
+            <line number="176" hits="2" branch="False" />
+            <line number="177" hits="2" branch="False" />
+            <line number="178" hits="8" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="1410" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="179" hits="0" branch="False" />
+            <line number="180" hits="0" branch="False" />
+            <line number="181" hits="0" branch="False" />
+            <line number="182" hits="8" branch="True" condition-coverage="100% (8/8)">
+              <conditions>
+                <condition number="1435" type="jump" coverage="100%" />
+                <condition number="1443" type="jump" coverage="100%" />
+                <condition number="1451" type="jump" coverage="100%" />
+                <condition number="1476" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="183" hits="6" branch="False" />
+            <line number="184" hits="6" branch="False" />
+            <line number="185" hits="6" branch="False" />
+            <line number="187" hits="2" branch="False" />
+            <line number="188" hits="2" branch="False" />
+            <line number="191" hits="62" branch="False" />
+            <line number="193" hits="62" branch="False" />
+            <line number="209" hits="64" branch="False" />
+            <line number="217" hits="10" branch="False" />
+            <line number="218" hits="10" branch="True" condition-coverage="50% (2/4)">
+              <conditions>
+                <condition number="9" type="jump" coverage="50%" />
+                <condition number="37" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="219" hits="10" branch="False" />
+            <line number="220" hits="10" branch="False" />
+            <line number="222" hits="10" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="74" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="225" hits="0" branch="False" />
+            <line number="227" hits="0" branch="False" />
+            <line number="228" hits="10" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Exceptions.AllException" filename="Exceptions/AllException.cs" line-rate="0" branch-rate="1" complexity="2">
+          <methods>
+            <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="16" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="21" hits="0" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="16" hits="0" branch="False" />
+            <line number="21" hits="0" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Exceptions.AnyException" filename="Exceptions/AnyException.cs" line-rate="0.5" branch-rate="1" complexity="2">
+          <methods>
+            <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="17" hits="48" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="12" hits="0" branch="False" />
+            <line number="17" hits="48" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Exceptions.BetweenException" filename="Exceptions/BetweenException.cs" line-rate="0.8125" branch-rate="1" complexity="5">
+          <methods>
+            <method name="BuildMessage" signature="(System.Object,System.Object,System.Object,System.String,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="63" hits="7" branch="False" />
+                <line number="64" hits="7" branch="False" />
+                <line number="65" hits="7" branch="False" />
+                <line number="66" hits="7" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="14" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="20" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String,System.Exception)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="28" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.Object,System.Object,System.Object,System.String,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="40" hits="7" branch="False" />
+                <line number="41" hits="7" branch="False" />
+                <line number="42" hits="7" branch="False" />
+                <line number="43" hits="7" branch="False" />
+                <line number="44" hits="7" branch="False" />
+                <line number="45" hits="7" branch="False" />
+                <line number="46" hits="7" branch="False" />
+                <line number="47" hits="7" branch="False" />
+                <line number="48" hits="7" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="63" hits="7" branch="False" />
+            <line number="64" hits="7" branch="False" />
+            <line number="65" hits="7" branch="False" />
+            <line number="66" hits="7" branch="False" />
+            <line number="14" hits="0" branch="False" />
+            <line number="20" hits="0" branch="False" />
+            <line number="28" hits="0" branch="False" />
+            <line number="40" hits="7" branch="False" />
+            <line number="41" hits="7" branch="False" />
+            <line number="42" hits="7" branch="False" />
+            <line number="43" hits="7" branch="False" />
+            <line number="44" hits="7" branch="False" />
+            <line number="45" hits="7" branch="False" />
+            <line number="46" hits="7" branch="False" />
+            <line number="47" hits="7" branch="False" />
+            <line number="48" hits="7" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Exceptions.GreaterThanException" filename="Exceptions/GreaterThanException.cs" line-rate="0.7692" branch-rate="1" complexity="5">
+          <methods>
+            <method name="BuildMessage" signature="(System.Object,System.Object,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="51" hits="5" branch="False" />
+                <line number="52" hits="5" branch="False" />
+                <line number="53" hits="5" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="14" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="20" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String,System.Exception)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="27" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.Object,System.Object,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="34" hits="5" branch="False" />
+                <line number="35" hits="5" branch="False" />
+                <line number="36" hits="5" branch="False" />
+                <line number="37" hits="5" branch="False" />
+                <line number="38" hits="5" branch="False" />
+                <line number="39" hits="5" branch="False" />
+                <line number="40" hits="5" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="51" hits="5" branch="False" />
+            <line number="52" hits="5" branch="False" />
+            <line number="53" hits="5" branch="False" />
+            <line number="14" hits="0" branch="False" />
+            <line number="20" hits="0" branch="False" />
+            <line number="27" hits="0" branch="False" />
+            <line number="34" hits="5" branch="False" />
+            <line number="35" hits="5" branch="False" />
+            <line number="36" hits="5" branch="False" />
+            <line number="37" hits="5" branch="False" />
+            <line number="38" hits="5" branch="False" />
+            <line number="39" hits="5" branch="False" />
+            <line number="40" hits="5" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Exceptions.GreaterThanOrEqualException" filename="Exceptions/GreaterThanOrEqualException.cs" line-rate="0.7692" branch-rate="1" complexity="5">
+          <methods>
+            <method name="BuildMessage" signature="(System.Object,System.Object,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="52" hits="4" branch="False" />
+                <line number="53" hits="4" branch="False" />
+                <line number="54" hits="4" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="15" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="21" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String,System.Exception)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="28" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.Object,System.Object,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="35" hits="4" branch="False" />
+                <line number="36" hits="4" branch="False" />
+                <line number="37" hits="4" branch="False" />
+                <line number="38" hits="4" branch="False" />
+                <line number="39" hits="4" branch="False" />
+                <line number="40" hits="4" branch="False" />
+                <line number="41" hits="4" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="52" hits="4" branch="False" />
+            <line number="53" hits="4" branch="False" />
+            <line number="54" hits="4" branch="False" />
+            <line number="15" hits="0" branch="False" />
+            <line number="21" hits="0" branch="False" />
+            <line number="28" hits="0" branch="False" />
+            <line number="35" hits="4" branch="False" />
+            <line number="36" hits="4" branch="False" />
+            <line number="37" hits="4" branch="False" />
+            <line number="38" hits="4" branch="False" />
+            <line number="39" hits="4" branch="False" />
+            <line number="40" hits="4" branch="False" />
+            <line number="41" hits="4" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Exceptions.LessThanException" filename="Exceptions/LessThanException.cs" line-rate="0.7272" branch-rate="1" complexity="5">
+          <methods>
+            <method name="BuildMessage" signature="(System.Object,System.Object,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="54" hits="5" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="14" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="20" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String,System.Exception)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="27" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.Object,System.Object,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="37" hits="5" branch="False" />
+                <line number="38" hits="5" branch="False" />
+                <line number="39" hits="5" branch="False" />
+                <line number="40" hits="5" branch="False" />
+                <line number="41" hits="5" branch="False" />
+                <line number="42" hits="5" branch="False" />
+                <line number="43" hits="5" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="54" hits="5" branch="False" />
+            <line number="14" hits="0" branch="False" />
+            <line number="20" hits="0" branch="False" />
+            <line number="27" hits="0" branch="False" />
+            <line number="37" hits="5" branch="False" />
+            <line number="38" hits="5" branch="False" />
+            <line number="39" hits="5" branch="False" />
+            <line number="40" hits="5" branch="False" />
+            <line number="41" hits="5" branch="False" />
+            <line number="42" hits="5" branch="False" />
+            <line number="43" hits="5" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Exceptions.LessThanOrEqualException" filename="Exceptions/LessThanOrEqualException.cs" line-rate="0.7272" branch-rate="1" complexity="5">
+          <methods>
+            <method name="BuildMessage" signature="(System.Object,System.Object,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="54" hits="3" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="14" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="20" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String,System.Exception)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="27" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.Object,System.Object,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="37" hits="3" branch="False" />
+                <line number="38" hits="3" branch="False" />
+                <line number="39" hits="3" branch="False" />
+                <line number="40" hits="3" branch="False" />
+                <line number="41" hits="3" branch="False" />
+                <line number="42" hits="3" branch="False" />
+                <line number="43" hits="3" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="54" hits="3" branch="False" />
+            <line number="14" hits="0" branch="False" />
+            <line number="20" hits="0" branch="False" />
+            <line number="27" hits="0" branch="False" />
+            <line number="37" hits="3" branch="False" />
+            <line number="38" hits="3" branch="False" />
+            <line number="39" hits="3" branch="False" />
+            <line number="40" hits="3" branch="False" />
+            <line number="41" hits="3" branch="False" />
+            <line number="42" hits="3" branch="False" />
+            <line number="43" hits="3" branch="False" />
+          </lines>
+        </class>
+        <class name="SGuard.Exceptions.NullOrEmptyException" filename="Exceptions/NullOrEmptyException.cs" line-rate="0.8181" branch-rate="1" complexity="5">
+          <methods>
+            <method name="BuildMessage" signature="(System.Object,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="46" hits="5" branch="False" />
+                <line number="47" hits="5" branch="False" />
+                <line number="48" hits="5" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="14" hits="12" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="20" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String,System.Exception)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="27" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.Object,System.String)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="32" hits="5" branch="False" />
+                <line number="33" hits="5" branch="False" />
+                <line number="34" hits="5" branch="False" />
+                <line number="35" hits="5" branch="False" />
+                <line number="36" hits="5" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="46" hits="5" branch="False" />
+            <line number="47" hits="5" branch="False" />
+            <line number="48" hits="5" branch="False" />
+            <line number="14" hits="12" branch="False" />
+            <line number="20" hits="0" branch="False" />
+            <line number="27" hits="0" branch="False" />
+            <line number="32" hits="5" branch="False" />
+            <line number="33" hits="5" branch="False" />
+            <line number="34" hits="5" branch="False" />
+            <line number="35" hits="5" branch="False" />
+            <line number="36" hits="5" branch="False" />
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

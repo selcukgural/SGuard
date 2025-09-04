@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/SGuard.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="GitHub Workflow" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="change-license" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;selcukgural&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/selcukgural/sguard.git&quot;,
+    &quot;accountId&quot;: &quot;f9b58bfa-13a7-4e86-b381-cc701f0e9a87&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;selcukgural&quot;,
+    &quot;repository&quot;: &quot;sguard&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9e152ae1f1f0493cba641958893be34e6d18/98/2998a8d2/ConcurrentBag`1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/selcuk/RiderProjects/sguard/guard/src/Callbacks/SGuardCallback.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/selcuk/RiderProjects/sguard/src/Exceptions/AllException.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file:///usr/local/share/dotnet/sdk/9.0.101/Sdks/NuGet.Build.Tasks.Pack/buildCrossTargeting/NuGet.Build.Tasks.Pack.targets" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="31FHZhfho7viF2mLL7CIQQeRhyD" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "e101f5ea-0955-4784-a7c1-9fb078d779f7.executor": "Run",
+    "git-widget-placeholder": "#10 on update-project-structure",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "PLAIN_TEXT"
+    ]
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="" />
+      <created>1755112957294</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1755112957294</updated>
+      <workItem from="1755112958371" duration="18798000" />
+      <workItem from="1755328789474" duration="8740000" />
+      <workItem from="1755367861650" duration="16311000" />
+      <workItem from="1755620008786" duration="42000" />
+      <workItem from="1755620069236" duration="14334000" />
+      <workItem from="1755703860791" duration="17891000" />
+      <workItem from="1755872646552" duration="151000" />
+      <workItem from="1755873040755" duration="14569000" />
+      <workItem from="1755889151626" duration="13888000" />
+      <workItem from="1756126014105" duration="6288000" />
+      <workItem from="1756229811247" duration="1210000" />
+      <workItem from="1756292765825" duration="17000" />
+      <workItem from="1756292811633" duration="77000" />
+      <workItem from="1756292906012" duration="1480000" />
+      <workItem from="1756294605800" duration="66000" />
+      <workItem from="1756294684536" duration="2415000" />
+      <workItem from="1756307012201" duration="344000" />
+      <workItem from="1756307373079" duration="184000" />
+      <workItem from="1756307571084" duration="17975000" />
+      <workItem from="1756450096165" duration="989000" />
+      <workItem from="1756451110241" duration="8082000" />
+      <workItem from="1756636881611" duration="47000" />
+      <workItem from="1756636945829" duration="1263000" />
+      <workItem from="1756921179024" duration="5906000" />
+      <workItem from="1756927958833" duration="3046000" />
+      <workItem from="1757003956139" duration="694000" />
+      <workItem from="1757005194473" duration="3039000" />
+      <workItem from="1757008263133" duration="22000" />
+    </task>
+    <task id="LOCAL-00001" summary="feat(guards): add GreaterThan comparison guards and improve null/empty visitor&#10;&#10;- Add Is.GreaterThan&lt;TLeft,TRight&gt; method with null guards and callback support&#10;- Add Is.GreaterThanOrEqual&lt;TLeft,TRight&gt; method with null guards and callback support  &#10;- Remove basic NullVisitor implementation&#10;- Replace with comprehensive NullOrEmptyVisitor supporting nested member access chains&#10;- Add type-specific empty checks for string, arrays, collections, dictionaries, and numeric types&#10;- Implement null-safe member chain traversal to prevent NullReferenceException on nested properties&#10;&#10;Breaking changes:&#10;- NullVisitor class removed (internal API)&#10;&#10;New APIs:&#10;- Is.GreaterThan&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool&#10;- Is.GreaterThanOrEqual&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool">
+      <option name="closed" value="true" />
+      <created>1755890115845</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1755890115845</updated>
+    </task>
+    <task id="LOCAL-00002" summary="docs(README): improve formatting and consistency&#10;&#10;- Standardize arrow symbols `→` and fix minor grammatical inconsistencies.&#10;- Enhance readability by improving list formatting and outcome descriptions.&#10;- Adjust semantics for clarity around key concepts like `NullOrEmpty`.">
+      <option name="closed" value="true" />
+      <created>1755893393093</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1755893393093</updated>
+    </task>
+    <task id="LOCAL-00003" summary="docs(README): enhance icon styling with centered image and dimensions&#10;&#10;- Replaced Markdown image syntax with HTML for precise styling.&#10;- Added alignment and defined custom width and height for the icon.">
+      <option name="closed" value="true" />
+      <created>1755893973784</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1755893973784</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat(guards): add string-based comparison guards and enhance exception messaging&#10;&#10;- Add GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, and Between string comparison guards with StringComparison support.&#10;- Introduce string-aware ThrowIf.Between methods, including overloads for custom exceptions.&#10;- Improve exception messages for comparison guards by swapping parameter order in error details.&#10;- Adjust project metadata for version increment (2.0.1) including FileVersion and PackageVersion updates.">
+      <option name="closed" value="true" />
+      <created>1756128811514</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1756128811514</updated>
+    </task>
+    <task id="LOCAL-00005" summary="chore(project): update to version 2.0.2 and update license to GPL-3.0-or-later&#10;&#10;- Bump PackageVersion, AssemblyVersion, and FileVersion to 2.0.2.&#10;- Change project license from AGPL-3.0-only to GPL-3.0-or-later.&#10;- Update release notes to reflect licensing update and compliance requirements.">
+      <option name="closed" value="true" />
+      <created>1756230258531</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1756230258531</updated>
+    </task>
+    <task id="LOCAL-00006" summary="chore(project): update to version 2.0.3&#10;&#10;- Removed `PackAsTool`.&#10;- Bump PackageVersion and AssemblyVersion to 2.0.3.&#10;- Update release notes to reflect version increment.">
+      <option name="closed" value="true" />
+      <created>1756293039209</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1756293039209</updated>
+    </task>
+    <task id="LOCAL-00007" summary="fix the release notes">
+      <option name="closed" value="true" />
+      <created>1756293124003</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1756293124003</updated>
+    </task>
+    <task id="LOCAL-00008" summary="- Added `LessThan` and `LessThanOrEqual` guards for generics and strings.&#10;- Added `Any&lt;T&gt;` and `All&lt;T&gt;` guards with predicate support.&#10;- String guards now support `StringComparison` for culture-aware checks.&#10;- Unified callback support across all guards.&#10;- Custom exception overloads and constructor argument support.&#10;- Generic exception creation with `ExceptionActivator.Create&lt;T&gt;`, supporting both parameterless and parameterized constructors.&#10;- Expression caching for improved performance in null/empty checks.&#10;- Improved documentation and XML comments.">
+      <option name="closed" value="true" />
+      <created>1756459191088</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1756459191088</updated>
+    </task>
+    <task id="LOCAL-00009" summary="chore(project): add GitHub workflows, templates, and change license to MIT&#10;&#10;- Introduce CI workflow with build, test, and coverage setup.&#10;- Add pull request and feature request templates to `.github` directory for better contribution guidelines.&#10;- Change license from GNU GPL-3.0 to MIT for simplified compliance and broader usage. &#10;- Update solution file to include new test project structure.">
+      <option name="closed" value="true" />
+      <created>1756929682902</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1756929682902</updated>
+    </task>
+    <task id="LOCAL-00010" summary="feat(guards): add comparison guards, custom exceptions, and enhance tests&#10;&#10;- Introduced new guards: `Is.All`, `Is.Any`, `Is.Between`, `Is.GreaterThan`, and `Is.GreaterThanOrEqual` with overloads for generics and strings.&#10;- Added custom exceptions (`AllException`, `AnyException`, `BetweenException`, `GreaterThanException`, `GreaterThanOrEqualException`) to improve error handling.&#10;- Implemented `ExceptionActivator` for dynamic creation of exceptions.&#10;- Extended unit tests for new guards and exception handling.">
+      <option name="closed" value="true" />
+      <created>1757005261206</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1757005261206</updated>
+    </task>
+    <task id="LOCAL-00011" summary="refactor(guards): remove comparison guards and custom exceptions&#10;&#10;- Removed `Is.All`, `Is.Any`, `Is.Between`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, and related string-based guards.&#10;- Deleted custom exceptions (`AllException`, `AnyException`, `BetweenException`, `GreaterThanException`, `GreaterThanOrEqualException`) and `ExceptionActivator`.&#10;- Cleaned up tests and XML documentation for removed components.">
+      <option name="closed" value="true" />
+      <created>1757005274610</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1757005274610</updated>
+    </task>
+    <task id="LOCAL-00012" summary="chore: add CODEOWNERS file to define default reviewers and ownership rules">
+      <option name="closed" value="true" />
+      <created>1757005811782</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1757005811782</updated>
+    </task>
+    <task id="LOCAL-00013" summary="chore(ci): enhance workflows and simplify project structure&#10;&#10;- Updated GitHub workflows (`ci.yml` and `publish.yml`) to include caching for NuGet packages, multi-TargetFramework support (.NET 6-9), and TRX test result artifacts.&#10;- Refined solution file to include GitHub-specific directories and metadata files.&#10;- Improved CONTRIBUTING.md with correct repository URLs.&#10;- Adjusted file structure and updated `.csproj` to remove unused metadata and references.">
+      <option name="closed" value="true" />
+      <created>1757007155680</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1757007155680</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnitTestsCoverage.Settings">
+    <option name="coveragePercentColumnWidth" value="185" />
+    <option name="sortOrder" value="DESCENDING" />
+    <option name="sortedColumn" value="1" />
+    <option name="symbolColumnWidth" value="697" />
+    <coverage-tree-state>
+      <expand />
+      <select />
+    </coverage-tree-state>
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="&quot;Remove unused exception classes and redundant utility methods&quot;" />
+    <MESSAGE value="Remove unused classes and methods." />
+    <MESSAGE value="Removed unused classes and methods `AllNullException`, `CallbackOption`, `Is`, and `Is.Throw`." />
+    <MESSAGE value="Add guard evaluation methods and exceptions for comparison checks" />
+    <MESSAGE value="feat(guards): add GreaterThan comparison guards and improve null/empty visitor&#10;&#10;- Add Is.GreaterThan&lt;TLeft,TRight&gt; method with null guards and callback support&#10;- Add Is.GreaterThanOrEqual&lt;TLeft,TRight&gt; method with null guards and callback support  &#10;- Remove basic NullVisitor implementation&#10;- Replace with comprehensive NullOrEmptyVisitor supporting nested member access chains&#10;- Add type-specific empty checks for string, arrays, collections, dictionaries, and numeric types&#10;- Implement null-safe member chain traversal to prevent NullReferenceException on nested properties&#10;&#10;Breaking changes:&#10;- NullVisitor class removed (internal API)&#10;&#10;New APIs:&#10;- Is.GreaterThan&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool&#10;- Is.GreaterThanOrEqual&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool" />
+    <MESSAGE value="docs(README): improve formatting and consistency&#10;&#10;- Standardize arrow symbols `→` and fix minor grammatical inconsistencies.&#10;- Enhance readability by improving list formatting and outcome descriptions.&#10;- Adjust semantics for clarity around key concepts like `NullOrEmpty`." />
+    <MESSAGE value="docs(README): enhance icon styling with centered image and dimensions&#10;&#10;- Replaced Markdown image syntax with HTML for precise styling.&#10;- Added alignment and defined custom width and height for the icon." />
+    <MESSAGE value="feat(guards): add string-based comparison guards and enhance exception messaging&#10;&#10;- Add GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, and Between string comparison guards with StringComparison support.&#10;- Introduce string-aware ThrowIf.Between methods, including overloads for custom exceptions.&#10;- Improve exception messages for comparison guards by swapping parameter order in error details.&#10;- Adjust project metadata for version increment (2.0.1) including FileVersion and PackageVersion updates." />
+    <MESSAGE value="chore(project): update to version 2.0.2 and update license to GPL-3.0-or-later&#10;&#10;- Bump PackageVersion, AssemblyVersion, and FileVersion to 2.0.2.&#10;- Change project license from AGPL-3.0-only to GPL-3.0-or-later.&#10;- Update release notes to reflect licensing update and compliance requirements." />
+    <MESSAGE value="chore(project): update to version 2.0.3&#10;&#10;- Removed `PackAsTool`.&#10;- Bump PackageVersion and AssemblyVersion to 2.0.3.&#10;- Update release notes to reflect version increment." />
+    <MESSAGE value="fix the release notes" />
+    <MESSAGE value="- Added `LessThan` and `LessThanOrEqual` guards for generics and strings.&#10;- Added `Any&lt;T&gt;` and `All&lt;T&gt;` guards with predicate support.&#10;- String guards now support `StringComparison` for culture-aware checks.&#10;- Unified callback support across all guards.&#10;- Custom exception overloads and constructor argument support.&#10;- Generic exception creation with `ExceptionActivator.Create&lt;T&gt;`, supporting both parameterless and parameterized constructors.&#10;- Expression caching for improved performance in null/empty checks.&#10;- Improved documentation and XML comments." />
+    <MESSAGE value="chore(project): add GitHub workflows, templates, and change license to MIT&#10;&#10;- Introduce CI workflow with build, test, and coverage setup.&#10;- Add pull request and feature request templates to `.github` directory for better contribution guidelines.&#10;- Change license from GNU GPL-3.0 to MIT for simplified compliance and broader usage. &#10;- Update solution file to include new test project structure." />
+    <MESSAGE value="feat(guards): add comparison guards, custom exceptions, and enhance tests&#10;&#10;- Introduced new guards: `Is.All`, `Is.Any`, `Is.Between`, `Is.GreaterThan`, and `Is.GreaterThanOrEqual` with overloads for generics and strings.&#10;- Added custom exceptions (`AllException`, `AnyException`, `BetweenException`, `GreaterThanException`, `GreaterThanOrEqualException`) to improve error handling.&#10;- Implemented `ExceptionActivator` for dynamic creation of exceptions.&#10;- Extended unit tests for new guards and exception handling." />
+    <MESSAGE value="refactor(guards): remove comparison guards and custom exceptions&#10;&#10;- Removed `Is.All`, `Is.Any`, `Is.Between`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, and related string-based guards.&#10;- Deleted custom exceptions (`AllException`, `AnyException`, `BetweenException`, `GreaterThanException`, `GreaterThanOrEqualException`) and `ExceptionActivator`.&#10;- Cleaned up tests and XML documentation for removed components." />
+    <MESSAGE value="chore: add CODEOWNERS file to define default reviewers and ownership rules" />
+    <MESSAGE value="chore(ci): enhance workflows and simplify project structure&#10;&#10;- Updated GitHub workflows (`ci.yml` and `publish.yml`) to include caching for NuGet packages, multi-TargetFramework support (.NET 6-9), and TRX test result artifacts.&#10;- Refined solution file to include GitHub-specific directories and metadata files.&#10;- Improved CONTRIBUTING.md with correct repository URLs.&#10;- Adjusted file structure and updated `.csproj` to remove unused metadata and references." />
+    <option name="LAST_COMMIT_MESSAGE" value="chore(ci): enhance workflows and simplify project structure&#10;&#10;- Updated GitHub workflows (`ci.yml` and `publish.yml`) to include caching for NuGet packages, multi-TargetFramework support (.NET 6-9), and TRX test result artifacts.&#10;- Refined solution file to include GitHub-specific directories and metadata files.&#10;- Improved CONTRIBUTING.md with correct repository URLs.&#10;- Adjusted file structure and updated `.csproj` to remove unused metadata and references." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
