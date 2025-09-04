@@ -1,0 +1,41 @@
+# Global code owners - Tüm dosyalar için varsayılan sahip
+* @selcukgural
+
+# Core library files - Ana kütüphane dosyaları
+/sguard/src/ @selcukgural
+
+# Documentation - Dokümantasyon dosyaları
+/sguard/docs/ @selcukgural
+/sguard/README.md @selcukgural
+*.md @selcukgural
+
+# Configuration files - Yapılandırma dosyaları
+*.csproj @selcukgural
+*.sln @selcukgural
+Directory.Build.props @selcukgural
+Directory.Packages.props @selcukgural
+
+# GitHub configuration - GitHub ayar dosyaları
+/.github/ @selcukgural
+
+# CI/CD files - Sürekli entegrasyon dosyaları
+/.github/workflows/ @selcukgural
+
+# Package configuration - Paket yapılandırma dosyaları
+nuget.config @selcukgural
+*.nuspec @selcukgural
+
+# License and legal files - Lisans ve yasal dosyalar
+/sguard/LICENSE @selcukgural
+/sguard/Security.md @selcukgural
+/sguard/CODE_OF_CONDUCT.md @selcukgural
+/sguard/CONTRIBUTING.md @selcukgural
+
+# Core exception classes - Ana exception sınıfları
+/sguard/src/Exceptions/ @selcukgural
+
+# Core guard classes - Ana guard sınıfları
+/sguard/src/Guards/ @selcukgural
+
+# Internal utilities - Dahili araçlar
+/sguard/src/Internal/ @selcukgural
