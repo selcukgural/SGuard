@@ -319,9 +319,9 @@ public void UpdateEmail(string email)
 # Summary
 |||
 |:---|:---|
-| Generated on: | 09/04/2025 - 20:34:01 |
-| Coverage date: | 09/03/2025 - 19:56:53 - 09/04/2025 - 20:33:59 |
-| Parser: | MultiReport (11x Cobertura) |
+| Generated on: | 09/04/2025 - 20:36:15 |
+| Coverage date: | 09/03/2025 - 19:56:53 - 09/04/2025 - 20:36:12 |
+| Parser: | MultiReport (12x Cobertura) |
 | Assemblies: | 1 |
 | Classes: | 15 |
 | Files: | 50 |
