@@ -14,7 +14,7 @@ public sealed class IsLessThanTests
     [Fact]
     public void LessThan_Generic_ReturnsTrue_WhenLeftIsLessThanRight()
     {
-        // Temel durumlar
+        // Basic cases
         Assert.True(Is.LessThan(3, 5));
         Assert.True(Is.LessThan(-10, -5));
         Assert.True(Is.LessThan(0, 1));
