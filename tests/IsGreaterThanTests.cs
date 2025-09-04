@@ -70,7 +70,7 @@ public sealed class IsGreaterThanTests
     [Fact]
     public void GreaterThan_String_OrdinalIgnoreCase_Behavior()
     {
-        // 'B' vs 'a' -> 'B' > 'a' ignore-case ile 'b' vs 'a' gibi
+        // 'B' vs 'a' -> 'B' > 'a' with ignore-case behaves like 'b' vs 'a'
         Assert.True(Is.GreaterThan("B", "a", StringComparison.OrdinalIgnoreCase));
         // eşit (ignore case)
         Assert.False(Is.GreaterThan("Hello", "hello", StringComparison.OrdinalIgnoreCase));
