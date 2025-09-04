@@ -4,7 +4,7 @@ namespace SGuard.Tests;
 
 public sealed class ThrowIfLessThanTests
 {
-    // Testlerde kullanılacak özel exception türü
+    // Custom exception type to be used in tests
     private class CustomException : Exception
     {
         public CustomException() { }
