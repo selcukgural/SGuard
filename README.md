@@ -164,7 +164,7 @@ ThrowIf.GreaterThan("zebra", "apple", StringComparison.Ordinal); // throws (zebr
 - Is.* invokes callbacks with Success when the result is true, Failure when false.
 - Callback exceptions are swallowed (they won’t break your validation flow).
 
-### Callbacks - — When do they run?
+### Callbacks – When do they run?
 
 - **ThrowIf methods:**
     - Outcome = Failure → the guard is about to throw (callback runs just before the exception propagates).
