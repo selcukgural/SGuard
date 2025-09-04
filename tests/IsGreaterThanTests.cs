@@ -20,7 +20,7 @@ public sealed class IsGreaterThanTests
         var result = Is.GreaterThan(5, 3);
         Assert.True(result);
 
-        // sınır değer
+        // boundary value
         Assert.True(Is.GreaterThan(int.MaxValue, int.MaxValue - 1));
     }
 
