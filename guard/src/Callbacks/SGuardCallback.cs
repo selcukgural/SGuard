@@ -21,13 +21,13 @@ public delegate void SGuardCallback(GuardOutcome outcome);
 public static class SGuardCallbacks
 {
     /// <summary>
-    /// Invokes the action only when outcome is Success.
+    /// Invokes the action only when an outcome is Success.
     /// </summary>
     public static SGuardCallback OnSuccess(Action action)
         => outcome => { if (outcome == GuardOutcome.Success) action(); };
 
     /// <summary>
-    /// Invokes the action only when outcome is Failure.
+    /// Invokes the action only when an outcome is Failure.
     /// </summary>
     public static SGuardCallback OnFailure(Action action)
         => outcome => { if (outcome == GuardOutcome.Failure) action(); };

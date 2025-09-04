@@ -52,17 +52,6 @@
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
         </None>
-        <None Include=".github\pull_request_template.md" />
-        <None Include=".github\CODEOWNERS.md" />
-        <None Include=".github\ISSUE_TEMPLATE\bug_report.md" />
-        <None Include=".github\ISSUE_TEMPLATE\feature_request.md" />
-        <None Include="README.md" Pack="true" PackagePath="\"/>
-        <None Include="icon.png" Pack="true" PackagePath="\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include=".github\workflows\ci.yml" />
-      <Content Include=".github\workflows\publish.yml" />
     </ItemGroup>
 
 </Project>

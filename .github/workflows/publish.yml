@@ -9,21 +9,43 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET (6/7/8/9)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+      - name: Restore
+        run: dotnet restore SGuard.sln
 
-      - name: Pack
-        run: dotnet pack --configuration Release --no-build --output ./artifacts
+      - name: Build (Release)
+        run: dotnet build SGuard.sln --configuration Release --no-restore
+
+      - name: Pack library
+        run: dotnet pack guard/SGuard.csproj --configuration Release --no-build --output ./artifacts -p:ContinuousIntegrationBuild=true
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/*.nupkg
 
       - name: Publish to NuGet
-        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
