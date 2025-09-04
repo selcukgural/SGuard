@@ -87,7 +87,7 @@ public sealed class ThrowIfBetweenTests
         var probe = new CallbackProbe();
 
         Assert.Throws<ArgumentNullException>(
-            () => ThrowIf.Between<int, int, int, CustomException>(5, 1, 10, (CustomException)null!, probe.Create()));
+            () => ThrowIf.Between(5, 1, 10, (CustomException)null!, probe.Create()));
 
         Assert.False(probe.Called);
     }

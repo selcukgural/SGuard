@@ -5,7 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.github/workflows/coverage-readme.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/ThrowIf_CallbackExceptionSwallowTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/Changelog.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SGuard.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SGuard.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/SGuard.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/guard/SGuard.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/guard/icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/ExceptionActivator_Tests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/ExceptionActivatorTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/ThrowIfAllTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/CallbacksTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/ThrowIfBetweenTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/ThrowIfBetweenTests.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,26 +45,26 @@
     &quot;assignee&quot;: &quot;selcukgural&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/selcukgural/sguard.git&quot;,
-    &quot;accountId&quot;: &quot;f9b58bfa-13a7-4e86-b381-cc701f0e9a87&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/selcukgural/SGuard.git",
+    "accountId": "f9b58bfa-13a7-4e86-b381-cc701f0e9a87"
   },
-  &quot;recentNewPullRequestHead&quot;: {
-    &quot;server&quot;: {
-      &quot;useHttp&quot;: false,
-      &quot;host&quot;: &quot;github.com&quot;,
-      &quot;port&quot;: null,
-      &quot;suffix&quot;: null
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
     },
-    &quot;owner&quot;: &quot;selcukgural&quot;,
-    &quot;repository&quot;: &quot;sguard&quot;
+    "owner": "selcukgural",
+    "repository": "sguard"
   }
-}</component>
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9e152ae1f1f0493cba641958893be34e6d18/98/2998a8d2/ConcurrentBag`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/sguard/guard/src/Callbacks/SGuardCallback.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/sguard/src/Exceptions/AllException.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/tests/CallbacksTests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/tests/ThrowIf_CallbackExceptionSwallowTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file:///usr/local/share/dotnet/sdk/9.0.101/Sdks/NuGet.Build.Tasks.Pack/buildCrossTargeting/NuGet.Build.Tasks.Pack.targets" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
@@ -77,7 +89,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "e101f5ea-0955-4784-a7c1-9fb078d779f7.executor": "Run",
-    "git-widget-placeholder": "#10 on update-project-structure",
+    "git-widget-placeholder": "main",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -92,6 +104,7 @@
     ]
   }
 }]]></component>
+  <component name="RunManager" selected="44268315-02eb-40e0-acf2-bf19dd4aedc0" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="" />
@@ -127,6 +140,7 @@
       <workItem from="1757003956139" duration="694000" />
       <workItem from="1757005194473" duration="3039000" />
       <workItem from="1757008263133" duration="22000" />
+      <workItem from="1757009157050" duration="8693000" />
     </task>
     <task id="LOCAL-00001" summary="feat(guards): add GreaterThan comparison guards and improve null/empty visitor&#10;&#10;- Add Is.GreaterThan&lt;TLeft,TRight&gt; method with null guards and callback support&#10;- Add Is.GreaterThanOrEqual&lt;TLeft,TRight&gt; method with null guards and callback support  &#10;- Remove basic NullVisitor implementation&#10;- Replace with comprehensive NullOrEmptyVisitor supporting nested member access chains&#10;- Add type-specific empty checks for string, arrays, collections, dictionaries, and numeric types&#10;- Implement null-safe member chain traversal to prevent NullReferenceException on nested properties&#10;&#10;Breaking changes:&#10;- NullVisitor class removed (internal API)&#10;&#10;New APIs:&#10;- Is.GreaterThan&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool&#10;- Is.GreaterThanOrEqual&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool">
       <option name="closed" value="true" />
@@ -262,6 +276,9 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$USER_HOME$" />
+    </ignored-roots>
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="&quot;Remove unused exception classes and redundant utility methods&quot;" />
     <MESSAGE value="Remove unused classes and methods." />
