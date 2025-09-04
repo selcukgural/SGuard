@@ -7,7 +7,7 @@ Thank you for your interest in contributing to SGuard! We welcome contributions 
 1. **Fork the repository**
    - Click the "Fork" button at the top of the GitHub page to create your own copy.
 2. **Clone your fork**
-   - `git clone https://github.com/your-username/sguard.git`
+   - `git clone https://github.com/selcukgural/sguard.git`
 3. **Create a branch**
    - `git checkout -b my-feature-branch`
 4. **Make your changes**

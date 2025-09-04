@@ -3,32 +3,76 @@ name: CI
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/**'
+      - 'SGuard.sln'
+      - '**/*.csproj'
+      - 'coverlet.runsettings'
   pull_request:
     branches: [ main, master ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/**'
+      - 'SGuard.sln'
+      - '**/*.csproj'
+      - 'coverlet.runsettings'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup .NET
+      - name: Setup .NET (6/7/8/9)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
-        run: dotnet restore sguard/sguard.csproj
+        run: dotnet restore SGuard.sln
 
       - name: Build
-        run: dotnet build sguard/sguard.csproj --configuration Release --no-restore
+        run: dotnet build SGuard.sln --configuration Release --no-restore
 
       - name: Test with coverage
-        run: dotnet test sguard/sguard.csproj --configuration Release --no-build --settings sguard/coverlet.runsettings --collect:"XPlat Code Coverage"
+        run: dotnet test SGuard.sln --configuration Release --no-build --settings coverlet.runsettings --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test_results.trx"
+
+      - name: Upload test results (TRX)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/TestResults/**/*.trx'
 
       - name: Upload coverage report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: '**/TestResults/**/*.xml'
+          path: |
+            **/TestResults/**/coverage*.xml
+            **/TestResults/**/*.xml
+
