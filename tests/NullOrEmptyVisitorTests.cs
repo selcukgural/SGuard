@@ -203,7 +203,7 @@ public sealed class NullOrEmptyVisitorTests
     [Fact]
     public void Nested_Member_Access_With_Null_ShortCircuit()
     {
-        // L1 null -> inner member erişiminde kısa devre ile "empty" kabul edilmeli
+        // L1 null -> inner member access should short-circuit and be considered "empty"
         var n1 = new WithNested { L1 = null };
         Assert.True(Is.NullOrEmpty(n1, x => x.L1!.L2!.Inner)); // null-safe, true beklenir
         Assert.True(Is.NullOrEmpty(n1, x => x.L1!.L2!.InnerArray));
