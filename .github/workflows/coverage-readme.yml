@@ -137,7 +137,7 @@ jobs:
               echo "$block_end"
             } >> "$README"
           fi
-
+    
       - name: Commit README and badges
         if: github.event_name == 'push'
         uses: stefanzweifel/git-auto-commit-action@v5
