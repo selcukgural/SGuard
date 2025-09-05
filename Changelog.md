@@ -15,8 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added XML documentation comments.
 
 ### Notes
-- If you used previous package versions, migration to `0.1.0` is recommended. No runtime breaking changes are expected.
-- 
 ## [0.1.0] - 2025-09-04
 
 ### Changed
