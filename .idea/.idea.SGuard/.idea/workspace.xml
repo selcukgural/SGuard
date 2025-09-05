@@ -6,13 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SGuard.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guard/SGuard.csproj.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/guard/SGuard.csproj.DotSettings" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guard/src/Internal/ExceptionActivator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Common/ExceptionActivator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guard/src/Internal/Throw.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Common/Throw.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guard/src/Internal/Visitor/NullOrEmptyVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Internal/Visitor/NullOrEmptyVisitor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/Changelog.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/SGuard.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/guard/SGuard.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,22 +35,29 @@
     &quot;assignee&quot;: &quot;selcukgural&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/selcukgural/SGuard.git&quot;,
-    &quot;accountId&quot;: &quot;f9b58bfa-13a7-4e86-b381-cc701f0e9a87&quot;
+  <component name="GithubProjectSettings">
+    <option name="branchProtectionPatterns">
+      <list>
+        <option value="main" />
+      </list>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/selcukgural/SGuard.git",
+    "accountId": "f9b58bfa-13a7-4e86-b381-cc701f0e9a87"
   },
-  &quot;recentNewPullRequestHead&quot;: {
-    &quot;server&quot;: {
-      &quot;useHttp&quot;: false,
-      &quot;host&quot;: &quot;github.com&quot;,
-      &quot;port&quot;: null,
-      &quot;suffix&quot;: null
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
     },
-    &quot;owner&quot;: &quot;selcukgural&quot;,
-    &quot;repository&quot;: &quot;sguard&quot;
+    "owner": "selcukgural",
+    "repository": "SGuard"
   }
-}</component>
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="mock://C:/Users/selcuk.gural/Documents/GitHub/sguard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/Users/selcuk.gural/Documents/GitHub/sguard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
@@ -87,7 +89,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "e101f5ea-0955-4784-a7c1-9fb078d779f7.executor": "Run",
-    "git-widget-placeholder": "feature/25-expansion-pack",
+    "git-widget-placeholder": "release/v0.1.1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -102,7 +104,6 @@
     ]
   }
 }]]></component>
-  <component name="RunManager" selected="e61d7d5f-ecf1-4d6c-99a2-4e07d7e8eb15" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="" />
