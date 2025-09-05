@@ -138,13 +138,11 @@ jobs:
             } >> "$README"
           fi
     
-      - name: Commit README and badges
-        if: github.event_name == 'push'
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
         with:
-          commit_message: "docs(readme): update test results and coverage [skip ci]"
-          file_pattern: |
-            README.md
-            coverage-report/badge_*.svg
-          commit_user_name: github-actions[bot]
-          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit-message: "docs(readme): update test results and coverage [skip ci]"
+          branch: "auto/update-readme"
+          title: "Update README with test results and coverage"
+          body: "This PR updates the README and coverage badges with the latest test results."
+          base: main
