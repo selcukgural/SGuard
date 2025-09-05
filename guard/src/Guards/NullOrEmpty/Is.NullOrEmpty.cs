@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Linq.Expressions;
-using SGuard.Visitor;
 
 namespace SGuard;
 
