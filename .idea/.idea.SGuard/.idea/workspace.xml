@@ -5,19 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.github/workflows/coverage-readme.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/ThrowIf_CallbackExceptionSwallowTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/Changelog.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SGuard.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SGuard.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guard/SGuard.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/guard/SGuard.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/guard/icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/ExceptionActivator_Tests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/ExceptionActivatorTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/ThrowIfAllTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/CallbacksTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/ThrowIfBetweenTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/ThrowIfBetweenTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/SGuard.csproj.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/guard/SGuard.csproj.DotSettings" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Internal/ExceptionActivator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Common/ExceptionActivator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Internal/Throw.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Common/Throw.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Internal/Visitor/NullOrEmptyVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Internal/Visitor/NullOrEmptyVisitor.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +29,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="change-license" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -45,27 +40,30 @@
     &quot;assignee&quot;: &quot;selcukgural&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/selcukgural/SGuard.git",
-    "accountId": "f9b58bfa-13a7-4e86-b381-cc701f0e9a87"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/selcukgural/SGuard.git&quot;,
+    &quot;accountId&quot;: &quot;f9b58bfa-13a7-4e86-b381-cc701f0e9a87&quot;
   },
-  "recentNewPullRequestHead": {
-    "server": {
-      "useHttp": false,
-      "host": "github.com",
-      "port": null,
-      "suffix": null
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
     },
-    "owner": "selcukgural",
-    "repository": "sguard"
+    &quot;owner&quot;: &quot;selcukgural&quot;,
+    &quot;repository&quot;: &quot;sguard&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9e152ae1f1f0493cba641958893be34e6d18/98/2998a8d2/ConcurrentBag`1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/selcuk.gural/Documents/GitHub/sguard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/selcuk.gural/Documents/GitHub/sguard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/selcuk.gural/Documents/GitHub/sguard/guard/src/Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/selcuk.gural/Documents/GitHub/sguard/guard/src/Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/selcuk.gural/Documents/GitHub/sguard/guard/src/Internal/Visitor/NullOrEmptyVisitor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/CallbacksTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/ThrowIf_CallbackExceptionSwallowTests.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file:///usr/local/share/dotnet/sdk/9.0.101/Sdks/NuGet.Build.Tasks.Pack/buildCrossTargeting/NuGet.Build.Tasks.Pack.targets" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
@@ -89,7 +87,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "e101f5ea-0955-4784-a7c1-9fb078d779f7.executor": "Run",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "feature/25-expansion-pack",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -104,7 +102,7 @@
     ]
   }
 }]]></component>
-  <component name="RunManager" selected="44268315-02eb-40e0-acf2-bf19dd4aedc0" />
+  <component name="RunManager" selected="e61d7d5f-ecf1-4d6c-99a2-4e07d7e8eb15" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="" />
@@ -141,6 +139,8 @@
       <workItem from="1757005194473" duration="3039000" />
       <workItem from="1757008263133" duration="22000" />
       <workItem from="1757009157050" duration="8693000" />
+      <workItem from="1757073578680" duration="1767000" />
+      <workItem from="1757083099535" duration="2456000" />
     </task>
     <task id="LOCAL-00001" summary="feat(guards): add GreaterThan comparison guards and improve null/empty visitor&#10;&#10;- Add Is.GreaterThan&lt;TLeft,TRight&gt; method with null guards and callback support&#10;- Add Is.GreaterThanOrEqual&lt;TLeft,TRight&gt; method with null guards and callback support  &#10;- Remove basic NullVisitor implementation&#10;- Replace with comprehensive NullOrEmptyVisitor supporting nested member access chains&#10;- Add type-specific empty checks for string, arrays, collections, dictionaries, and numeric types&#10;- Implement null-safe member chain traversal to prevent NullReferenceException on nested properties&#10;&#10;Breaking changes:&#10;- NullVisitor class removed (internal API)&#10;&#10;New APIs:&#10;- Is.GreaterThan&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool&#10;- Is.GreaterThanOrEqual&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool">
       <option name="closed" value="true" />
@@ -297,7 +297,9 @@
     <MESSAGE value="refactor(guards): remove comparison guards and custom exceptions&#10;&#10;- Removed `Is.All`, `Is.Any`, `Is.Between`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, and related string-based guards.&#10;- Deleted custom exceptions (`AllException`, `AnyException`, `BetweenException`, `GreaterThanException`, `GreaterThanOrEqualException`) and `ExceptionActivator`.&#10;- Cleaned up tests and XML documentation for removed components." />
     <MESSAGE value="chore: add CODEOWNERS file to define default reviewers and ownership rules" />
     <MESSAGE value="chore(ci): enhance workflows and simplify project structure&#10;&#10;- Updated GitHub workflows (`ci.yml` and `publish.yml`) to include caching for NuGet packages, multi-TargetFramework support (.NET 6-9), and TRX test result artifacts.&#10;- Refined solution file to include GitHub-specific directories and metadata files.&#10;- Improved CONTRIBUTING.md with correct repository URLs.&#10;- Adjusted file structure and updated `.csproj` to remove unused metadata and references." />
-    <option name="LAST_COMMIT_MESSAGE" value="chore(ci): enhance workflows and simplify project structure&#10;&#10;- Updated GitHub workflows (`ci.yml` and `publish.yml`) to include caching for NuGet packages, multi-TargetFramework support (.NET 6-9), and TRX test result artifacts.&#10;- Refined solution file to include GitHub-specific directories and metadata files.&#10;- Improved CONTRIBUTING.md with correct repository URLs.&#10;- Adjusted file structure and updated `.csproj` to remove unused metadata and references." />
+    <MESSAGE value="Refactor namespaces, improve exception documentation, and update class accessibility" />
+    <MESSAGE value="refactor: improve documentation and readability of exception handling classes" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: improve documentation and readability of exception handling classes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

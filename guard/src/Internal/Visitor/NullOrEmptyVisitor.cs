@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Linq.Expressions;
 
-namespace SGuard.Visitor;
+// ReSharper disable once CheckNamespace
+namespace SGuard;
 
 /// <summary>
 /// An internal class that visits member and unary expressions to check for null or default values.

@@ -4,9 +4,18 @@ using SGuard.Exceptions;
 namespace SGuard;
 
 /// <summary>
-/// An internal static class that throws exceptions for various conditions.
+/// A static class that throws exceptions for various conditions.
+/// This class provides a set of static methods to throw specific exceptions
+/// based on various conditions, such as range checks, null or empty values,
+/// and comparison operations. It is designed to centralize exception throwing
+/// logic and improve code readability and maintainability.
 /// </summary>
-internal static class Throw
+/// <remarks>
+/// The methods in this class are marked with the <see cref="System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute"/> attribute,
+/// indicating that they always throw an exception and do not return to the caller.
+/// </remarks>
+// ReSharper disable once ClassNeverInstantiated.Global
+public static class Throw
 {
     /// <summary>
     /// Throws a <see cref="BetweenException"/> with a formatted message that includes the value, minimum, and maximum bounds, as well as their respective expressions.
@@ -26,7 +35,6 @@ internal static class Throw
         throw new BetweenException(value, min, max);
     }
 
-
     /// <summary>
     /// Throws a <see cref="NullOrEmptyException"/> with a predefined message indicating that the value is null or empty.
     /// </summary>
@@ -38,7 +46,7 @@ internal static class Throw
     {
         throw new NullOrEmptyException(value);
     }
-    
+
     /// <summary>
     /// Throws a <see cref="GreaterThanException"/> with a message indicating that the left value is greater than the right value.
     /// </summary>
