@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <PackageVersion>0.1.0</PackageVersion>
+        <PackageVersion>0.1.1</PackageVersion>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <FileVersion>1.0.0</FileVersion>
         <PackageProjectUrl>https://github.com/selcukgural/sguard</PackageProjectUrl>
@@ -20,36 +20,18 @@
         <Company>Selçuk Güral</Company>
         <RepositoryType>git</RepositoryType>
         <PackageReleaseNotes>
-            # Release Notes - Version 0.1.0
+            # Release Notes - Version 0.1.1
 
-            This release restarts the package versioning at 0.1.0. Previous NuGet versions have been unlisted/removed.
-            The codebase remains functionally compatible with the current API surface; consumers adopting SGuard from
-            this version should not require code changes.
+            ### Changed
+            - Throw.cs has been released for public use.
+            - ExceptionActivator.cs has been released for public use.
+            - Improved code readability and maintainability.
 
-            ## Highlights
-            - Fresh start at v0.1.0 under the **MIT License**
-            - Targets: **.NET 6 / 7 / 8 / 9**
-            - README, LICENSE, and package icon included in the NuGet package
+            ### Added
+            - Added XML documentation comments.
 
-            ## Features
-            - Guard APIs:
-              - Boolean checks via `Is.*`
-              - Throwing guards via `ThrowIf.*` with CallerArgumentExpression for rich diagnostics
-            - Unified model with `GuardCallback` and `GuardOutcome` for consistent outcomes and callbacks
-            - Comparisons:
-              - Generic comparisons for `IComparable&lt;T&gt;`
-              - String operations with `StringComparison` support and culture-aware scenarios
-              - Range helpers (Between, LessThan, LessThanOrEqual, etc.)
-            - Collections and predicates:
-              - `Any&lt;T&gt;` and `All&lt;T&gt;` with predicate support
-              - Null/empty checks with selector support and expression caching for performance
-            - Exceptions:
-              - Multiple overloads for custom exception types
-              - Parameterless and parameterized constructors supported
-              - Generic creation via `ExceptionActivator.Create&lt;T&gt;`
-
-            ## Notes
-            - If you were using earlier package versions, please migrate to `0.1.0`. No runtime breaking changes are expected.
+            ### Notes
+            - If you used previous package versions, migration to `0.1.0` is recommended. No runtime breaking changes are expected.
         </PackageReleaseNotes>
         <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
