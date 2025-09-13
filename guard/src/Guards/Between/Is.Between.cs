@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace SGuard;
 
@@ -27,6 +28,8 @@ public sealed partial class Is
     /// Returns <c>true</c> if the value is greater than or equal to the minimum
     /// and less than or equal to the maximum; otherwise, <c>false</c>.
     /// </returns>
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Between<TValue, TMin, TMax>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax>
     {
@@ -51,6 +54,7 @@ public sealed partial class Is
     /// <param name="comparison">The string comparison rule to use.</param>
     /// <param name="callback">Optional callback invoked with the outcome.</param>
     /// <returns>true if the value is between min and max (inclusive) under the specified comparison; otherwise false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Between(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null)
     {
         ArgumentNullException.ThrowIfNull(min);

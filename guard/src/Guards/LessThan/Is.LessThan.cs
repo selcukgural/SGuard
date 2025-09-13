@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace SGuard;
 
 public sealed partial class Is
@@ -19,6 +21,7 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool LessThan<TLeft, TRight>(TLeft lValue, TRight rValue, SGuardCallback? callback = null) where TLeft : IComparable<TRight>
     {
         ArgumentNullException.ThrowIfNull(lValue);
@@ -40,6 +43,7 @@ public sealed partial class Is
     /// <param name="callback">Optional callback invoked with the outcome.</param>
     /// <returns>true if lValue is less than rValue according to the comparison; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">Thrown if lValue or rValue is null.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool LessThan(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
         ArgumentNullException.ThrowIfNull(lValue);
@@ -71,6 +75,7 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool LessThanOrEqual<TLeft, TRight>(TLeft lValue, TRight rValue, SGuardCallback? callback = null) where TLeft : IComparable<TRight>
     {
         ArgumentNullException.ThrowIfNull(lValue);
@@ -92,6 +97,7 @@ public sealed partial class Is
     /// <param name="callback">Optional callback invoked with the outcome.</param>
     /// <returns>true if lValue is less than or equal to rValue according to the comparison; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">Thrown if lValue or rValue is null.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool LessThanOrEqual(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
         ArgumentNullException.ThrowIfNull(lValue);

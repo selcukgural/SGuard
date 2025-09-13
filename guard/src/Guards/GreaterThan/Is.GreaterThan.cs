@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace SGuard;
 
@@ -21,6 +22,7 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GreaterThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
@@ -43,6 +45,7 @@ public sealed partial class Is
     /// <param name="callback">Optional callback invoked with the outcome.</param>
     /// <returns>true if lValue is greater than rValue according to the comparison; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">Thrown if lValue or rValue is null.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GreaterThan(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
         ArgumentNullException.ThrowIfNull(lValue);
@@ -72,6 +75,7 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GreaterThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
@@ -94,6 +98,7 @@ public sealed partial class Is
     /// <param name="callback">Optional callback invoked with the outcome.</param>
     /// <returns>true if lValue is greater than or equal to rValue according to the comparison; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">Thrown if lValue or rValue is null.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GreaterThanOrEqual(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
         ArgumentNullException.ThrowIfNull(lValue);

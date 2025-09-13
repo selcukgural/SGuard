@@ -32,6 +32,10 @@ SGuard is a lightweight, extensible guard clause library for .NET, providing exp
 - **Rich Exception Messages**: Informative diagnostics using `CallerArgumentExpression`.
 - **Multi-targeting**: Supports .NET 6, 7, 8, and 9.
 
+## 📊 Benchmarks
+
+Performance benchmarks for all guard methods are available in the [SGuard.Benchmark/benchmarks/](SGuard.Benchmark/benchmarks/) folder. Explore these to see real-world performance comparisons for `Is.*` and `ThrowIf.*` methods.
+
 ## 📦 Installation
 `dotnet add package SGuard`
 

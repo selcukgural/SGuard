@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace SGuard;
 
@@ -17,6 +18,7 @@ public sealed partial class ThrowIf
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="lValue"/> is less than <paramref name="rValue"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
@@ -39,6 +41,7 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback invoked with the outcome of the guard evaluation.</param>
     /// <exception cref="ArgumentNullException">Thrown when any of the arguments are null.</exception>
     /// <exception cref="TException">Thrown when <paramref name="lValue"/> is less than <paramref name="rValue"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, [NotNull] TException exception,
                                                            SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
@@ -66,6 +69,7 @@ public sealed partial class ThrowIf
     /// <exception cref="Exception">
     /// Thrown if the left value is less than or equal to the right value. The exception is determined by internal logic.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
@@ -88,6 +92,7 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback invoked with the guard outcome, specifying whether the validation succeeded or failed.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/>, <paramref name="rValue"/>, or <paramref name="exception"/> is null.</exception>
     /// <exception cref="TException">Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, [NotNull] TException exception,
                                                                   SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
@@ -116,6 +121,7 @@ public sealed partial class ThrowIf
     /// Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.
     /// The exception instance is created using the specified constructor arguments.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception, new()
     {
@@ -143,6 +149,7 @@ public sealed partial class ThrowIf
     /// Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.
     /// The exception instance is created using the specified constructor arguments.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, object[]? constructorArgs,
                                                                   SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception

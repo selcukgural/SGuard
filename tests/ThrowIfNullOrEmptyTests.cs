@@ -142,8 +142,7 @@ public sealed class ThrowIfNullOrEmptyTests
         var message = "Value is invalid";
         object[] args = { message };
 
-        var ex = Assert.Throws<CustomException>(() =>
-                                                    ThrowIf.NullOrEmpty<string, CustomException>(null!, args, probe.Create()));
+        var ex = Assert.Throws<CustomException>(() => ThrowIf.NullOrEmpty<string, CustomException>(null!, args, probe.Create()));
 
         Assert.Equal(message, ex.Message);
         Assert.True(probe.Called);
@@ -206,7 +205,8 @@ public sealed class ThrowIfNullOrEmptyTests
         var probe = new CallbackProbe();
         var obj = new TestObject { Name = "John" };
 
-        Assert.Throws<ArgumentNullException>(() => ThrowIf.NullOrEmpty<TestObject, NullOrEmptyException>(obj, selector: null!, callback: probe.Create()));
+        Assert.Throws<ArgumentNullException>(() => ThrowIf.NullOrEmpty<TestObject, NullOrEmptyException>(
+                                                 obj, selector: null!, callback: probe.Create()));
 
         Assert.False(probe.Called);
     }
@@ -288,8 +288,7 @@ public sealed class ThrowIfNullOrEmptyTests
         var message = "Member cannot be null or empty.";
         object[] args = { message };
 
-        var ex = Assert.Throws<CustomException>(() =>
-                                                    ThrowIf.NullOrEmpty<TestObject, CustomException>(obj, o => o.Numbers, args, probe.Create()));
+        var ex = Assert.Throws<CustomException>(() => ThrowIf.NullOrEmpty<TestObject, CustomException>(obj, o => o.Numbers, args, probe.Create()));
 
         Assert.Equal(message, ex.Message);
         Assert.True(probe.Called);

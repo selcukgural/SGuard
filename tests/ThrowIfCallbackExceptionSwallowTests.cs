@@ -2,7 +2,7 @@ using SGuard.Exceptions;
 
 namespace SGuard.Tests;
 
-public sealed class ThrowIf_CallbackExceptionSwallowTests
+public sealed class ThrowIfCallbackExceptionSwallowTests
 {
     private static SGuardCallback ThrowingCallback()
         => _ => throw new InvalidOperationException("callback boom");
