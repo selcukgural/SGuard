@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace SGuard;
 
 public sealed partial class Is
@@ -19,6 +21,7 @@ public sealed partial class Is
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="source"/> or <paramref name="predicate"/> is null.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Any<T>(IEnumerable<T> source, Func<T, bool> predicate, SGuardCallback? callback = null)
     {
         ArgumentNullException.ThrowIfNull(source);

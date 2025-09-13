@@ -1,10 +1,11 @@
 using System.Collections;
-#pragma warning disable CS8603 // Possible null reference return.
+#pragma warning dIsable CS8603 // Possible null reference return.
 
 namespace SGuard.Tests;
 
-public sealed class NullOrEmptyVisitorTests
+public sealed class NullOrEmptyVisitorOptimizedTests
 {
+
     private sealed class WithStrings
     {
         public string? S1 { get; init; }
@@ -254,3 +255,4 @@ public sealed class NullOrEmptyVisitorTests
         Assert.True(Is.NullOrEmpty(obj, x => x.S1));
     }
 }
+

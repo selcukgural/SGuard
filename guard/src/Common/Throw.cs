@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using SGuard.Exceptions;
 
 namespace SGuard;
@@ -30,6 +31,7 @@ public static class Throw
     /// Thrown when the value is not within the specified range indicated by the minimum and maximum bounds.
     /// </exception>
     [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void BetweenException<TValue, TMin, TMax>(TValue value, TMin min, TMax max)
     {
         throw new BetweenException(value, min, max);
@@ -42,6 +44,7 @@ public static class Throw
     /// Always thrown with a message stating, "Value is null or empty".
     /// </exception>
     [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void NullOrEmptyException<T>(T value)
     {
         throw new NullOrEmptyException(value);
@@ -58,6 +61,7 @@ public static class Throw
     /// Always thrown with a message stating that the left value is greater than the right value.
     /// </exception>
     [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void GreaterThanException<TLeft, TRight>(TLeft lValue, TRight rValue)
     {
         throw new GreaterThanException(lValue, rValue);
@@ -75,6 +79,7 @@ public static class Throw
     /// Always thrown with a message stating that the left value is greater than or equal to the right value.
     /// </exception>
     [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void GreaterThanOrEqualException<TLeft, TRight>(TLeft lValue, TRight rValue)
     {
         throw new GreaterThanOrEqualException(lValue, rValue);
@@ -92,6 +97,7 @@ public static class Throw
     /// Always thrown with a message stating that the left value is less than the right value.
     /// </exception>
     [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThanException<TLeft, TRight>(TLeft lValue, TRight rValue)
     {
         throw new LessThanException(lValue, rValue);
@@ -109,6 +115,7 @@ public static class Throw
     /// Always thrown with a message stating that the left value is less than or equal to the right value.
     /// </exception>
     [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThanOrEqualException<TLeft, TRight>(TLeft lValue, TRight rValue)
     {
         throw new LessThanOrEqualException(lValue, rValue);
@@ -123,6 +130,7 @@ public static class Throw
     ///     <cref>TException</cref>
     /// </exception>
     [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void That<TException>(TException exception) where TException : Exception
     {
         throw exception;

@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace SGuard;
 
 public sealed partial class Is
@@ -15,6 +17,7 @@ public sealed partial class Is
     /// <returns>
     /// True if all elements in the sequence satisfy the condition specified by the predicate; otherwise, false.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool All<T>(IEnumerable<T> source, Func<T, bool> predicate, SGuardCallback? callback = null)
     {
         ArgumentNullException.ThrowIfNull(source);

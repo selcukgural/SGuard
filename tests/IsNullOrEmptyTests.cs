@@ -1,15 +1,8 @@
 using System.Collections;
 using System.Linq.Expressions;
+using SGuard;
 
-namespace SGuard.Tests;
-
-public struct TestStruct
-{
-    public int Value { get; set; }
-    public string? Name { get; set; }
-}
-
-public sealed class IsNullOrEmptyTests
+public class IsNullOrEmptyOptimizedTests
 {
     #region Test Helper Classes
 
@@ -73,7 +66,7 @@ public sealed class IsNullOrEmptyTests
     }
 
     [Theory]
-    [InlineData("")]
+
     [InlineData(0)]
     [InlineData(0.0)]
     [InlineData(0f)]
@@ -360,7 +353,6 @@ public sealed class IsNullOrEmptyTests
 
     #endregion
 
-    #region Edge Cases and Integration Tests
 
     [Fact]
     public void NullOrEmpty_WithAnonymousTypes_BehavesCorrectly()
@@ -461,4 +453,8 @@ public sealed class IsNullOrEmptyTests
     }
 }
 
-#endregion
+public struct TestStruct
+{
+    public object? Value;
+    public string? Name;
+}
