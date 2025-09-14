@@ -16,25 +16,4 @@
       <ProjectReference Include="..\guard\SGuard.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="bin\Release\net9.0\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\.DS_Store" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\.DS_Store" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.All.IsAllBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.All.ThrowIfAllBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.Any.IsAnyBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.Any.ThrowIfAnyBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.Between.IsBetweenBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.Between.ThrowIfBetweenBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.GreaterThan.IsGreaterThanBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.GreaterThan.ThrowIfGreaterThanBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.LessThan.IsLessThanBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.LessThan.ThrowIfLessThanBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.NullOrEmpty.IsNullOrEmptyBenchmark-report-github.md" />
-      <Content Include="bin\Release\net9.0\BenchmarkDotNet.Artifacts\results\SGuard.Benchmark.NullOrEmpty.ThrowIfNullOrEmptBenchmark-report-github.md" />
-    </ItemGroup>
-
 </Project>
