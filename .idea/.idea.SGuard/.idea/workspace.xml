@@ -8,8 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/coverage-readme.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/coverage-readme.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SGuard.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,6 +143,7 @@
   },
   "keyToStringList": {
     "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "HTML",
       "Markdown",
       "PLAIN_TEXT"
     ]
@@ -343,7 +344,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757834571176</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Refactor workflows and update README badges&#10;&#10;- Updated `coverage-readme.yml` to improve clarity and step naming.&#10;- Adjusted README to replace badges with updated versions, removing redundancy.&#10;- Minor workspace and branch configuration updates to align with the main branch.">
+      <option name="closed" value="true" />
+      <created>1757869631758</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1757869631758</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -396,7 +405,8 @@
     <MESSAGE value="chore(ci): enhance workflows and simplify project structure&#10;&#10;- Updated GitHub workflows (`ci.yml` and `publish.yml`) to include caching for NuGet packages, multi-TargetFramework support (.NET 6-9), and TRX test result artifacts.&#10;- Refined solution file to include GitHub-specific directories and metadata files.&#10;- Improved CONTRIBUTING.md with correct repository URLs.&#10;- Adjusted file structure and updated `.csproj` to remove unused metadata and references." />
     <MESSAGE value="chore: restructure project, add coverage workflow, and update metadata&#10;&#10;- Introduced `.github/workflows/coverage-readme.yml` for automated coverage updates.&#10;- Reorganized test files and renamed for clarity (e.g., `ThrowIfAllTests.cs` → `CallbacksTests.cs`).&#10;- Updated `.sln` and `.csproj` to include new metadata and remove redundant entries.&#10;- Refreshed `README.md` with badges, versioning details, and usage examples.&#10;- Reset package version to `0.1.0` and added additional files (e.g., `icon.png`, `LICENSE`) to NuGet package bundle." />
     <MESSAGE value="Update project files and documentation for benchmark discoverability.&#10;&#10;- Removed unnecessary benchmark artifact file references in `SGuard.Benchmark.csproj`.&#10;- Updated `SGuard.csproj` to version 0.1.2 with detailed release notes emphasizing benchmark accessibility.&#10;- Enhanced `README.md` and `Changelog.md` to provide a clearer path to benchmark results." />
-    <option name="LAST_COMMIT_MESSAGE" value="Update project files and documentation for benchmark discoverability.&#10;&#10;- Removed unnecessary benchmark artifact file references in `SGuard.Benchmark.csproj`.&#10;- Updated `SGuard.csproj` to version 0.1.2 with detailed release notes emphasizing benchmark accessibility.&#10;- Enhanced `README.md` and `Changelog.md` to provide a clearer path to benchmark results." />
+    <MESSAGE value="Refactor workflows and update README badges&#10;&#10;- Updated `coverage-readme.yml` to improve clarity and step naming.&#10;- Adjusted README to replace badges with updated versions, removing redundancy.&#10;- Minor workspace and branch configuration updates to align with the main branch." />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor workflows and update README badges&#10;&#10;- Updated `coverage-readme.yml` to improve clarity and step naming.&#10;- Adjusted README to replace badges with updated versions, removing redundancy.&#10;- Minor workspace and branch configuration updates to align with the main branch." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
