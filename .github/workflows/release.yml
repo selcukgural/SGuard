@@ -1,8 +1,8 @@
-name: Update README with Coverage (main only, no PR)
+name: Update README with Coverage (main only, auto PR + auto merge)
 
 on:
   push:
-    branches: [ main ]        # sadece main'de çalış
+    branches: [ main ]
     paths:
       - 'src/**'
       - 'tests/**'
@@ -10,10 +10,10 @@ on:
       - 'SGuard.sln'
       - '**/*.csproj'
       - 'coverlet.runsettings'
-  workflow_dispatch:           # elle tetiklemek için (opsiyonel)
+  workflow_dispatch:
 
 permissions:
-  contents: write              # README ve /badges commit için
+  contents: write
 
 jobs:
   coverage-readme:
@@ -137,11 +137,25 @@ jobs:
             } >> "$README"
           fi
 
-      - name: Commit README + badges (no PR)
+      - name: Commit README + badges (auto branch)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
+          branch: "auto/update-coverage-${{ github.run_id }}"
           commit_message: "docs(readme): update test results & coverage badges [skip ci]"
           file_pattern: |
             README.md
             badges/*.svg
             coveragereport/Summary.md
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: "auto/update-coverage-${{ github.run_id }}"
+          base: "main"
+          title: "Update test results & coverage badges"
+          body: "Automated update of test results and coverage badges."
+
+      - name: Automerge PR
+        uses: pascalgn/automerge-action@v0.16.3
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
