@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <PackageVersion>0.1.1</PackageVersion>
+        <PackageVersion>0.1.2</PackageVersion>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <FileVersion>1.0.0</FileVersion>
         <PackageProjectUrl>https://github.com/selcukgural/sguard</PackageProjectUrl>
@@ -20,18 +20,14 @@
         <Company>Selçuk Güral</Company>
         <RepositoryType>git</RepositoryType>
         <PackageReleaseNotes>
-            # Release Notes - Version 0.1.1
+            # Release Notes - Version 0.1.2
 
-            ### Changed
-            - Throw.cs has been released for public use.
-            - ExceptionActivator.cs has been released for public use.
-            - Improved code readability and maintainability.
+            * Added a "📊 Benchmarks" section to the main README.md, providing a direct link to the SGuard.Benchmark/benchmarks/ folder for easy developer access to performance results. (#28)
+            * Ensured all benchmark results are discoverable and documented for each guard method (Is.* and ThrowIf.*), including All, Any, Between, GreaterThan, LessThan, and NullOrEmpty.
+            * No breaking changes to the core library or APIs.
+            * Improved developer experience and documentation clarity.
 
-            ### Added
-            - Added XML documentation comments.
-
-            ### Notes
-            - If you used previous package versions, migration to `0.1.0` is recommended. No runtime breaking changes are expected.
+            This update makes it much easier for contributors and users to find and review performance benchmarks for all guard methods.
         </PackageReleaseNotes>
         <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
@@ -43,10 +39,8 @@
         </None>
     </ItemGroup>
     <ItemGroup>
-        <None Include="icon.png" Pack="true" PackagePath="\" />
-    </ItemGroup>
-    <ItemGroup>
         <None Include="../README.md" Pack="true" PackagePath="\" />
+        <None Include="icon.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>

@@ -12,13 +12,6 @@ Join our community chat to ask questions, share feedback, or get involved: [#sgu
 
 SGuard is a lightweight, extensible guard clause library for .NET, providing expressive and robust validation for method arguments, object state, and business rules. It offers both boolean checks (`Is.*`) and exception-throwing guards (`ThrowIf.*`), with a unified callback model and rich exception diagnostics.
 
-## 🆕 What’s New in 0.1.0
-
-- Versioning reset: starting fresh at `0.1.0`. Older NuGet versions have been unlisted/removed.
-  - **No functional breaking changes are expected for consumers adopting this version.**
-- Targets: .NET 6, 7, 8, and 9.
-- Packaging: README, LICENSE, and package icon included in the NuGet package.
-
 ## 🚀 Features
 
 - **Boolean Guards (`Is.*`)**: Check conditions without throwing exceptions.
@@ -51,13 +44,13 @@ Performance benchmarks for all guard methods are available in the [SGuard.Benchm
     - Callback exceptions are safely swallowed, so your validation flow isn’t disrupted.
 
 - Rich exception surface
-    - Throw built-in exceptions for common guards, or supply your own:
+    - Throw built-in exceptions for common guards or supply your own:
         - Pass a custom exception instance, use a generic TException, or provide constructor arguments for detailed messages.
 
 - Expressive, dual API
     - Choose the style that fits your code:
         - Is.* returns booleans for control-flow friendly checks.
-        - ThrowIf.* fails fast with informative exceptions when rules are violated.
+        - ThrowIf.* it fails fast with informative exceptions when rules are violated.
 
 - Culture-aware comparisons and inclusive ranges
     - String overloads accept StringComparison for correct cultural/ordinal semantics.
@@ -322,46 +315,46 @@ public void UpdateEmail(string email)
 
 | Total | Passed | Failed | Skipped |
 |------:|-------:|-------:|--------:|
-| 367 | 367 | 0 | 0 |
+|   367 |    367 |      0 |       0 |
 
 ### Code Coverage
 # Summary
-|||
-|:---|:---|
-| Generated on: | 09/05/2025 - 10:39:42 |
-| Coverage date: | 09/03/2025 - 19:56:53 - 09/05/2025 - 10:39:39 |
-| Parser: | MultiReport (12x Cobertura) |
-| Assemblies: | 1 |
-| Classes: | 15 |
-| Files: | 50 |
-| **Line coverage:** | 86.9% (815 of 937) |
-| Covered lines: | 815 |
-| Uncovered lines: | 122 |
-| Coverable lines: | 937 |
-| Total lines: | 4360 |
-| **Branch coverage:** | 83% (186 of 224) |
-| Covered branches: | 186 |
-| Total branches: | 224 |
+|                      |                                                                          |
+|:---------------------|:-------------------------------------------------------------------------|
+| Generated on:        | 09/05/2025 - 10:39:42                                                    |
+| Coverage date:       | 09/03/2025 - 19:56:53 - 09/05/2025 - 10:39:39                            |
+| Parser:              | MultiReport (12x Cobertura)                                              |
+| Assemblies:          | 1                                                                        |
+| Classes:             | 15                                                                       |
+| Files:               | 50                                                                       |
+| **Line coverage:**   | 86.9% (815 of 937)                                                       |
+| Covered lines:       | 815                                                                      |
+| Uncovered lines:     | 122                                                                      |
+| Coverable lines:     | 937                                                                      |
+| Total lines:         | 4360                                                                     |
+| **Branch coverage:** | 83% (186 of 224)                                                         |
+| Covered branches:    | 186                                                                      |
+| Total branches:      | 224                                                                      |
 | **Method coverage:** | [Feature is only available for sponsors](https://reportgenerator.io/pro) |
 
-|**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|
-|:---|---:|---:|---:|---:|---:|---:|---:|---:|
-|**SGuard**|**815**|**122**|**937**|**4360**|**86.9%**|**186**|**224**|**83%**|
-|SGuard.ExceptionActivator|15|0|15|56|100%|6|8|75%|
-|SGuard.Exceptions.AllException|0|4|4|44|0%|0|0||
-|SGuard.Exceptions.AnyException|2|2|4|36|50%|0|0||
-|SGuard.Exceptions.BetweenException|23|6|29|135|79.3%|0|0||
-|SGuard.Exceptions.GreaterThanException|17|6|23|108|73.9%|0|0||
-|SGuard.Exceptions.GreaterThanOrEqualException|17|6|23|110|73.9%|0|0||
-|SGuard.Exceptions.LessThanException|15|6|21|111|71.4%|0|0||
-|SGuard.Exceptions.LessThanOrEqualException|15|6|21|111|71.4%|0|0||
-|SGuard.Exceptions.NullOrEmptyException|15|4|19|98|78.9%|0|0||
-|SGuard.Is|181|0|181|1100|100%|22|24|91.6%|
-|SGuard.SGuard|31|1|32|124|96.8%|12|12|100%|
-|SGuard.SGuardCallbacks|2|2|4|68|50%|0|0||
-|SGuard.Throw|21|0|21|243|100%|0|0||
-|SGuard.ThrowIf|311|19|330|1558|94.2%|52|56|92.8%|
-|SGuard.Visitor.NullOrEmptyVisitor|150|60|210|458|71.4%|94|124|75.8%|
+| **Name**                                      | **Covered** | **Uncovered** | **Coverable** | **Total** | **Line coverage** | **Covered** | **Total** | **Branch coverage** |
+|:----------------------------------------------|------------:|--------------:|--------------:|----------:|------------------:|------------:|----------:|--------------------:|
+| **SGuard**                                    |     **815** |       **122** |       **937** |  **4360** |         **86.9%** |     **186** |   **224** |             **83%** |
+| SGuard.ExceptionActivator                     |          15 |             0 |            15 |        56 |              100% |           6 |         8 |                 75% |
+| SGuard.Exceptions.AllException                |           0 |             4 |             4 |        44 |                0% |           0 |         0 |                     |
+| SGuard.Exceptions.AnyException                |           2 |             2 |             4 |        36 |               50% |           0 |         0 |                     |
+| SGuard.Exceptions.BetweenException            |          23 |             6 |            29 |       135 |             79.3% |           0 |         0 |                     |
+| SGuard.Exceptions.GreaterThanException        |          17 |             6 |            23 |       108 |             73.9% |           0 |         0 |                     |
+| SGuard.Exceptions.GreaterThanOrEqualException |          17 |             6 |            23 |       110 |             73.9% |           0 |         0 |                     |
+| SGuard.Exceptions.LessThanException           |          15 |             6 |            21 |       111 |             71.4% |           0 |         0 |                     |
+| SGuard.Exceptions.LessThanOrEqualException    |          15 |             6 |            21 |       111 |             71.4% |           0 |         0 |                     |
+| SGuard.Exceptions.NullOrEmptyException        |          15 |             4 |            19 |        98 |             78.9% |           0 |         0 |                     |
+| SGuard.Is                                     |         181 |             0 |           181 |      1100 |              100% |          22 |        24 |               91.6% |
+| SGuard.SGuard                                 |          31 |             1 |            32 |       124 |             96.8% |          12 |        12 |                100% |
+| SGuard.SGuardCallbacks                        |           2 |             2 |             4 |        68 |               50% |           0 |         0 |                     |
+| SGuard.Throw                                  |          21 |             0 |            21 |       243 |              100% |           0 |         0 |                     |
+| SGuard.ThrowIf                                |         311 |            19 |           330 |      1558 |             94.2% |          52 |        56 |               92.8% |
+| SGuard.Visitor.NullOrEmptyVisitor             |         150 |            60 |           210 |       458 |             71.4% |          94 |       124 |               75.8% |
 <!-- TEST-RESULTS:END -->
 
 ## 🔢 Versioning
