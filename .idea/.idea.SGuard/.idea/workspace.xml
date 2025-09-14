@@ -8,13 +8,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/.name" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/release.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/coverage-readme.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/coverage-readme.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/publish.yml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/Changelog.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SGuard.Benchmark/SGuard.Benchmark.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.Benchmark/SGuard.Benchmark.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SGuard.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/guard/SGuard.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/guard/SGuard.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guard/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/guard/icon.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +35,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="change-license" />
+        <entry key="$PROJECT_DIR$" value="version/0.1.2" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -69,7 +70,6 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Immediate Window" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/02bfa03b73f94f5b8947ec21da8cdcba74518/57/01eb8ba3/InvalidOperationException.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/02bfa03b73f94f5b8947ec21da8cdcba74518/72/d214aaaf/ArgumentNullException.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/02bfa03b73f94f5b8947ec21da8cdcba74518/a4/0eaada2e/ArgumentException.cs" root0="SKIP_HIGHLIGHTING" />
@@ -105,30 +105,13 @@
     <setting file="file://$PROJECT_DIR$/SGuard.Benchmark/src/NullOrEmpty/Is.NullOrEmpty.Benchmark.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SGuard.Benchmark/src/NullOrEmpty/ThrowIf.NullOrEmpty.Benchmark.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/guard/src/Common/Throw.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/guard/src/Internal/Visitor/NullOrEmptyVisitor.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/CallbacksTests.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/tests/IsNullOrEmptyTests.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/IsNullOrEmptyTests.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/tests/NullOrEmptyVisitorTests.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/NullOrEmptyVisitorTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/ThrowIfCallbackExceptionSwallowTests.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/tests/ThrowIfNullOrEmptyTests.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/tests/ThrowIfNullOrEmptyTests.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/ThrowIfNullOrEmptyTests.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/selcuk/RiderProjects/SGuard/tests/ThrowIfNullOrEmptyTests.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file:///usr/local/share/dotnet/sdk/9.0.101/Sdks/NuGet.Build.Tasks.Pack/buildCrossTargeting/NuGet.Build.Tasks.Pack.targets" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://IsNullOrEmptyOptimizedTests.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
@@ -146,31 +129,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Project.SGuard.Benchmark.executor&quot;: &quot;Run&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;e101f5ea-0955-4784-a7c1-9fb078d779f7.executor&quot;: &quot;Run&quot;,
-    &quot;e8fffb31-1d21-4053-88b9-721e10f8111c.executor&quot;: &quot;Debug&quot;,
-    &quot;f9e0363e-a8d4-4255-a860-9e56649d97e9.executor&quot;: &quot;Debug&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Project.SGuard.Benchmark.executor": "Run",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "e101f5ea-0955-4784-a7c1-9fb078d779f7.executor": "Run",
+    "e8fffb31-1d21-4053-88b9-721e10f8111c.executor": "Debug",
+    "f9e0363e-a8d4-4255-a860-9e56649d97e9.executor": "Debug",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Markdown&quot;,
-      &quot;PLAIN_TEXT&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Markdown",
+      "PLAIN_TEXT"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="SGuard.Benchmark" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -242,7 +225,9 @@
       <workItem from="1757704459614" duration="1290000" />
       <workItem from="1757705769406" duration="15238000" />
       <workItem from="1757768498001" duration="23059000" />
-      <workItem from="1757833371899" duration="1143000" />
+      <workItem from="1757833371899" duration="3276000" />
+      <workItem from="1757865672177" duration="737000" />
+      <workItem from="1757867199293" duration="1843000" />
     </task>
     <task id="LOCAL-00001" summary="feat(guards): add GreaterThan comparison guards and improve null/empty visitor&#10;&#10;- Add Is.GreaterThan&lt;TLeft,TRight&gt; method with null guards and callback support&#10;- Add Is.GreaterThanOrEqual&lt;TLeft,TRight&gt; method with null guards and callback support  &#10;- Remove basic NullVisitor implementation&#10;- Replace with comprehensive NullOrEmptyVisitor supporting nested member access chains&#10;- Add type-specific empty checks for string, arrays, collections, dictionaries, and numeric types&#10;- Implement null-safe member chain traversal to prevent NullReferenceException on nested properties&#10;&#10;Breaking changes:&#10;- NullVisitor class removed (internal API)&#10;&#10;New APIs:&#10;- Is.GreaterThan&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool&#10;- Is.GreaterThanOrEqual&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool">
       <option name="closed" value="true" />
@@ -356,7 +341,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757017982464</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Update project files and documentation for benchmark discoverability.&#10;&#10;- Removed unnecessary benchmark artifact file references in `SGuard.Benchmark.csproj`.&#10;- Updated `SGuard.csproj` to version 0.1.2 with detailed release notes emphasizing benchmark accessibility.&#10;- Enhanced `README.md` and `Changelog.md` to provide a clearer path to benchmark results.">
+      <option name="closed" value="true" />
+      <created>1757834571176</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1757834571176</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -408,7 +401,8 @@
     <MESSAGE value="chore: add CODEOWNERS file to define default reviewers and ownership rules" />
     <MESSAGE value="chore(ci): enhance workflows and simplify project structure&#10;&#10;- Updated GitHub workflows (`ci.yml` and `publish.yml`) to include caching for NuGet packages, multi-TargetFramework support (.NET 6-9), and TRX test result artifacts.&#10;- Refined solution file to include GitHub-specific directories and metadata files.&#10;- Improved CONTRIBUTING.md with correct repository URLs.&#10;- Adjusted file structure and updated `.csproj` to remove unused metadata and references." />
     <MESSAGE value="chore: restructure project, add coverage workflow, and update metadata&#10;&#10;- Introduced `.github/workflows/coverage-readme.yml` for automated coverage updates.&#10;- Reorganized test files and renamed for clarity (e.g., `ThrowIfAllTests.cs` → `CallbacksTests.cs`).&#10;- Updated `.sln` and `.csproj` to include new metadata and remove redundant entries.&#10;- Refreshed `README.md` with badges, versioning details, and usage examples.&#10;- Reset package version to `0.1.0` and added additional files (e.g., `icon.png`, `LICENSE`) to NuGet package bundle." />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: restructure project, add coverage workflow, and update metadata&#10;&#10;- Introduced `.github/workflows/coverage-readme.yml` for automated coverage updates.&#10;- Reorganized test files and renamed for clarity (e.g., `ThrowIfAllTests.cs` → `CallbacksTests.cs`).&#10;- Updated `.sln` and `.csproj` to include new metadata and remove redundant entries.&#10;- Refreshed `README.md` with badges, versioning details, and usage examples.&#10;- Reset package version to `0.1.0` and added additional files (e.g., `icon.png`, `LICENSE`) to NuGet package bundle." />
+    <MESSAGE value="Update project files and documentation for benchmark discoverability.&#10;&#10;- Removed unnecessary benchmark artifact file references in `SGuard.Benchmark.csproj`.&#10;- Updated `SGuard.csproj` to version 0.1.2 with detailed release notes emphasizing benchmark accessibility.&#10;- Enhanced `README.md` and `Changelog.md` to provide a clearer path to benchmark results." />
+    <option name="LAST_COMMIT_MESSAGE" value="Update project files and documentation for benchmark discoverability.&#10;&#10;- Removed unnecessary benchmark artifact file references in `SGuard.Benchmark.csproj`.&#10;- Updated `SGuard.csproj` to version 0.1.2 with detailed release notes emphasizing benchmark accessibility.&#10;- Enhanced `README.md` and `Changelog.md` to provide a clearer path to benchmark results." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

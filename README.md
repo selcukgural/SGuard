@@ -4,11 +4,9 @@
 [![NuGet](https://img.shields.io/nuget/v/SGuard.svg)](https://www.nuget.org/packages/SGuard)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/SGuard.svg)](https://www.nuget.org/packages/SGuard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Build](https://github.com/selcukgural/SGuard/actions/workflows/ci.yml/badge.svg)](https://github.com/selcukgural/SGuard/actions)
+![Coverage](https://raw.githubusercontent.com/selcukgural/SGuard/gh-pages/badges/badge_linecoverage.svg)
 [![Matrix Chat](https://img.shields.io/badge/chat-on%20matrix-4fc08d)](https://matrix.to/#/#sguard:gitter.im)
-
-## 💬 Join the Community Chat
-
-Join our community chat to ask questions, share feedback, or get involved: [#sguard:gitter.im](https://matrix.to/#/#sguard:gitter.im)
 
 SGuard is a lightweight, extensible guard clause library for .NET, providing expressive and robust validation for method arguments, object state, and business rules. It offers both boolean checks (`Is.*`) and exception-throwing guards (`ThrowIf.*`), with a unified callback model and rich exception diagnostics.
 
@@ -303,8 +301,11 @@ public void UpdateEmail(string email)
     // Proceed with updating the email...
 }
 
-
 ```
+## 💬 Join the Community Chat
+
+Join our community chat to ask questions, share feedback, or get involved: [#sguard:gitter.im](https://matrix.to/#/#sguard:gitter.im)
+
 
 ## ✅ Test and Coverage Status
 
@@ -356,10 +357,6 @@ public void UpdateEmail(string email)
 | SGuard.ThrowIf                                |         311 |            19 |           330 |      1558 |             94.2% |          52 |        56 |               92.8% |
 | SGuard.Visitor.NullOrEmptyVisitor             |         150 |            60 |           210 |       458 |             71.4% |          94 |       124 |               75.8% |
 <!-- TEST-RESULTS:END -->
-
-## 🔢 Versioning
-
-This project follows Semantic Versioning. As of this release, versioning restarts at `0.1.0`. If you previously consumed older versions, please upgrade to the latest package.
 
 ## 🤝 Contributing
 

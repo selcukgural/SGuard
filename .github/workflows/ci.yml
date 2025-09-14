@@ -1,7 +1,8 @@
 name: CI
 
 permissions:
-  contents: read
+  contents: write           
+  pull-requests: write      
 
 on:
   push:
@@ -32,10 +33,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
       - name: Setup .NET (6/7/8/9)
         uses: actions/setup-dotnet@v4
@@ -46,36 +46,84 @@ jobs:
             8.0.x
             9.0.x
 
-      - name: Cache NuGet packages
+      - name: Cache NuGet
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
+          restore-keys: ${{ runner.os }}-nuget-
 
-      - name: Restore dependencies
+      - name: Restore
         run: dotnet restore SGuard.sln
 
       - name: Build
         run: dotnet build SGuard.sln --configuration Release --no-restore
 
-      - name: Test with coverage
-        run: dotnet test SGuard.sln --configuration Release --no-build --settings coverlet.runsettings --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test_results.trx"
+      - name: Test (TRX + Coverage)
+        run: >
+          dotnet test SGuard.sln
+          --configuration Release
+          --no-build
+          --settings coverlet.runsettings
+          --collect:"XPlat Code Coverage"
+          --logger "trx;LogFileName=test_results.trx"
 
-      - name: Upload test results (TRX)
+      - name: Publish Unit Test Results (TRX)
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: '**/TestResults/**/*.trx'
+          check_name: 'Test Results'
+          comment_mode: failures
+
+      - name: Generate Coverage Summary + Badges + HTML
+        uses: danielpalme/ReportGenerator-GitHub-Action@v5
+        with:
+          reports: '**/TestResults/**/coverage.cobertura.xml'
+          targetdir: 'coveragereport'
+          reporttypes: 'MarkdownSummary;Html;Badges'
+          assemblyfilters: '+SGuard*;-*Tests'
+          classfilters: '-*.Generated*'
+          tag: '${{ github.run_number }}'
+
+      - name: Append coverage table to Job Summary
+        if: always()
+        run: |
+          echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
+          cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Post sticky PR comment (Coverage)
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: sguard-coverage
+          path: coveragereport/Summary.md
+
+      - name: Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: '**/TestResults/**/*.trx'
+          name: coverage-report-html
+          path: coveragereport
 
-      - name: Upload coverage report
+      - name: Upload raw test/coverage files
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: test-and-coverage-raw
           path: |
+            **/TestResults/**/*.trx
             **/TestResults/**/coverage*.xml
             **/TestResults/**/*.xml
 
+      - name: Update badges on main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p badges
+          cp -f coveragereport/badges/* badges/
+      - name: Commit badges
+        if: github.ref == 'refs/heads/main'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: update coverage badges [skip ci]'
+          file_pattern: 'badges/*.svg'
