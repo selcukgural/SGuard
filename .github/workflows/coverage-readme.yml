@@ -2,27 +2,29 @@ name: Coverage (badges to gh-pages)
 
 on:
   push:
-    branches: [ main ]             # sadece main'e merge sonrası çalışır
+    branches: [ main ]       
     paths:
       - 'src/**'
       - 'tests/**'
       - 'SGuard.sln'
       - '**/*.csproj'
       - 'coverlet.runsettings'
-  workflow_dispatch:
+  workflow_dispatch:          
 
 permissions:
-  contents: write                  # gh-pages'a push için
+  contents: write             
 
 jobs:
   coverage:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with: { fetch-depth: 0 }
 
-      - uses: actions/setup-dotnet@v4
+      - name: Setup .NET (6/7/8/9)
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             6.0.x
@@ -33,12 +35,14 @@ jobs:
       - name: Restore
         run: dotnet restore SGuard.sln
 
-      - name: Build
+      - name: Build (Release)
         run: dotnet build SGuard.sln -c Release --no-restore
 
-      - name: Test (with coverage)
+      - name: Test (TRX + Coverage)
         run: >
-          dotnet test SGuard.sln -c Release --no-build
+          dotnet test SGuard.sln
+          -c Release
+          --no-build
           --settings coverlet.runsettings
           --collect:"XPlat Code Coverage"
           --logger "trx;LogFileName=test_results.trx"
@@ -48,7 +52,7 @@ jobs:
           dotnet tool install -g dotnet-reportgenerator-globaltool
           echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
 
-      - name: Generate badges only
+      - name: Generate coverage badges
         run: |
           reportgenerator \
             -reports:"**/coverage.cobertura.xml" \
@@ -56,6 +60,7 @@ jobs:
             -reporttypes:"Badges" \
             -assemblyfilters:"+SGuard*;-*Tests"
           # site/badges/badge_linecoverage.svg ve badge_branchcoverage.svg üretilecek
+          touch site/.nojekyll   # GH Pages'ta sorunsuz yayın için
 
       - name: Publish badges to gh-pages
         uses: peaceiris/actions-gh-pages@v3
