@@ -48,6 +48,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmark", "benchmark", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGuard.Benchmark", "SGuard.Benchmark\SGuard.Benchmark.csproj", "{82DB097E-BD45-46B3-8D61-C2107C389B70}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{87651356-85B5-427D-B4F5-FAB563AAC7DF}"
+	ProjectSection(SolutionItems) = preProject
+		docs\index.html = docs\index.html
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
