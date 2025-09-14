@@ -17,8 +17,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{2F9E8C7D-9D17-43A2-9B69-6B8C50E0B1A2}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\ci.yml = .github\workflows\ci.yml
-		.github\workflows\publish.yml = .github\workflows\publish.yml
 		.github\workflows\coverage-readme.yml = .github\workflows\coverage-readme.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEMPLATE", "{8A45F1BC-6F8E-4B1A-9F5F-2D4C8E7A9B10}"

@@ -1,0 +1,147 @@
+name: Update README with Coverage (main only, no PR)
+
+on:
+  push:
+    branches: [ main ]        # sadece main'de çalış
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/**'
+      - 'SGuard.sln'
+      - '**/*.csproj'
+      - 'coverlet.runsettings'
+  workflow_dispatch:           # elle tetiklemek için (opsiyonel)
+
+permissions:
+  contents: write              # README ve /badges commit için
+
+jobs:
+  coverage-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Setup .NET (6/7/8/9)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
+
+      - name: Restore
+        run: dotnet restore SGuard.sln
+
+      - name: Build (Release)
+        run: dotnet build SGuard.sln -c Release --no-restore
+
+      - name: Test (TRX + Coverage)
+        run: >
+          dotnet test SGuard.sln
+          -c Release
+          --no-build
+          --settings coverlet.runsettings
+          --collect:"XPlat Code Coverage"
+          --logger "trx;LogFileName=test_results.trx"
+
+      - name: Install ReportGenerator
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      - name: Generate summary + badges
+        run: |
+          reportgenerator \
+            -reports:"**/coverage.cobertura.xml" \
+            -targetdir:"coveragereport" \
+            -reporttypes:"MarkdownSummary;Badges"
+          mkdir -p badges
+          cp -f coveragereport/badges/* badges/ || true
+
+      - name: Build test summary table (from TRX)
+        shell: pwsh
+        run: |
+          $trx = Get-ChildItem -Recurse -Filter test_results.trx | Select-Object -First 1
+          if ($null -eq $trx) {
+            @(
+              '### Test Results'
+              ''
+              '_TRX file not found._'
+            ) | Out-File -FilePath test-summary.md -Encoding utf8
+            exit 0
+          }
+          [xml]$doc = Get-Content $trx.FullName
+          $c = $doc.TestRun.ResultSummary.Counters
+          $total   = [int]$c.total
+          $passed  = [int]$c.passed
+          $failed  = [int]$c.failed
+          $skipped = [int]$c.notExecuted
+          @(
+            '### Test Results'
+            ''
+            '| Total | Passed | Failed | Skipped |'
+            '|------:|-------:|-------:|--------:|'
+            "| $total | $passed | $failed | $skipped |"
+          ) | Out-File -FilePath test-summary.md -Encoding utf8
+
+      - name: Update README block (no PR)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SUMMARY="coveragereport/Summary.md"
+          TESTS="test-summary.md"
+          README="README.md"
+
+          block_start="<!-- TEST-RESULTS:START -->"
+          block_end="<!-- TEST-RESULTS:END -->"
+
+          {
+            echo "## Test and Coverage Status"
+            echo
+            cat "$TESTS"
+            echo
+            echo "### Code Coverage"
+            if [ -f "$SUMMARY" ]; then
+              cat "$SUMMARY"
+            else
+              echo "_Coverage summary not found._"
+            fi
+          } > .insert-block.md
+
+          if grep -q "$block_start" "$README"; then
+            awk -v start="$block_start" -v end="$block_end" '
+              BEGIN { printing=1 }
+              {
+                if ($0 ~ start) {
+                  print $0
+                  while ((getline line < ".insert-block.md") > 0) print line
+                  printing=0
+                  next
+                }
+                if ($0 ~ end) { printing=1 }
+                if (printing) print $0
+              }
+            ' "$README" > "${README}.tmp"
+            mv "${README}.tmp" "$README"
+          else
+            {
+              echo
+              echo "$block_start"
+              cat .insert-block.md
+              echo
+              echo "$block_end"
+            } >> "$README"
+          fi
+
+      - name: Commit README + badges (no PR)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(readme): update test results & coverage badges [skip ci]"
+          file_pattern: |
+            README.md
+            badges/*.svg
+            coveragereport/Summary.md
