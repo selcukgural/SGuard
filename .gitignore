@@ -554,3 +554,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+# Docusaurus
+docs/.docusaurus/
+docs/build/
+docs/.cache-loader/
