@@ -49,4 +49,35 @@ public sealed partial class ThrowIf
 
         SGuard.Guard(Is.All(source, predicate, callback), () => Throw.That(exception), callback);
     }
+
+    /// <summary>
+    /// Throws an exception of the specified type if all elements in the given span satisfy the provided predicate.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <typeparam name="TException">The type of exception to be thrown if the condition is met.</typeparam>
+    /// <param name="source">The span of elements to evaluate.</param>
+    /// <param name="predicate">The predicate to test each element of the span against.</param>
+    /// <param name="exception">The exception to be thrown if all elements satisfy the predicate.</param>
+    /// <param name="callback">
+    /// Optional callback to receive the guard evaluation outcome.
+    /// If not provided, no callback will be invoked.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="predicate"/> or <paramref name="exception"/> is null.
+    /// </exception>
+    /// <exception cref="TException">Thrown if all elements in the span satisfy the given predicate.</exception>
+    public static void All<T, TException>(ReadOnlySpan<T> source, Func<T, bool> predicate, [NotNull] TException exception, SGuardCallback? callback = null)
+        where TException : Exception
+    {
+        if (source.IsEmpty)
+        {
+            SGuard.Guard(false, () => Throw.That(exception), callback);
+            return;
+        }
+        
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(exception);
+
+        SGuard.Guard(Is.All(source, predicate, callback), () => Throw.That(exception), callback);
+    }
 }

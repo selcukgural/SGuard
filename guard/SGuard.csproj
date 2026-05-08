@@ -14,7 +14,7 @@
         <PackageTags>guard;is;throwIf;sguard;validation;dotnet;csharp;callbacks</PackageTags>
         <Description>SGuard is a lightweight guard library for .NET that offers explicit boolean checks (Is.*) and throwing guards (ThrowIf.*), a unified GuardCallback/GuardOutcome model, and richly-informative exceptions via CallerArgumentExpression for easier diagnostics. Targets net6.0/net7.0/net8.0/net9.0.
         </Description>
-        <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
         <Title>SGuard</Title>
         <Authors>Selçuk Güral</Authors>
         <Company>Selçuk Güral</Company>

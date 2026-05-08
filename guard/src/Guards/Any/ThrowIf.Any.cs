@@ -40,4 +40,26 @@ public sealed partial class ThrowIf
         
         SGuard.Guard(Is.Any(source, predicate, callback), () => Throw.That(exception), callback);
     }
+
+    /// <summary>
+    /// Throws an exception if any element in the given source satisfies the specified predicate.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the source.</typeparam>
+    /// <typeparam name="TException">The type of exception to be thrown if the predicate condition is met.</typeparam>
+    /// <param name="source">The span of elements to evaluate.</param>
+    /// <param name="predicate">The predicate function to apply to each element.</param>
+    /// <param name="exception">The exception to be thrown when the predicate condition is satisfied.</param>
+    /// <param name="callback">An optional callback invoked with the guard's outcome.</param>
+    public static void Any<T, TException>(ReadOnlySpan<T> source, Func<T, bool> predicate, [NotNull] TException exception, SGuardCallback? callback = null)
+        where TException : Exception
+    {
+        if (source.IsEmpty)
+        {
+            SGuard.Guard(false, () => Throw.That(exception), callback);
+        }
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(exception);
+        
+        SGuard.Guard(Is.Any(source, predicate, callback), () => Throw.That(exception), callback);
+    }
 }

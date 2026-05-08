@@ -24,11 +24,23 @@ public static class SGuardCallbacks
     /// Invokes the action only when an outcome is Success.
     /// </summary>
     public static SGuardCallback OnSuccess(Action action)
-        => outcome => { if (outcome == GuardOutcome.Success) action(); };
+        => outcome =>
+        {
+            if (outcome == GuardOutcome.Success)
+            {
+                action();
+            }
+        };
 
     /// <summary>
     /// Invokes the action only when an outcome is Failure.
     /// </summary>
     public static SGuardCallback OnFailure(Action action)
-        => outcome => { if (outcome == GuardOutcome.Failure) action(); };
+        => outcome =>
+        {
+            if (outcome == GuardOutcome.Failure)
+            {
+                action();
+            }
+        };
 }

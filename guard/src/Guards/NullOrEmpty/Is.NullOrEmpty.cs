@@ -29,6 +29,41 @@ public sealed partial class Is
 
         return result;
     }
+    
+    /// <summary>
+    /// Determines whether the specified value is null, empty, or matches a predefined empty pattern,
+    /// and optionally invokes a callback with the evaluation result.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to evaluate.</typeparam>
+    /// <param name="value">The value to evaluate for null, emptiness, or empty patterns.</param>
+    /// <param name="callback">
+    /// An optional callback that is invoked with the result of the evaluation.
+    /// The callback is executed safely, ignoring any exceptions thrown during its invocation.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the value is null, empty, or matches predefined empty patterns; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null)
+    {
+        var result = value.IsEmpty;
+
+        if (!result)
+        {
+            result = true;
+            foreach (var item in value)
+            {
+                if (item is not null)
+                {
+                    result = false;
+                    break;
+                }
+            }
+        }
+        
+        SGuard.InvokeCallbackSafely(result, callback);
+        
+        return result;
+    }
 
     /// <summary>
     /// Determines whether the specified value is null or empty based on general patterns or a provided property selector.
