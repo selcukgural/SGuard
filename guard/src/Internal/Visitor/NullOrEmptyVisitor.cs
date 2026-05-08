@@ -30,7 +30,10 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
         var members = new List<MemberExpression>();
 
         for (var current = node; current is not null; current = current.Expression as MemberExpression)
+        {
             members.Add(current);
+        }
+        
         members.Reverse();
 
         var instance = members[0].Expression!;
@@ -74,7 +77,7 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
 
         if (memberType == typeof(string))
         {
-            var method = typeof(string).GetMethod(nameof(string.IsNullOrEmpty), new[] { typeof(string) });
+            var method = typeof(string).GetMethod(nameof(string.IsNullOrEmpty), [typeof(string)]);
             specificCheck = Expression.Call(method!, memberAccess);
         }
         else if (memberType.IsArray)
@@ -89,10 +92,10 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
             specificCheck = Expression.Equal(Expression.Property(Expression.Convert(memberAccess, typeof(ICollection)), countProp!),
                                              Expression.Constant(0));
         }
-        else if (ImplementsGenericInterface(memberType, typeof(IReadOnlyCollection<>), out var iroc))
+        else if (ImplementsGenericInterface(memberType, typeof(IReadOnlyCollection<>), out var roCollection))
         {
-            var countProp = CountPropertyCache.GetOrAdd(iroc!, t => t.GetProperty(nameof(IReadOnlyCollection<object>.Count)));
-            specificCheck = Expression.Equal(Expression.Property(Expression.Convert(memberAccess, iroc), countProp!), Expression.Constant(0));
+            var countProp = CountPropertyCache.GetOrAdd(roCollection!, t => t.GetProperty(nameof(IReadOnlyCollection<object>.Count)));
+            specificCheck = Expression.Equal(Expression.Property(Expression.Convert(memberAccess, roCollection!), countProp!), Expression.Constant(0));
         }
         else if (typeof(IDictionary).IsAssignableFrom(memberType))
         {
@@ -104,7 +107,7 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
         else if (ImplementsGenericInterface(memberType, typeof(IReadOnlyDictionary<,>), out var irod))
         {
             var countProp = CountPropertyCache.GetOrAdd(irod!, t => t.GetProperty(nameof(IReadOnlyDictionary<object, object>.Count)));
-            specificCheck = Expression.Equal(Expression.Property(Expression.Convert(memberAccess, irod), countProp!), Expression.Constant(0));
+            specificCheck = Expression.Equal(Expression.Property(Expression.Convert(memberAccess, irod!), countProp!), Expression.Constant(0));
         }
         else if (typeof(IEnumerable).IsAssignableFrom(memberType) && memberType != typeof(string))
         {
@@ -121,7 +124,7 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
                 var assignEnum =
                     Expression.Assign(enumeratorVar, Expression.Call(Expression.Convert(memberAccess, typeof(IEnumerable)), getEnumeratorMethod!));
                 var moveNextCall = Expression.Call(enumeratorVar, moveNextMethod!);
-                var block = Expression.Block(new[] { enumeratorVar }, assignEnum, Expression.IsFalse(moveNextCall));
+                var block = Expression.Block([enumeratorVar], assignEnum, Expression.IsFalse(moveNextCall));
                 specificCheck = block;
             }
         }
