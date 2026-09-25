@@ -47,7 +47,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(predicate);
         ArgumentNullException.ThrowIfNull(exception);
 
-        SGuard.Guard(Is.All(source, predicate, callback), () => Throw.That(exception), callback);
+        SGuard.Guard(Is.All(source, predicate), () => Throw.That(exception), callback);
     }
 
     /// <summary>
@@ -78,6 +78,6 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(predicate);
         ArgumentNullException.ThrowIfNull(exception);
 
-        SGuard.Guard(Is.All(source, predicate, callback), () => Throw.That(exception), callback);
+        SGuard.Guard(Is.All(source, predicate), () => Throw.That(exception), callback);
     }
 }
