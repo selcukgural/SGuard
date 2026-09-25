@@ -37,11 +37,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with: { fetch-depth: 0 }
 
       - name: Setup .NET (8/9/10)
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             8.0.x
@@ -49,7 +49,7 @@ jobs:
             10.0.x
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
@@ -100,21 +100,21 @@ jobs:
 
       - name: Post sticky PR comment (Coverage)
         if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: sguard-coverage
           path: coveragereport/Summary.md
 
       - name: Upload Artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report-html
           path: coveragereport
 
       - name: Upload raw test/coverage files
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-and-coverage-raw
           path: |
@@ -129,7 +129,7 @@ jobs:
           cp -f coveragereport/badges/* badges/
       - name: Commit badges
         if: github.ref == 'refs/heads/main'
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: 'chore: update coverage badges [skip ci]'
           file_pattern: 'badges/*.svg'
