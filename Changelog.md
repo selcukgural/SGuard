@@ -15,6 +15,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   40–50x faster with about 90% less allocation. `Is.NullOrEmpty` and
   `ThrowIf.NullOrEmpty` share the cache. Selectors that read captured
   variables are still compiled on every call.
+- Selector-based `NullOrEmpty` guards no longer overflow the stack on
+  self-referencing or recursively generic types. A type already being inspected
+  on the same path, or nested more than 8 complex types deep, is only checked
+  for null. Indexed properties are skipped instead of throwing.
+- `Is.Email` now rejects addresses followed by a line break
+  (`"a@example.com\n"`) and addresses that contain non-ASCII letters such as
+  the Kelvin sign (U+212A). Inputs longer than 254 characters are rejected
+  before matching.
+
+### Added
+
+- `Is.Email(email, regex, regexOptions, matchTimeout, callback)` overload
+  that limits how long a custom pattern may run.
+
+### Changed
+
+- `Is.Email` with a custom pattern now stops matching after
+  `Is.DefaultEmailRegexTimeout` (1 second) and throws
+  `RegexMatchTimeoutException`; previously matching had no time limit.
 
 ## [0.1.2] - 2025-10-14
 ### Added

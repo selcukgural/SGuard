@@ -24,6 +24,12 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
     private static readonly ConcurrentDictionary<Type, PropertyInfo?> CountPropertyCache = new();
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> TypePropertyCache = new();
 
+    /// <summary>
+    /// The maximum number of nested complex types whose properties are inspected. Deeper complex members are only checked
+    /// for null, which keeps self-referencing and recursively generic types from expanding without bound.
+    /// </summary>
+    internal const int MaxComplexTypeDepth = 8;
+
     protected override Expression VisitMember(MemberExpression node)
     {
         var nullConst = Expression.Constant(null, typeof(object));
@@ -46,7 +52,7 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
 
             if (index == members.Count - 1)
             {
-                var finalCheck = BuildNullOrEmptyCheckExpression(access, access.Type);
+                var finalCheck = BuildNullOrEmptyCheckExpression(access, access.Type, [], 0);
                 var instanceIsNull = Expression.Equal(Expression.Convert(currentInstance, typeof(object)), nullConst);
                 return Expression.Condition(instanceIsNull, nullConst, finalCheck);
             }
@@ -64,11 +70,14 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
     /// </summary>
     /// <param name="memberAccess">The expression representing the member to be checked.</param>
     /// <param name="memberType">The type of the member being checked.</param>
+    /// <param name="complexTypePath">The complex types whose properties are being inspected on the current path.</param>
+    /// <param name="complexTypeDepth">The number of complex types on the current path.</param>
     /// <returns>
     /// An expression that evaluates whether the member is null, empty, or holds a default value
     /// for its type. The method uses static caches to optimize reflection-based checks.
     /// </returns>
-    private static Expression BuildNullOrEmptyCheckExpression(Expression memberAccess, Type memberType)
+    private static Expression BuildNullOrEmptyCheckExpression(Expression memberAccess, Type memberType, HashSet<Type> complexTypePath,
+                                                              int complexTypeDepth)
     {
         var memberAsObject = Expression.Convert(memberAccess, typeof(object));
         var isNull = Expression.Equal(memberAsObject, Expression.Constant(null, typeof(object)));
@@ -206,26 +215,27 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
         }
         else if (memberType.IsClass || memberType.IsValueType)
         {
-            // Complex type: all readable properties are null/empty
-            var props = TypePropertyCache.GetOrAdd(memberType, t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance));
-
-            if (props.Length == 0)
+            // A type already being inspected on this path (a cycle) or nested too deeply is only checked for null.
+            if (complexTypeDepth >= MaxComplexTypeDepth || !complexTypePath.Add(memberType))
             {
                 specificCheck = Expression.Constant(false);
             }
             else
             {
+                // Complex type: all readable, non-indexed properties are null/empty
+                var props = TypePropertyCache.GetOrAdd(memberType, GetInspectableProperties);
                 Expression? allNullOrEmpty = null;
 
-                foreach (var prop in props.Where(e => e.CanRead))
+                foreach (var prop in props)
                 {
                     var propAccess = Expression.Property(memberAccess, prop);
-                    var propCheck = BuildNullOrEmptyCheckExpression(propAccess, prop.PropertyType);
+                    var propCheck = BuildNullOrEmptyCheckExpression(propAccess, prop.PropertyType, complexTypePath, complexTypeDepth + 1);
                     var isNull2 = Expression.Equal(Expression.Convert(propAccess, typeof(object)), Expression.Constant(null));
                     var condition = Expression.OrElse(isNull2, Expression.Equal(propCheck, Expression.Constant(null, typeof(object))));
                     allNullOrEmpty = allNullOrEmpty is null ? condition : Expression.AndAlso(allNullOrEmpty, condition);
                 }
 
+                complexTypePath.Remove(memberType);
                 specificCheck = allNullOrEmpty ?? Expression.Constant(false);
             }
         }
@@ -237,6 +247,11 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
 
         var combinedCheck = Expression.OrElse(isNull, specificCheck);
         return Expression.Condition(combinedCheck, Expression.Constant(null, typeof(object)), memberAsObject);
+
+        static PropertyInfo[] GetInspectableProperties(Type type)
+            => type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                   .Where(p => p.CanRead && p.GetIndexParameters().Length == 0)
+                   .ToArray();
 
         static bool ImplementsGenericInterface(Type type, Type openGeneric, out Type? implemented)
         {
