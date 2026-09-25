@@ -254,5 +254,49 @@ public sealed class NullOrEmptyVisitorOptimizedTests
         obj = new WithStrings { S1 = "" };
         Assert.True(Is.NullOrEmpty(obj, x => x.S1));
     }
-}
 
+    private sealed class Node
+    {
+        public Node? Next { get; init; }
+        public string? Name { get; init; }
+    }
+
+    private sealed class Chain<T>
+    {
+        public Chain<Chain<T>>? Next { get; init; }
+        public string? Name { get; init; }
+    }
+
+    private sealed class WithIndexer
+    {
+        public string? S { get; init; }
+        public int this[int i] => i;
+    }
+
+    private sealed class HolderOf<T>
+    {
+        public T? Inner { get; init; }
+    }
+
+    [Fact]
+    public void SelfReferencingType_DoesNotRecurseForever()
+    {
+        Assert.True(Is.NullOrEmpty(new HolderOf<Node> { Inner = new Node() }, x => x.Inner!));
+        Assert.False(Is.NullOrEmpty(new HolderOf<Node> { Inner = new Node { Next = new Node { Name = "x" } } }, x => x.Inner!));
+        Assert.False(Is.NullOrEmpty(new HolderOf<Node> { Inner = new Node { Name = "x" } }, x => x.Inner!));
+    }
+
+    [Fact]
+    public void RecursivelyGenericType_StopsAtMaxDepth()
+    {
+        Assert.True(Is.NullOrEmpty(new HolderOf<Chain<int>> { Inner = new Chain<int>() }, x => x.Inner!));
+        Assert.False(Is.NullOrEmpty(new HolderOf<Chain<int>> { Inner = new Chain<int> { Name = "x" } }, x => x.Inner!));
+    }
+
+    [Fact]
+    public void IndexedProperties_AreIgnored()
+    {
+        Assert.True(Is.NullOrEmpty(new HolderOf<WithIndexer> { Inner = new WithIndexer() }, x => x.Inner!));
+        Assert.False(Is.NullOrEmpty(new HolderOf<WithIndexer> { Inner = new WithIndexer { S = "x" } }, x => x.Inner!));
+    }
+}

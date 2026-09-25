@@ -134,6 +134,13 @@ ThrowIf.NullOrEmpty(user);
 // Checks: user != null, Username not empty, Email not empty, Roles not empty
 ```
 
+When a selector points at a complex type, its readable properties are inspected recursively, with these limits:
+
+- Indexed properties (`this[...]`) are skipped.
+- A type that is already being inspected higher up the same path (for example `Node.Next` of type `Node`) is only checked
+  for null, so self-referencing types don't recurse forever. A non-null reference counts as non-empty.
+- The same null-only check applies below 8 levels of nested complex types.
+
 ## Real-World Examples
 
 ### API Request Validation
