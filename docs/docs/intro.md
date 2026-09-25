@@ -8,7 +8,6 @@ slug: /
 SGuard is a lightweight, extensible guard clause library for .NET, providing expressive and robust validation for method arguments, object state, and business rules.
 
 [![CI](https://github.com/selcukgural/SGuard/actions/workflows/ci.yml/badge.svg)](https://github.com/selcukgural/SGuard/actions)
-![Coverage](https://raw.githubusercontent.com/selcukgural/SGuard/gh-pages/badges/badge_linecoverage.svg)
 [![NuGet](https://img.shields.io/nuget/v/SGuard.svg)](https://www.nuget.org/packages/SGuard)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/SGuard.svg)](https://www.nuget.org/packages/SGuard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/selcukgural/SGuard/blob/main/LICENSE)
