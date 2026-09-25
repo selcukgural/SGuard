@@ -45,8 +45,12 @@ bool isValid = Is.LessThan(a, b);
 
 ### Null/Empty Validation
 
-- **`NullOrEmpty`**: Validates primitives, collections, strings, and complex objects
-- **Deep validation**: For objects with selectors (e.g., `ThrowIf.NullOrEmpty(order, o => o.Customer.Name)`)
+- **`NullOrEmpty`**: Checks for `null`, `""` (whitespace is *not* empty), empty collections and arrays, and
+  default values of value types (`0`, `false`, `Guid.Empty`, `default(DateTime)`, ...). A non-null class instance is
+  never considered empty on its own; its properties are not inspected.
+- **Selectors**: Check a member of an object (e.g., `ThrowIf.NullOrEmpty(order, o => o.Customer.Name)`). A `null`
+  anywhere on the path counts as empty. When the selected member is itself a complex object, it counts as empty only
+  if **all** of its readable properties are null or empty.
 
 ```csharp
 ThrowIf.NullOrEmpty(str);
@@ -58,7 +62,9 @@ bool isEmpty = Is.NullOrEmpty(collection);
 
 ### Comparison Guards
 
-All comparison guards support generic types and string-specific overloads with `StringComparison`:
+All comparison guards are generic (`TLeft : IComparable<TRight>`). Overloads that take a `StringComparison` exist
+for `Is.LessThan`, `Is.LessThanOrEqual`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, `Is.Between` and
+`ThrowIf.Between` only; the other `ThrowIf.*` comparisons have no `StringComparison` overload.
 
 - **`LessThan`**: `value < other`
 - **`LessThanOrEqual`**: `value <= other`
@@ -74,6 +80,13 @@ bool inRange = Is.Between(score, 0, 100);
 bool isLess = Is.LessThan("apple", "banana", StringComparison.Ordinal);
 ```
 
+The left operand's type decides the comparison, so literals must match it: for a `decimal` use `0m`, not `0`
+(`decimal` does not implement `IComparable<int>`).
+
+**NaN:** if any operand is a floating-point NaN (`double`, `float`, `Half`), `Is.*` comparisons return `false` and
+`ThrowIf.*` comparisons throw. A check written as `if (Is.GreaterThan(x, max)) reject();` therefore lets NaN
+through; prefer `ThrowIf.*` or `!Is.Between(x, min, max)` for bound checks.
+
 ### Collection Guards
 
 Predicate-based validation for collections:
@@ -88,6 +101,9 @@ ThrowIf.All(numbers, n => n < 0); // Throws if all numbers are negative
 bool hasPositive = Is.Any(numbers, n => n > 0);
 bool allValid = Is.All(items, i => i.IsValid());
 ```
+
+On an empty collection they follow LINQ: `Is.All` returns `true` and `Is.Any` returns `false`. So
+`ThrowIf.All(empty, ...)` throws and `ThrowIf.Any(empty, ...)` does not.
 
 ## Guard Semantics
 
@@ -114,8 +130,13 @@ SGuard uses `CallerArgumentExpression` to automatically capture argument names:
 
 ```csharp
 ThrowIf.NullOrEmpty(user.Email);
-// Exception: "Value cannot be null or empty. (Parameter 'user.Email')"
+// NullOrEmptyException: "Value 'user.Email' is null or empty."
+// ex.ParamName == "user.Email"
 ```
+
+The built-in exceptions derive from `ArgumentException`. Messages name the expressions but leave out the checked
+values unless you enable `SGuardOptions.IncludeValuesInExceptions` (see
+[Custom Exceptions](./custom-exceptions#including-values-in-messages)).
 
 No manual parameter name strings required!
 

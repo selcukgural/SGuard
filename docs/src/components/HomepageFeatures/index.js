@@ -25,8 +25,8 @@ const FeatureList = [
     title: 'Comprehensive Guards',
     description: (
       <>
-        Null/empty checks, comparison guards, collection validation, 
-        custom exceptions, callbacks, and culture-aware string comparisons.
+        Null/empty checks, comparison guards, collection and span validation,
+        email validation, custom exceptions, callbacks, and culture-aware string comparisons.
       </>
     ),
   },
@@ -34,7 +34,7 @@ const FeatureList = [
     title: 'High Performance',
     description: (
       <>
-        Expression caching, minimal allocations, and thread-safe evaluation. 
+        Selector expressions are compiled once and cached in a thread-safe cache.
         Benchmarks available for all guard methods.
       </>
     ),
@@ -43,7 +43,7 @@ const FeatureList = [
     title: 'Modern .NET',
     description: (
       <>
-        Multi-targeting support for .NET 6, 7, 8, and 9. 
+        Multi-targeting support for .NET 8, 9, and 10. 
         Follows modern C# best practices and conventions.
       </>
     ),
@@ -52,7 +52,8 @@ const FeatureList = [
     title: 'Easy to Extend',
     description: (
       <>
-        Custom exception support, unified callback model, and rich exception diagnostics. 
+        Custom exception support, unified callback model, and built-in exceptions that derive from
+        <code>ArgumentException</code>. 
         Integrate seamlessly with your domain logic.
       </>
     ),

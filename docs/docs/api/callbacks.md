@@ -8,29 +8,33 @@ Complete reference for the callback system.
 
 ## Overview
 
-SGuard provides a unified callback model for adding side effects to guard validations. Callbacks work consistently across both `ThrowIf.*` and `Is.*` APIs.
+SGuard provides a unified callback model for adding side effects to guard validations. Every `ThrowIf.*` and `Is.*`
+method takes an optional `SGuardCallback? callback = null` parameter. What `Success` and `Failure` mean differs
+between the two APIs; see [Callback Behavior](#callback-behavior).
 
 ## SGuardCallback
 
-Delegate type for callbacks:
+Delegate type for callbacks (namespace `SGuard`):
 
 ```csharp
 public delegate void SGuardCallback(GuardOutcome outcome);
 ```
 
-Receives a `GuardOutcome` parameter indicating success or failure.
+Receives a `GuardOutcome` describing the result of the guard call. A parameterless lambda (`() => ...`) is not an
+`SGuardCallback`; wrap it with `SGuardCallbacks.OnSuccess` / `OnFailure`, or take the outcome parameter.
 
 ## GuardOutcome
-
-Enum representing the validation result:
 
 ```csharp
 public enum GuardOutcome
 {
-    Success,  // Validation passed
-    Failure   // Validation failed
+    Success,  // ThrowIf.*: the guard passed.     Is.*: the method returned true.
+    Failure   // ThrowIf.*: the guard threw.      Is.*: the method returned false.
 }
 ```
+
+For `Is.*`, `Success` is not "the input is valid": `Is.NullOrEmpty(value)` reports `Success` when the value **is**
+null or empty.
 
 ## SGuardCallbacks
 
@@ -38,7 +42,7 @@ Static factory class for creating callbacks.
 
 ### OnSuccess
 
-Creates a callback that runs only on success:
+Creates a callback that runs the action only for `GuardOutcome.Success`:
 
 ```csharp
 public static SGuardCallback OnSuccess(Action action);
@@ -46,7 +50,7 @@ public static SGuardCallback OnSuccess(Action action);
 
 **Example:**
 ```csharp
-var onSuccess = SGuardCallbacks.OnSuccess(() => 
+var onSuccess = SGuardCallbacks.OnSuccess(() =>
     logger.LogInformation("Validation passed"));
 
 ThrowIf.NullOrEmpty(value, onSuccess);
@@ -54,7 +58,7 @@ ThrowIf.NullOrEmpty(value, onSuccess);
 
 ### OnFailure
 
-Creates a callback that runs only on failure:
+Creates a callback that runs the action only for `GuardOutcome.Failure`:
 
 ```csharp
 public static SGuardCallback OnFailure(Action action);
@@ -62,10 +66,10 @@ public static SGuardCallback OnFailure(Action action);
 
 **Example:**
 ```csharp
-var onFailure = SGuardCallbacks.OnFailure(() => 
-    logger.LogError("Validation failed"));
+var onFailure = SGuardCallbacks.OnFailure(() =>
+    logger.LogError("Value out of range"));
 
-bool isValid = Is.Between(value, min, max, onFailure);
+bool inRange = Is.Between(value, min, max, onFailure);
 ```
 
 ## Combining Callbacks
@@ -85,23 +89,23 @@ ThrowIf.NullOrEmpty(value, combined);
 
 ### With ThrowIf.*
 
-- **Success** → Guard passes, no exception thrown
-- **Failure** → Guard fails, callback runs just before exception is thrown
+- **Success** → the condition was false, no exception thrown
+- **Failure** → the condition was true; the callback runs, then the exception propagates
 
 ```csharp
-ThrowIf.LessThan(1, 2, 
+ThrowIf.LessThan(1, 2,
     SGuardCallbacks.OnFailure(() => Console.WriteLine("About to throw")));
 // Output: "About to throw"
-// Then throws exception
+// Then throws LessThanException (1 < 2)
 ```
 
 ### With Is.*
 
-- **Success** → Method returns `true`
-- **Failure** → Method returns `false`
+- **Success** → the method returns `true`
+- **Failure** → the method returns `false`
 
 ```csharp
-bool result = Is.Between(5, 1, 10, 
+bool result = Is.Between(5, 1, 10,
     SGuardCallbacks.OnSuccess(() => Console.WriteLine("In range")));
 // Output: "In range"
 // Returns: true
@@ -109,27 +113,32 @@ bool result = Is.Between(5, 1, 10,
 
 ## Inline Callbacks
 
-For advanced scenarios, create callbacks inline to access the outcome directly:
+To access the outcome directly, pass a lambda that takes it:
 
 ```csharp
 GuardOutcome? observed = null;
 
-ThrowIf.LessThan(1, 2, outcome => observed = outcome);
-
-// observed is now Failure (before exception is thrown)
+try
+{
+    ThrowIf.LessThan(1, 2, outcome => observed = outcome);
+}
+catch (LessThanException)
+{
+    // observed is Failure: the callback ran before the exception propagated
+}
 ```
 
 ## Exception Handling
 
-Exceptions thrown within callbacks are **safely swallowed** to prevent disrupting validation flow:
+Exceptions thrown within callbacks are **swallowed** so they can't disrupt the guard:
 
 ```csharp
-ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() => 
+ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() =>
 {
     throw new Exception("This won't propagate");
 }));
 // Callback exception is caught and ignored
-// Validation exception is still thrown
+// NullOrEmptyException is still thrown if value is null or empty
 ```
 
 ## Use Cases
@@ -137,8 +146,8 @@ ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() =>
 ### Logging
 
 ```csharp
-var logFailure = SGuardCallbacks.OnFailure(() => 
-    logger.LogWarning("Validation failed for {Parameter}", paramName));
+var logFailure = SGuardCallbacks.OnFailure(() =>
+    logger.LogWarning("Validation failed for {Parameter}", nameof(username)));
 
 ThrowIf.NullOrEmpty(username, logFailure);
 ```
@@ -146,7 +155,7 @@ ThrowIf.NullOrEmpty(username, logFailure);
 ### Metrics
 
 ```csharp
-var trackMetrics = 
+var trackMetrics =
     SGuardCallbacks.OnSuccess(() => metrics.Increment("validation.success")) +
     SGuardCallbacks.OnFailure(() => metrics.Increment("validation.failure"));
 
@@ -156,21 +165,22 @@ bool isValid = Is.Between(value, min, max, trackMetrics);
 ### Auditing
 
 ```csharp
-var audit = SGuardCallbacks.OnFailure(() => 
+var audit = SGuardCallbacks.OnFailure(() =>
     auditService.RecordEvent(new ValidationFailureEvent
     {
         Timestamp = DateTime.UtcNow,
-        Parameter = paramName,
-        Value = value
+        Parameter = nameof(age)
     }));
 
 ThrowIf.LessThan(age, 18, audit);
 ```
 
+Record which argument failed rather than its value, unless you know the value can't be personal data.
+
 ### Notifications
 
 ```csharp
-var notify = SGuardCallbacks.OnFailure(() => 
+var notify = SGuardCallbacks.OnFailure(() =>
     notificationService.Send("Validation failed"));
 
 ThrowIf.Any(items, i => i.IsInvalid, notify);
@@ -180,14 +190,17 @@ ThrowIf.Any(items, i => i.IsInvalid, notify);
 
 ```csharp
 #if DEBUG
-var debug = SGuardCallbacks.OnFailure(() => 
+SGuardCallback? debug = SGuardCallbacks.OnFailure(() =>
     Debug.WriteLine($"Validation failed at {DateTime.Now}"));
 #else
-var debug = (GuardOutcome _) => { };
+SGuardCallback? debug = null;
 #endif
 
 ThrowIf.NullOrEmpty(value, debug);
 ```
+
+Declare the variable as `SGuardCallback`: a lambda assigned to `var` gets the natural type `Action<GuardOutcome>`,
+which doesn't convert to `SGuardCallback`.
 
 ## Callback Order
 
@@ -200,36 +213,34 @@ var callback3 = SGuardCallbacks.OnFailure(() => Console.WriteLine("3"));
 
 var combined = callback1 + callback2 + callback3;
 
-ThrowIf.NullOrEmpty(null, combined);
+ThrowIf.NullOrEmpty("", combined);
 // Output:
 // 1
 // 2
 // 3
-// Then throws
+// Then throws NullOrEmptyException
 ```
+
+If one of the combined callbacks throws, the exception is swallowed and the callbacks after it don't run.
 
 ## Performance Impact
 
-Callbacks add minimal overhead:
-- **No callback**: ~5-10ns
-- **With callback**: ~10-20ns (simple action)
-- **Complex callback**: Depends on action logic
-
-The overhead is negligible for most applications. Only avoid callbacks in extremely hot loops if profiling shows an issue.
+A callback is a plain delegate invocation, so the cost is that of your action. When no callback is passed, the guard
+only checks it for `null`. Keep callbacks cheap in hot paths.
 
 ## Important Notes
 
-### 1. Callbacks Run Before Exceptions
+### 1. Callbacks Run Before Exceptions Propagate
 
-For `ThrowIf.*`, failure callbacks run **just before** the exception is thrown:
+For `ThrowIf.*`, the failure callback runs **before** the exception reaches your `catch`:
 
 ```csharp
 try
 {
-    ThrowIf.NullOrEmpty(null, SGuardCallbacks.OnFailure(() => 
+    ThrowIf.NullOrEmpty("", SGuardCallbacks.OnFailure(() =>
         Console.WriteLine("Callback runs first")));
 }
-catch
+catch (NullOrEmptyException)
 {
     Console.WriteLine("Exception caught second");
 }
@@ -238,15 +249,20 @@ catch
 // Exception caught second
 ```
 
-### 2. Callbacks Not Invoked on Invalid Arguments
+### 2. When the Callback Is Not Invoked
 
-If the guard method itself receives invalid arguments, callbacks are **not invoked**:
+If a guard rejects its own arguments before evaluating the condition, the callback is **not invoked**. This covers:
+
+- `null` operands, bounds, sources, predicates, selectors or exception instances (`ArgumentNullException`);
+- reversed `Between` bounds (`ArgumentException`);
+- `Is.Email` with a `null` or empty email or pattern, and a custom pattern that times out
+  (`RegexMatchTimeoutException`).
 
 ```csharp
 try
 {
-    ThrowIf.NullOrEmpty<string, Exception>(value, null!, // null exception
-        SGuardCallbacks.OnFailure(() => logger.Log("Won't run")));
+    ThrowIf.LessThan(age, 0, (ArgumentOutOfRangeException)null!, // null exception
+        SGuardCallbacks.OnFailure(() => logger.LogError("Won't run")));
 }
 catch (ArgumentNullException)
 {
@@ -254,16 +270,33 @@ catch (ArgumentNullException)
 }
 ```
 
-### 3. Callbacks Are Swallowed
+One case differs: with the `constructorArgs` overloads, the exception is created only when the guard fails. If no
+constructor matches the arguments, the callback has already been invoked with `Failure`, and then an
+`InvalidOperationException` is thrown instead of your exception type:
+
+```csharp
+try
+{
+    ThrowIf.GreaterThan<int, int, ArgumentOutOfRangeException>(quantity, 100,
+        [42, 43, 44], // no matching constructor
+        SGuardCallbacks.OnFailure(() => logger.LogError("Runs")));
+}
+catch (InvalidOperationException)
+{
+    // Callback WAS invoked with Failure (when quantity > 100)
+}
+```
+
+### 3. Callback Exceptions Are Swallowed
 
 Callback exceptions don't disrupt validation:
 
 ```csharp
-ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() => 
+ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() =>
 {
     throw new Exception("Ignored");
 }));
-// Validation exception is still thrown normally
+// The guard's own exception is still thrown normally
 ```
 
 ## Best Practices
@@ -271,7 +304,7 @@ ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() =>
 1. **Keep callbacks lightweight**: Avoid expensive operations
 2. **Use for side effects only**: Don't put critical logic in callbacks
 3. **Combine wisely**: Use `+` operator for clarity
-4. **Consider performance**: In hot paths, callbacks add small overhead
+4. **Mind the `Is.*` meaning**: `Success` means "returned true", not "input is valid"
 5. **Don't rely on exceptions**: Callback exceptions are swallowed
 
 ## Next Steps

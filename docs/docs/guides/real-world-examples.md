@@ -65,15 +65,23 @@ public class UserService
         ThrowIf.GreaterThan(req.Age, 130,
             new ArgumentException("Age seems unrealistic", nameof(req.Age)));
         
-        // Check for existing user
+        // Reject the username if a user with it already exists
         var existing = await _repository.FindByUsernameAsync(req.Username);
-        ThrowIf.NullOrEmpty(existing,
-            new InvalidOperationException("Username already taken"));
+        if (existing is not null)
+        {
+            throw new InvalidOperationException("Username already taken");
+        }
         
         return new User(req.Username, req.Age, req.Email);
     }
 }
 ```
+
+:::note
+`ThrowIf.NullOrEmpty(existing, ...)` would be the wrong guard for the uniqueness check: it throws when *no* user was
+found, which blocks free usernames and lets taken ones through. `ThrowIf.*` throws when its condition is true, so pick the
+guard whose condition is the failure case. SGuard has no "not null" guard; use a plain `if`.
+:::
 
 ## Order Processing: Validation Pipeline
 
@@ -123,7 +131,7 @@ public class OrderProcessor
         }
         
         // Validate payment amount
-        ThrowIf.LessThanOrEqual(order.TotalAmount, 0,
+        ThrowIf.LessThanOrEqual(order.TotalAmount, 0m,
             new ArgumentException("Order total must be positive"));
     }
     
@@ -137,6 +145,11 @@ public class OrderProcessor
 ```
 
 ## API: Request Validation
+
+SGuard's built-in exceptions (`NullOrEmptyException`, `LessThanOrEqualException`, ...) derive from `ArgumentException`, so
+one `catch (ArgumentException)` handles both them and the `ArgumentException`s passed in below. Their messages name the
+argument expression but leave the checked values out (unless you turn on `SGuardOptions.IncludeValuesInExceptions`), for
+example `Value 'request.Name' is null or empty.`
 
 ```csharp
 public class ProductController : ControllerBase
@@ -158,6 +171,13 @@ public class ProductController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProduct(int id)
+    {
+        var product = await _productService.FindAsync(id);
+        return product is null ? NotFound() : Ok(product);
+    }
     
     private void ValidateRequest(CreateProductRequest request)
     {
@@ -166,12 +186,12 @@ public class ProductController : ControllerBase
         ThrowIf.NullOrEmpty(request.Sku);
         
         // Price validation
-        ThrowIf.LessThanOrEqual(request.Price, 0,
+        ThrowIf.LessThanOrEqual(request.Price, 0m,
             new ArgumentException("Price must be positive", nameof(request.Price)));
         
-        // SKU format validation (must start with "PRD-")
-        if (Is.LessThan(request.Sku, "PRD-", StringComparison.Ordinal) ||
-            Is.GreaterThan(request.Sku, "PRD-~", StringComparison.Ordinal))
+        // SKU format validation (must start with "PRD-").
+        // Use StartsWith, not an ordering check: Is.Between(sku, "PRD-", "PRD-~") rejects valid SKUs such as "PRD-Ä1".
+        if (!request.Sku.StartsWith("PRD-", StringComparison.Ordinal))
         {
             throw new ArgumentException("SKU must start with 'PRD-'", nameof(request.Sku));
         }
@@ -189,7 +209,7 @@ public class Money
     
     public Money(decimal amount, string currency)
     {
-        ThrowIf.LessThan(amount, 0,
+        ThrowIf.LessThan(amount, 0m, // 0m: decimal doesn't implement IComparable<int>, so a plain 0 doesn't compile
             new ArgumentException("Amount cannot be negative", nameof(amount)));
         
         ThrowIf.NullOrEmpty(currency);
@@ -209,7 +229,7 @@ public class Money
 ```csharp
 public class ProductRepository
 {
-    private readonly DbContext _context;
+    private readonly AppDbContext _context; // EF Core DbContext with a DbSet<Product> Products
     private readonly ILogger<ProductRepository> _logger;
     
     public async Task<List<Product>> SearchAsync(ProductSearchCriteria criteria)

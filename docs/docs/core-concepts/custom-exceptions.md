@@ -23,6 +23,9 @@ ThrowIf.LessThanOrEqual(
     new DomainValidationException("Quantity must be greater than zero."));
 ```
 
+The exception object is created on every call, even when the guard passes. On hot paths, prefer the
+`TException` or `constructorArgs` overloads, which create it only on failure.
+
 **When to use:**
 - You need a specific error message
 - Your exception has special properties to set
@@ -30,41 +33,62 @@ ThrowIf.LessThanOrEqual(
 
 ### 2. Use Generic TException
 
-Specify the exception type as a generic parameter:
+Specify the exception type as a generic parameter and let SGuard create it with its parameterless constructor:
 
 ```csharp
 ThrowIf.Between<int, int, int, MyCustomException>(value, min, max);
 
-ThrowIf.Any<MyItem, MyCustomException>(
-    items, 
-    i => i is null, 
-    new MyCustomException("Collection contains null items"));
+ThrowIf.GreaterThan<int, int, MyCustomException>(quantity, maxQuantity);
 ```
 
+These overloads require `where TException : Exception, new()`, so the exception type needs a public parameterless
+constructor. The exception is created only when the guard fails.
+
 **When to use:**
-- Your exception has a parameterless constructor or matches SGuard's activation pattern
-- You want type safety at compile time
-- You're using exceptions that follow standard .NET patterns
+- The exception type alone says what went wrong (no message needed)
+- You want to avoid creating an exception object on every call
 
 ### 3. Constructor Arguments
 
-For exceptions that need constructor arguments, SGuard can activate them for you:
+For exceptions that need constructor arguments, pass them as an `object[]` and SGuard creates the exception when the
+guard fails:
 
 ```csharp
-// Exception with message and paramName
-ThrowIf.NullOrEmpty<string, MyException>(
+// Calls ArgumentException(string message, string paramName)
+ThrowIf.NullOrEmpty<string, ArgumentException>(
     value, 
-    "Value is required", 
-    "customParamName");
+    new object[] { "Value is required", "customParamName" });
+
+// Calls OrderValidationException(string message)
+ThrowIf.LessThanOrEqual<int, int, OrderValidationException>(
+    quantity, 
+    0, 
+    new object[] { "Quantity must be positive" });
 ```
 
+The arguments are matched against the exception's public constructors at run time (via `ExceptionActivator`), so any
+constructor works as long as the argument types fit. If none matches, the guard throws `InvalidOperationException`
+instead of your exception, and only when it fails, so cover these calls with a test.
+
 **When to use:**
-- Your exception follows standard .NET exception constructors
-- You want SGuard to handle the exception instantiation
+- Your exception needs constructor arguments
+- You want the exception created only when the guard fails
+
+### Which Guards Support Which Variant
+
+| Guard | Exception instance | `TException : new()` | `constructorArgs` |
+|---|---|---|---|
+| `Between` | Yes | Yes | Yes |
+| `GreaterThan`, `GreaterThanOrEqual` | Yes | Yes | Yes |
+| `LessThanOrEqual` | Yes | Yes | Yes |
+| `LessThan` | Yes | No | No |
+| `NullOrEmpty` (value) | Yes | No | Yes |
+| `NullOrEmpty` (with selector) | Yes | Yes | Yes |
+| `Any`, `All` | Yes | No | No |
 
 ## Built-in Exception Types
 
-SGuard provides specialized exception types for each guard:
+SGuard provides specialized exception types for each guard (namespace `SGuard.Exceptions`):
 
 - `NullOrEmptyException`
 - `BetweenException`
@@ -75,24 +99,57 @@ SGuard provides specialized exception types for each guard:
 - `AnyException`
 - `AllException`
 
-These are used by default when no custom exception is specified.
+These are used by default when no custom exception is specified. They all derive from `ArgumentException`, so
+`catch (ArgumentException)` handles them. `ParamName` holds the argument expression from the call site, and the
+message names it too:
+
+```csharp
+try
+{
+    ThrowIf.GreaterThan(request.Age, limit);
+}
+catch (GreaterThanException ex)
+{
+    // ex.ParamName == "request.Age"
+    // ex.Message   == "Left value is greater than right value. Actual: left=request.Age, right=limit."
+}
+```
+
+### Including Values in Messages
+
+By default the checked **values** are left out of built-in exception messages and `Exception.Data`, because messages
+end up in logs and error trackers and values may be passwords, tokens or personal data. To include them, set this
+once at startup:
+
+```csharp
+SGuardOptions.IncludeValuesInExceptions = true;
+
+// ThrowIf.GreaterThan(request.Age, 1000) with request.Age == 4217 now throws:
+// "'4217' is greater than '1000'. Actual: left=request.Age, right=1000."
+```
+
+Each value is written with `ToString()` and truncated to 64 characters (`SGuardOptions.MaxValueLength`), and
+`Exception.Data` holds those formatted strings. Enable it only when the checked values can't contain secrets or
+personal data. The option affects only the built-in exceptions, not exceptions you supply.
 
 ## Exception Requirements
 
-For SGuard to activate your custom exception, it should have one of these constructor signatures:
+What your exception type needs depends on the overload you use:
+
+- **Exception instance**: nothing; you construct it yourself.
+- **`TException` with `new()`**: a public parameterless constructor (enforced at compile time).
+- **`constructorArgs`**: a public constructor whose parameters accept the arguments you pass (checked at run time;
+  `InvalidOperationException` if none matches).
+
+Following the standard .NET exception constructors keeps all three options open:
 
 ```csharp
-// Parameterless
-public MyException() { }
-
-// Message only
-public MyException(string message) { }
-
-// Message and parameter name
-public MyException(string message, string paramName) { }
-
-// Message and inner exception
-public MyException(string message, Exception innerException) { }
+public class MyException : Exception
+{
+    public MyException() { }
+    public MyException(string message) : base(message) { }
+    public MyException(string message, Exception innerException) : base(message, innerException) { }
+}
 ```
 
 ## Real-World Examples
@@ -140,26 +197,25 @@ ThrowIf.GreaterThan(
 ```csharp
 public class UserValidationException : ArgumentException
 {
-    public ValidationContext Context { get; }
+    public string TenantId { get; }
     
     public UserValidationException(
         string message, 
         string paramName, 
-        ValidationContext context) 
+        string tenantId) 
         : base(message, paramName)
     {
-        Context = context;
+        TenantId = tenantId;
     }
 }
 
 // Usage
-var context = new ValidationContext { /* ... */ };
 ThrowIf.NullOrEmpty(
     username, 
     new UserValidationException(
         "Username is required", 
         nameof(username), 
-        context));
+        tenantId));
 ```
 
 ## Combining with Callbacks

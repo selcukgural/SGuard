@@ -10,16 +10,17 @@ SGuard is a lightweight, extensible guard clause library for .NET, providing exp
 
 ## 🚀 Features
 
-- **Boolean Guards (`Is.*`)**: Check conditions without throwing exceptions.
-- **Throwing Guards (`ThrowIf.*`)**: Throw exceptions when conditions are met, with `CallerArgumentExpression`-powered messages.
-- **Any & All Guards**: Predicate-based validation for collections.
-- **Comprehensive Comparison Guards**: `Between`, `LessThan`, `LessThanOrEqual`, `GreaterThan`, `GreaterThanOrEqual` for generics and strings (with `StringComparison`).
-- **Null/Empty Checks**: Deep and type-safe null/empty validation for primitives, collections, and complex types.
-- **Custom Exception Support**: Overloads for custom exception types, with constructor argument support.
+- **Boolean Guards (`Is.*`)**: Check conditions and get a `bool` back instead of an exception.
+- **Throwing Guards (`ThrowIf.*`)**: Throw when a condition is true, with `CallerArgumentExpression`-powered messages.
+- **Any & All Guards**: Predicate-based validation for collections (`IEnumerable<T>` and `ReadOnlySpan<T>`).
+- **Comparison Guards**: `Between` (inclusive), `LessThan`, `LessThanOrEqual`, `GreaterThan`, `GreaterThanOrEqual` for any `IComparable<T>` type. The `Is.*` comparisons and `ThrowIf.Between` also have string overloads that take a `StringComparison`. With a floating-point `NaN` operand, `Is.*` comparisons return `false` and `ThrowIf.*` comparisons throw.
+- **Null/Empty Checks**: Null, default values (`0`, `Guid.Empty`, ...), empty strings (whitespace is not empty), collections and spans. With a selector (`o => o.Customer.Email`), SGuard follows the member path; a complex-type member counts as empty only when all of its readable properties are null or empty.
+- **Email Validation**: `Is.Email` with a built-in pattern or your own regex (with a match timeout).
+- **Custom Exception Support**: Overloads for custom exception instances and types, with constructor argument support.
 - **Callback Model**: Unified `SGuardCallback` and `GuardOutcome` for success/failure handling.
-- **Expression Caching**: Efficient, thread-safe caching for compiled expressions.
-- **Rich Exception Messages**: Informative diagnostics using `CallerArgumentExpression`.
-- **Multi-targeting**: Supports .NET 6, 7, 8, and 9.
+- **Expression Caching**: Selectors are compiled once and cached by expression structure (thread-safe).
+- **Clear Exception Messages**: Built-in exceptions derive from `ArgumentException` and name the failing argument expression; checked values are left out of messages by default.
+- **Multi-targeting**: Supports .NET 8, 9, and 10.
 
 ## 📊 Benchmarks
 
@@ -36,7 +37,7 @@ Performance benchmarks for all guard methods are available in the [SGuard.Benchm
 - Consistent callback model
     - A single SGuardCallback(outcome) works across both APIs:
         - ThrowIf.* invokes with Failure when it’s about to throw, Success when it passes.
-        - Is.* invokes with Success when the result is true, Failure when false.
+        - Is.* invokes with Success when the result is true, Failure when false (so `Is.NullOrEmpty((string?)null)` reports Success).
     - Callback exceptions are safely swallowed, so your validation flow isn’t disrupted.
 
 - Rich exception surface
@@ -46,56 +47,62 @@ Performance benchmarks for all guard methods are available in the [SGuard.Benchm
 - Expressive, dual API
     - Choose the style that fits your code:
         - Is.* returns booleans for control-flow friendly checks.
-        - ThrowIf.* it fails fast with informative exceptions when rules are violated.
+        - ThrowIf.* fails fast with informative exceptions when rules are violated.
 
 - Culture-aware comparisons and inclusive ranges
-    - String overloads accept StringComparison for correct cultural/ordinal semantics.
+    - String overloads of the `Is.*` comparisons and `ThrowIf.Between` accept StringComparison for correct cultural/ordinal semantics.
     - Between checks are inclusive by design for predictable validation.
 
 - Performance and ergonomics
-    - Expression caching reduces overhead for repeated checks.
-    - Minimal allocations and thread-safe evaluation where applicable.
+    - Selector expressions are compiled once and cached by expression structure, so repeated checks don't pay the compilation cost again (selectors that capture local variables are still compiled on every call).
+    - The selector cache is thread-safe.
 
 - Modern .NET support
-    - Targets .NET 6, 7, 8, and 9 with multi-targeting, ensuring broad compatibility.
+    - Targets .NET 8, 9, and 10 with multi-targeting.
 
 ## ⚡ Quick Start
 
 SGuard helps you validate inputs and state with two complementary APIs:
-- ThrowIf.*: fail fast by throwing informative exceptions.
+- ThrowIf.*: fail fast by throwing informative exceptions when a condition is true.
 - Is.*: return booleans for control-flow-friendly checks.
 
 ### 1) Validate inputs (fail fast)
 ```csharp
 public record CreateUserRequest(string Username, int Age, string Email);
 
-public User CreateUser(CreateUserRequest req) 
-{ 
+public User CreateUser(CreateUserRequest req)
+{
     ThrowIf.NullOrEmpty(req);
     ThrowIf.NullOrEmpty(req.Email);
     ThrowIf.NullOrEmpty(req.Username);
     ThrowIf.LessThan(req.Age, 13, new ArgumentException("User must be 13+.", nameof(req.Age)));
-    
+
     // Optionally check formats or ranges
+    if (!Is.Email(req.Email))
+        throw new ArgumentException("Email is not valid.", nameof(req.Email));
+
     if (!Is.Between(req.Age, 13, 130))
         throw new ArgumentOutOfRangeException(nameof(req.Age), "Age seems invalid.");
 
     return new User(req.Username, req.Age, req.Email);
 }
 
-
-public sealed class User 
-{ 
-    public User(string username, int age, string email) 
+public sealed class User
+{
+    public User(string username, int age, string email)
     {
         ThrowIf.LessThan(age, 0);
         ThrowIf.NullOrEmpty(email);
         ThrowIf.NullOrEmpty(username);
-                
+
         Age = age;
         Email = email;
         Username = username;
     }
+
+    public int Age { get; }
+    public string Email { get; }
+    public string Username { get; }
 }
 ```
 ### 2) Check conditions (boolean style)
@@ -103,31 +110,31 @@ public sealed class User
 if (Is.Between(value, min, max)) { /* ... */ }
 if (Is.LessThan(a, b)) { /* ... */ }
 if (Is.Any(list, x => x > 0)) { /* ... */ }
-if (!Is.Between(req.Age, 13, 130))
-{
-    throw new ArgumentOutOfRangeException(nameof(req.Age), "Age seems invalid.");
-}
 
-// Numeric comparisons 
-bool inRange = Is.Between(value, min, max); 
-bool isLess = Is.LessThan(a, b); 
+// Numeric comparisons
+bool inRange = Is.Between(value, min, max);
+bool isLess = Is.LessThan(a, b);
 bool isGreaterOrEqual = Is.GreaterThanOrEqual(a, b);
-bool before = Is.LessThan("straße", "strasse", StringComparison.InvariantCulture); // culture-aware
 
-// Collections 
-bool anyPositive = Is.Any(numbers, n => n > 0); 
+// Collections (LINQ semantics: Is.All(empty) is true, Is.Any(empty) is false)
+bool anyPositive = Is.Any(numbers, n => n > 0);
 bool allNonNull = Is.All(items, it => it is not null);
 
 // Strings (culture/ordinal aware)
-bool lessOrdinal = Is.LessThan("apple", "banana", StringComparison.Ordinal);
-bool lessIgnoreCase = Is.LessThan("Apple", "banana", StringComparison.OrdinalIgnoreCase)
+bool lessOrdinal = Is.LessThan("apple", "banana", StringComparison.Ordinal);            // true
+bool lessIgnoreCase = Is.LessThan("Apple", "banana", StringComparison.OrdinalIgnoreCase); // true
+
+// Email (built-in ASCII pattern, at most 254 characters; not a full RFC 5322 parser)
+bool validEmail = Is.Email("jane.doe@example.com"); // true
 ```
+
+`Is.*` methods don't throw for the check itself, but they do throw for invalid arguments: `ArgumentNullException` for a null operand, predicate, source or `Is.Email(null)`; `ArgumentException` for `Is.Email("")` and for `Between` bounds where `min > max`; and `RegexMatchTimeoutException` when a custom `Is.Email` pattern times out.
 
 ### 3) Callbacks (side effects on success/failure)
 ```csharp
 // ThrowIf: run side effects on the outcome
-ThrowIf.LessThan(1, 2, SGuardCallbacks.OnFailure(() => logger.LogWarning("a < b failed")));
-ThrowIf.LessThan(5, 2, SGuardCallbacks.OnSuccess(() => logger.LogInformation("a >= b OK")));
+ThrowIf.LessThan(1, 2, SGuardCallbacks.OnFailure(() => logger.LogWarning("a < b failed")));   // logs, then throws
+ThrowIf.LessThan(5, 2, SGuardCallbacks.OnSuccess(() => logger.LogInformation("a >= b OK"))); // logs, no throw
 
 // Is: outcome maps to the boolean result (true=Success, false=Failure)
 bool ok = Is.Between(5, 1, 10, SGuardCallbacks.OnSuccess(() => metrics.Increment("is.between.true")));
@@ -137,7 +144,9 @@ bool ok = Is.Between(5, 1, 10, SGuardCallbacks.OnSuccess(() => metrics.Increment
 
 ```csharp
 ThrowIf.LessThanOrEqual(a, b, new MyCustomException("Invalid!"));
-ThrowIf.Between<string, string, string, MyCustomException>(value, min, max, new MyCustomException("Out of range!"));
+
+// ThrowIf.Between throws when the value is INSIDE the range (inclusive)
+ThrowIf.Between(port, 0, 1023, new MyCustomException("Well-known ports are reserved."));
 
 // Throw using your own exception type
 ThrowIf.Any(items, i => i is null, new DomainValidationException("Collection contains null item(s)."));
@@ -149,18 +158,40 @@ ThrowIf.LessThanOrEqual(quantity, 0, new DomainValidationException("Quantity mus
 ### 5) String comparisons (culture/ordinal aware)
 ```csharp
 // Ordinal comparisons
-bool before = Is.LessThan("apple", "banana", StringComparison.Ordinal);
+bool before = Is.LessThan("apple", "banana", StringComparison.Ordinal); // true
 
-// Throw if the ordering violates your rule
-ThrowIf.GreaterThan("zebra", "apple", StringComparison.Ordinal); // throws (zebra > apple)
+// ThrowIf.Between has a StringComparison overload (throws when the value is inside the range)
+ThrowIf.Between("kiwi", "a", "m", StringComparison.OrdinalIgnoreCase); // throws BetweenException
 ```
+
+`ThrowIf.LessThan`/`GreaterThan` and their `OrEqual` variants have no `StringComparison` overload. Don't use lexicographic string comparison for access-control, path-prefix or version checks: use `Path.GetFullPath` with an ordinal `StartsWith` on a root that ends with a separator for paths, and `System.Version` for versions.
 
 ### 6) Notes
 
-- Between is inclusive (min and max are allowed).
+- Between is inclusive (min and max are allowed), and throws `ArgumentException` when `min > max`.
 - ThrowIf invokes callbacks with Failure when it’s about to throw, Success when it passes.
 - Is.* invokes callbacks with Success when the result is true, Failure when false.
 - Callback exceptions are swallowed (they won’t break your validation flow).
+- A floating-point `NaN` operand (`double`, `float`, `Half`) makes `Is.*` comparisons return `false` and `ThrowIf.*` comparisons throw. A check such as `if (Is.GreaterThan(x, max)) reject();` therefore lets `NaN` through; prefer `ThrowIf.*` or `!Is.Between(...)`.
+
+### Exception messages and options
+
+Built-in exceptions (`NullOrEmptyException`, `BetweenException`, `GreaterThanException`, `LessThanException`, ... in `SGuard.Exceptions`) derive from `ArgumentException`, so existing `catch (ArgumentException)` blocks handle them. `ParamName` holds the caller's argument expression, and the message names the expressions but leaves the checked values out:
+
+```csharp
+ThrowIf.NullOrEmpty(request.Name);
+// NullOrEmptyException: Value 'request.Name' is null or empty.
+
+ThrowIf.GreaterThan(request.Age, limit);
+// GreaterThanException: Left value is greater than right value. Actual: left=request.Age, right=limit.
+```
+
+To include the values (converted with `ToString()` and truncated to 64 characters) in `Message` and `Exception.Data`, opt in once at startup. Only do this when the checked values can't be secrets or personal data:
+
+```csharp
+SGuardOptions.IncludeValuesInExceptions = true;
+// GreaterThanException: '4217' is greater than '1000'. Actual: left=request.Age, right=limit.
+```
 
 ### Callbacks – When do they run?
 
@@ -181,8 +212,8 @@ ThrowIf.LessThan(5, 2, SGuardCallbacks.OnSuccess(() => logger.LogInformation("a 
 
 
 - **Is methods**:
-    - Return a boolean and never throw for the check itself.
-    - Outcome = Success when the result is true, Outcome = Failure when the result is false.
+    - Return a boolean; they throw only for invalid arguments (see above), not for the check itself.
+    - Outcome = Success when the result is true, Outcome = Failure when the result is false. Success means "the method returned true", not "validation passed": `Is.NullOrEmpty((string?)null)` reports Success.
 
 #### Examples
 ```csharp
@@ -204,7 +235,7 @@ SGuardCallback combined = onFailure + onSuccess;
 ThrowIf.Between(value, min, max, combined);
 ```
 
-**Note:** The callback is invoked regardless of the outcome of the guard.
+**Note:** The callback runs for both outcomes, but not when the call itself is invalid:
 ```csharp
 // Passing a null exception instance causes an immediate ArgumentNullException.
 // The callback is NOT invoked in this case (no Success/Failure outcome is produced).
@@ -226,7 +257,14 @@ Inline callback when you need the **outcome** value directly
 ```csharp
 GuardOutcome? observed = null;
 
-ThrowIf.LessThan(1, 2, outcome => observed = outcome); // throws -> observed remains null (callback still runs with Failure before exception propagation)
+try
+{
+    ThrowIf.LessThan(1, 2, outcome => observed = outcome); // throws LessThanException
+}
+catch (LessThanException)
+{
+    // observed == GuardOutcome.Failure: the callback ran before the exception propagated
+}
 ```
 
 
@@ -239,12 +277,12 @@ ThrowIf.LessThan(1, 2, outcome => observed = outcome); // throws -> observed rem
 ```csharp
 ThrowIf.NullOrEmpty(str);
 ThrowIf.NullOrEmpty(obj, x => x.Property);
-ThrowIf.Between(value, min, max); // Throws if value is between min and max
-ThrowIf.LessThan(a, b, () => Console.WriteLine("Failed!"));
+ThrowIf.Between(value, min, max); // Throws if value is between min and max (inclusive)
+ThrowIf.LessThan(a, b, SGuardCallbacks.OnFailure(() => Console.WriteLine("Failed!")));
 ThrowIf.Any(list, x => x == null);
 
 // Optionally run a callback on failure (e.g., logging/metrics/cleanup)
-ThrowIf.GreaterThan(total, limit, () => logger.LogWarning("Limit exceeded"));
+ThrowIf.GreaterThan(total, limit, SGuardCallbacks.OnFailure(() => logger.LogWarning("Limit exceeded")));
 
 // With selector for nested properties (CallerArgumentExpression helps messages)
 ThrowIf.NullOrEmpty(order, o => o.Customer.Name);
@@ -254,13 +292,13 @@ ThrowIf.NullOrEmpty(order, o => o.Customer.Name);
 ## 📝 Usage Examples (Real-life Scenarios)
 
 ```csharp
-public static class CheckoutService 
-{ 
-    public static void ValidateCart(Cart cart, IReadOnlyDictionary<string, int> stockBySku) 
-    { 
-        ThrowIf.NullOrEmpty(cart); 
+public static class CheckoutService
+{
+    public static void ValidateCart(Cart cart, IReadOnlyDictionary<string, int> stockBySku)
+    {
+        ThrowIf.NullOrEmpty(cart);
         ThrowIf.NullOrEmpty(cart.Items);
-        
+
         // Every item must have positive quantity
         if (!Is.All(cart.Items, i => i.Quantity > 0))
             throw new ArgumentException("All items must have a positive quantity.", nameof(cart.Items));
@@ -272,7 +310,7 @@ public static class CheckoutService
             ThrowIf.GreaterThan(item.Quantity, stock, new InvalidOperationException($"Insufficient stock for SKU '{item.Sku}'."));
         }
 
-        // Totals
+        // Totals (decimal needs a decimal literal: 0m)
         ThrowIf.LessThanOrEqual(cart.TotalAmount, 0m, new ArgumentOutOfRangeException(nameof(cart.TotalAmount), "Total must be greater than zero."));
     }
 }
@@ -282,9 +320,9 @@ public void SaveUser(string username)
     var callback = SGuardCallbacks.OnFailure(() =>
         logger.LogWarning("Validation failed: username is required"));
 
-    // When username is null or empty, throw an exception with a custom message and invoke the callback.
+    // When username is null or empty, the callback runs and a NullOrEmptyException is thrown.
     ThrowIf.NullOrEmpty(username, callback);
-    
+
     // Proceed with saving the user...
 }
 
@@ -293,7 +331,7 @@ public void UpdateEmail(string email)
     var onSuccess = SGuardCallbacks.OnSuccess(() =>
         audit.Record("Email validation succeeded"));
 
-    // If valid, onSuccess is called; if not, an exception is thrown
+    // If email is not null or empty, onSuccess is called; otherwise an exception is thrown
     ThrowIf.NullOrEmpty(email, onSuccess);
 
     // Proceed with updating the email...

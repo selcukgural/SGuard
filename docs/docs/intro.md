@@ -15,16 +15,17 @@ SGuard is a lightweight, extensible guard clause library for .NET, providing exp
 
 ## 🚀 Features
 
-- **Boolean Guards (`Is.*`)**: Check conditions without throwing exceptions.
-- **Throwing Guards (`ThrowIf.*`)**: Throw exceptions when conditions are met, with `CallerArgumentExpression`-powered messages.
-- **Any & All Guards**: Predicate-based validation for collections.
-- **Comprehensive Comparison Guards**: `Between`, `LessThan`, `LessThanOrEqual`, `GreaterThan`, `GreaterThanOrEqual` for generics and strings (with `StringComparison`).
-- **Null/Empty Checks**: Deep and type-safe null/empty validation for primitives, collections, and complex types.
-- **Custom Exception Support**: Overloads for custom exception types, with constructor argument support.
+- **Boolean Guards (`Is.*`)**: Check conditions and get a `bool` back instead of an exception.
+- **Throwing Guards (`ThrowIf.*`)**: Throw when a condition is true, with `CallerArgumentExpression`-powered messages.
+- **Any & All Guards**: Predicate-based validation for collections (`IEnumerable<T>` and `ReadOnlySpan<T>`).
+- **Comparison Guards**: `Between` (inclusive), `LessThan`, `LessThanOrEqual`, `GreaterThan`, `GreaterThanOrEqual` for any `IComparable<T>` type. The `Is.*` comparisons and `ThrowIf.Between` also have string overloads that take a `StringComparison`. With a floating-point `NaN` operand, `Is.*` comparisons return `false` and `ThrowIf.*` comparisons throw.
+- **Null/Empty Checks**: Null, default values (`0`, `Guid.Empty`, ...), empty strings (whitespace is not empty), collections and spans. With a selector (`o => o.Customer.Email`), SGuard follows the member path; a complex-type member counts as empty only when all of its readable properties are null or empty.
+- **Email Validation**: `Is.Email` with a built-in pattern or your own regex (with a match timeout).
+- **Custom Exception Support**: Overloads for custom exception instances and types, with constructor argument support.
 - **Callback Model**: Unified `SGuardCallback` and `GuardOutcome` for success/failure handling.
-- **Expression Caching**: Efficient, thread-safe caching for compiled expressions.
-- **Rich Exception Messages**: Informative diagnostics using `CallerArgumentExpression`.
-- **Multi-targeting**: Supports .NET 6, 7, 8, and 9.
+- **Expression Caching**: Selectors are compiled once and cached by expression structure (thread-safe).
+- **Clear Exception Messages**: Built-in exceptions derive from `ArgumentException` and name the failing argument expression; checked values are left out of messages by default.
+- **Multi-targeting**: Supports .NET 8, 9, and 10.
 
 ## 📦 Quick Install
 

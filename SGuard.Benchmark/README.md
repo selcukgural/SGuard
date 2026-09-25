@@ -4,12 +4,13 @@ This project contains performance benchmarks for various methods in the SGuard l
 
 ## How to Run
 
-1. Open a terminal in the project root directory.
-2. Run the following command:
+1. Open a terminal in the `SGuard.Benchmark` directory.
+2. Run the benchmarks for one target framework (the project targets `net8.0` and `net9.0`, so `-f` is required):
    ```bash
-   dotnet run -c Release
+   dotnet run -c Release -f net9.0
    ```
-3. Results will be available in the `BenchmarkDotNet.Artifacts/results/` folder and in the relevant markdown files under the `benchmarks/` directory.
+3. Results are written to `BenchmarkDotNet.Artifacts/results/`. The markdown files under `benchmarks/` are not updated
+   automatically; copy the new results there if you want to commit them.
 
 ## Benchmark Results
 
@@ -39,9 +40,11 @@ Detailed benchmark results for each method can be found in the corresponding mar
 - [Is.NullOrEmpty.Benchmark.md](benchmarks/NullOrEmpty/Is.NullOrEmpty.Benchmark.md)
 - [ThrowIf.NullOrEmpty.Benchmark.md](benchmarks/NullOrEmpty/ThrowIf.NullOrEmpty.Benchmark.md)
 
+The committed results were recorded on .NET 9 before selector caching was added, so they don't reflect the selector
+cache (see [Changelog.md](../Changelog.md)).
+
 Summary:
 - For small lists, execution time is in nanoseconds; for large lists, it increases to microseconds.
-- Adding a callback introduces minimal overhead.
-- Performance is consistent and efficient across all scenarios.
+- A passing `ThrowIf.*` guard takes about 10 ns; a failing one (throw plus catch) takes several microseconds.
 
 For more details, see the markdown files for each method in the benchmarks folder.

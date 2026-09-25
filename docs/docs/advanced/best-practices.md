@@ -78,7 +78,7 @@ public class OrderService
 ```csharp
 public Money(decimal amount, string currency)
 {
-    ThrowIf.LessThan(amount, 0);
+    ThrowIf.LessThan(amount, 0m); // 0m: a decimal needs a decimal bound
     ThrowIf.NullOrEmpty(currency);
 }
 ```
@@ -126,8 +126,11 @@ ThrowIf.Any(order.Items, i => i.IsBackordered,
 /// </summary>
 /// <param name="username">The username.</param>
 /// <param name="age">The user's age.</param>
-/// <exception cref="ArgumentException">
-/// Thrown when username is null/empty or age is negative.
+/// <exception cref="SGuard.Exceptions.NullOrEmptyException">
+/// Thrown when <paramref name="username"/> is null or empty.
+/// </exception>
+/// <exception cref="SGuard.Exceptions.LessThanException">
+/// Thrown when <paramref name="age"/> is negative.
 /// </exception>
 public User CreateUser(string username, int age)
 {
@@ -136,6 +139,9 @@ public User CreateUser(string username, int age)
     // ...
 }
 ```
+
+Both built-in exceptions derive from `ArgumentException`, so callers that only catch `ArgumentException` are
+covered; documenting the concrete types lets them be more specific.
 
 ## String Comparisons
 
@@ -152,8 +158,15 @@ key.CompareTo("config.") < 0;
 ### Use Ordinal for Non-User Strings
 
 ```csharp
-// Identifiers, keys, paths, protocols
-ThrowIf.LessThan(apiVersion, "1.0", StringComparison.Ordinal);
+// Identifiers, keys, protocol tokens
+bool inRange = Is.Between(code, "A000", "A999", StringComparison.Ordinal);
+```
+
+Don't use string ordering for version numbers ("10.0" sorts before "9.0"), path-prefix or access-control checks.
+Compare versions as `System.Version`:
+
+```csharp
+ThrowIf.LessThan(Version.Parse(apiVersion), new Version(1, 0));
 ```
 
 ### Use CurrentCulture for Display
@@ -210,21 +223,29 @@ public class User
 ### Use Records for Simple DTOs
 
 ```csharp
-// Records with validation in constructor
-public record CreateUserRequest(string Username, string Email, int Age)
+// A positional record already has a primary constructor with these parameters,
+// so declaring another one with the same signature doesn't compile (CS0111).
+// Use a nominal record with an explicit constructor instead.
+public record CreateUserRequest
 {
-    public CreateUserRequest(string Username, string Email, int Age)
+    public CreateUserRequest(string username, string email, int age)
     {
-        ThrowIf.NullOrEmpty(Username);
-        ThrowIf.NullOrEmpty(Email);
-        ThrowIf.LessThan(Age, 0);
-        
-        this.Username = Username;
-        this.Email = Email;
-        this.Age = Age;
+        ThrowIf.NullOrEmpty(username);
+        ThrowIf.NullOrEmpty(email);
+        ThrowIf.LessThan(age, 0);
+
+        Username = username;
+        Email = email;
+        Age = age;
     }
+
+    public string Username { get; }
+    public string Email { get; }
+    public int Age { get; }
 }
 ```
+
+The properties are get-only, so a `with` expression can't assign new values that skip these checks.
 
 ## Testing
 
@@ -241,7 +262,12 @@ public void CreateUser_ValidInput_CreatesUser()
 [Fact]
 public void CreateUser_NegativeAge_ThrowsException()
 {
-    Assert.Throws<ArgumentException>(() => 
+    // Assert.Throws checks the exact type; the guard throws LessThanException
+    Assert.Throws<LessThanException>(() => 
+        new User("john", "john@example.com", -1));
+
+    // Or accept any ArgumentException, including derived types
+    Assert.ThrowsAny<ArgumentException>(() => 
         new User("john", "john@example.com", -1));
 }
 ```
@@ -263,16 +289,17 @@ public void ValidateOrder_InsufficientStock_ThrowsCorrectException()
 
 ### Use Selectors in Loops Carefully
 
-Expression caching helps, but direct checks are fastest:
+Compiled selectors are cached, but each selector call still builds an expression tree and hashes it to find the cached delegate, which costs
+microseconds rather than the nanoseconds of a direct check (see [Expression Caching](../core-concepts/expression-caching)):
 
 ```csharp
-// Good: Direct check (fastest)
+// Fastest: direct check (but throws NullReferenceException if order.Customer is null)
 foreach (var order in orders)
 {
     ThrowIf.NullOrEmpty(order.Customer.Email);
 }
 
-// Acceptable: Selector (cached, still fast)
+// Slower, null-safe: a null Customer counts as empty
 foreach (var order in orders)
 {
     ThrowIf.NullOrEmpty(order, o => o.Customer.Email);
@@ -316,9 +343,9 @@ public void ProcessOrder(Order order)
 
 private void ValidateOrderStructure(Order order)
 {
-    ThrowIf.NullOrEmpty(order);
-    ThrowIf.NullOrEmpty(order, o => o.Customer);
-    ThrowIf.NullOrEmpty(order, o => o.Items);
+    ThrowIf.NullOrEmpty(order);                  // null check only for a class instance
+    ThrowIf.NullOrEmpty(order, o => o.Customer); // null, or every Customer property empty
+    ThrowIf.NullOrEmpty(order, o => o.Items);    // null or no items
 }
 ```
 
@@ -335,7 +362,7 @@ public static class OrderValidators
     
     public static void ValidatePrice(decimal price)
     {
-        ThrowIf.LessThan(price, 0,
+        ThrowIf.LessThan(price, 0m,
             new ArgumentException("Price cannot be negative"));
     }
 }
@@ -365,15 +392,15 @@ var length = username.Length;  // Might throw NullReferenceException
 ThrowIf.NullOrEmpty(username);
 ```
 
-### ❌ Over-Nesting Selectors
+### ❌ Checking a Whole Object When You Mean One Member
+
+A complex member counts as empty only if **all** of its properties are null or empty:
 
 ```csharp
-// Bad: Too complex
-ThrowIf.NullOrEmpty(order, o => o.Customer.Address.Street.Name);
-
-// Good: Validate at each level
-ThrowIf.NullOrEmpty(order, o => o.Customer);
+// Bad: passes as long as any Address property is set, even if Street is empty
 ThrowIf.NullOrEmpty(order, o => o.Customer.Address);
+
+// Good: check the member you need; null anywhere on the path also counts as empty
 ThrowIf.NullOrEmpty(order, o => o.Customer.Address.Street);
 ```
 
