@@ -388,4 +388,80 @@ public sealed class CallbacksTests
     }
 
     #endregion
+
+    #region ThrowIf Any/All — callback invoked exactly once
+
+    private static readonly int[] Numbers = [1, 2, 3];
+
+    [Fact]
+    public void ThrowIfAny_Enumerable_Match_CallbackInvokedOnceWithFailure()
+    {
+        var outcomes = new List<GuardOutcome>();
+
+        Assert.Throws<AnyException>(() => ThrowIf.Any(Numbers, x => x == 2, outcomes.Add));
+
+        Assert.Equal([GuardOutcome.Failure], outcomes);
+    }
+
+    [Fact]
+    public void ThrowIfAny_Enumerable_NoMatch_CallbackInvokedOnceWithSuccess()
+    {
+        var outcomes = new List<GuardOutcome>();
+
+        ThrowIf.Any(Numbers, x => x == 5, outcomes.Add);
+
+        Assert.Equal([GuardOutcome.Success], outcomes);
+    }
+
+    [Fact]
+    public void ThrowIfAny_Span_Match_CallbackInvokedOnceWithFailure()
+    {
+        var outcomes = new List<GuardOutcome>();
+
+        Assert.Throws<CustomException>(() => ThrowIf.Any(new ReadOnlySpan<int>(Numbers), x => x == 2, new CustomException(), outcomes.Add));
+
+        Assert.Equal([GuardOutcome.Failure], outcomes);
+    }
+
+    [Fact]
+    public void ThrowIfAny_Span_Empty_CallbackInvokedOnceWithSuccess()
+    {
+        var outcomes = new List<GuardOutcome>();
+
+        ThrowIf.Any(ReadOnlySpan<int>.Empty, x => x == 2, new CustomException(), outcomes.Add);
+
+        Assert.Equal([GuardOutcome.Success], outcomes);
+    }
+
+    [Fact]
+    public void ThrowIfAll_Enumerable_AllMatch_CallbackInvokedOnceWithFailure()
+    {
+        var outcomes = new List<GuardOutcome>();
+
+        Assert.Throws<AllException>(() => ThrowIf.All(Numbers, x => x > 0, outcomes.Add));
+
+        Assert.Equal([GuardOutcome.Failure], outcomes);
+    }
+
+    [Fact]
+    public void ThrowIfAll_Enumerable_NotAllMatch_CallbackInvokedOnceWithSuccess()
+    {
+        var outcomes = new List<GuardOutcome>();
+
+        ThrowIf.All(Numbers, x => x > 1, outcomes.Add);
+
+        Assert.Equal([GuardOutcome.Success], outcomes);
+    }
+
+    [Fact]
+    public void ThrowIfAll_Span_AllMatch_CallbackInvokedOnceWithFailure()
+    {
+        var outcomes = new List<GuardOutcome>();
+
+        Assert.Throws<CustomException>(() => ThrowIf.All(new ReadOnlySpan<int>(Numbers), x => x > 0, new CustomException(), outcomes.Add));
+
+        Assert.Equal([GuardOutcome.Failure], outcomes);
+    }
+
+    #endregion
 }
