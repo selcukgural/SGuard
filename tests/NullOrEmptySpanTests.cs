@@ -19,16 +19,14 @@ public class NullOrEmptySpanTests
     }
 
     [Fact]
-    public void NullOrEmpty_Span_WithAllNulls_ThrowsException()
+    public void NullOrEmpty_Span_WithAllNulls_DoesNotThrow()
     {
-        // Arrange
-        var array = new string[] { null, null };
+        // Arrange: like an array or a collection, a span with elements is not empty
+        var array = new string?[] { null, null };
 
         // Act & Assert
-        Assert.Throws<NullOrEmptyException>(() => 
-        {
-            ThrowIf.NullOrEmpty((ReadOnlySpan<string>)array);
-        });
+        ThrowIf.NullOrEmpty((ReadOnlySpan<string?>)array);
+        ThrowIf.NullOrEmpty(array);
     }
 
     [Fact]
@@ -44,15 +42,15 @@ public class NullOrEmptySpanTests
         // No exception
     }
     [Fact]
-    public void Is_NullOrEmpty_Span_WithAllNulls_ReturnsTrue()
+    public void Is_NullOrEmpty_Span_WithAllNulls_ReturnsFalse_LikeTheArray()
     {
         // Arrange
-        var array = new string[] { null, null };
+        var array = new string?[] { null, null };
 
-        // Act
-        var result = Is.NullOrEmpty((ReadOnlySpan<string>)array);
-
-        // Assert
-        Assert.True(result);
+        // Act & Assert
+        Assert.False(Is.NullOrEmpty((ReadOnlySpan<string?>)array));
+        Assert.False(Is.NullOrEmpty(array));
+        Assert.True(Is.NullOrEmpty(ReadOnlySpan<string?>.Empty));
+        Assert.True(Is.NullOrEmpty(Array.Empty<string?>()));
     }
 }

@@ -64,7 +64,7 @@ public sealed class ExceptionValueTests
     public void NullOrEmpty_NamesCallerExpression()
     {
         var request = new Request("", 1);
-        ReadOnlySpan<string?> names = [null, null];
+        ReadOnlySpan<string?> names = [];
 
         var ex = Assert.Throws<NullOrEmptyException>(() => ThrowIf.NullOrEmpty(request.Name));
         var spanException = CaptureSpan(names);
