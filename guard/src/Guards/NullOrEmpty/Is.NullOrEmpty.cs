@@ -7,12 +7,6 @@ namespace SGuard;
 public sealed partial class Is
 {
     /// <summary>
-    /// A static instance of the <see cref="NullOrEmptyVisitor"/> class used for visiting expressions
-    /// to determine if they are null or empty.
-    /// </summary>
-    private static readonly NullOrEmptyVisitor NullOrEmptyVisitor = new();
-
-    /// <summary>
     /// Evaluates whether the specified value is null or empty based on predefined patterns, and optionally invokes a callback with the result.
     /// </summary>
     /// <typeparam name="T">The type of the value to evaluate.</typeparam>
@@ -85,9 +79,9 @@ public sealed partial class Is
             return true;
         }
 
-        var expression = NullOrEmptyVisitor.Visit(selector) as Expression<Func<T, object>>;
+        var evaluator = SelectorCache.GetNullOrEmptyEvaluator<T>(selector);
 
-        var isNullOrEmpty = expression?.Compile().Invoke(value) is null;
+        var isNullOrEmpty = evaluator?.Invoke(value) is null;
 
         SGuard.InvokeCallbackSafely(isNullOrEmpty, callback);
 

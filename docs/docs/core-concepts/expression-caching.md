@@ -64,16 +64,31 @@ foreach (var order in orders)
 
 ## Benchmarks
 
-See the [Performance](../advanced/performance) section for detailed benchmark results comparing cached vs. non-cached validations.
+Measured on .NET 10 with a two-level selector (`o => o.Customer.Name`),
+averaged over 20,000 calls:
 
-Typical improvements:
-- **10-50% faster** for repeated selector-based validations
-- **Reduced allocations** for expression compilation overhead
+| Guard | Without caching | With caching |
+|---|---|---|
+| `ThrowIf.NullOrEmpty` | ~83 µs, ~8 KB | ~1.9 µs, ~0.8 KB |
+| `Is.NullOrEmpty` | ~77 µs, ~7.7 KB | ~1.5 µs, ~0.7 KB |
+
+Times are per call; sizes are memory allocated per call. The remaining
+allocation is the expression tree the C# compiler builds at the call site on
+every call.
 
 ## Limitations
 
-- **Caching is per-expression structure**: Different selectors create separate cache entries
-- **No cache eviction**: Entries remain for the application lifetime (this is usually fine as the cache size is bounded by the number of unique validation patterns in your code)
+- **Caching is per-expression structure**: Different selectors create
+  separate cache entries. `Is.NullOrEmpty` and `ThrowIf.NullOrEmpty` share the
+  same entry for the same selector.
+- **Captured variables are not cached**: A selector that reads a captured
+  variable (e.g. `_ => someLocal.Name`) embeds that variable's current object
+  in its compiled form, so it is compiled on every call to stay correct.
+  Select from the lambda parameter (`x => x.Name`) to benefit from caching.
+- **No cache eviction**: Entries remain for the application lifetime (this is
+  usually fine as the cache size is bounded by the number of unique validation
+  patterns in your code). Each selector input type holds at most 1,000
+  entries; beyond that, selectors are compiled without being cached.
 
 ## No Configuration Needed
 

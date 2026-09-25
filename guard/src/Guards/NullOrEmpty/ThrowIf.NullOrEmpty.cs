@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using SGuard.Exceptions;
 
@@ -7,26 +6,9 @@ namespace SGuard;
 public sealed partial class ThrowIf
 {
     /// <summary>
-    /// A visitor class used to evaluate expressions for null or empty checks.
-    /// </summary>
-    private static readonly NullOrEmptyVisitor NullOrEmptyVisitor = new();
-
-    /// <summary>
     /// A predefined exception instance used for null or empty value checks.
     /// </summary>
     private static readonly NullOrEmptyException NullOrEmptyException = new();
-
-    /// <summary>
-    /// A thread-safe cache for storing compiled expressions to improve performance.
-    /// Limits the cache size to avoid memory leaks.
-    /// </summary>
-    private static readonly ConcurrentDictionary<Expression, Delegate> CompiledExpressionCache = new();
-
-    /// <summary>
-    /// The maximum size of the compiled expression cache.
-    /// When the cache exceeds this size, it is cleared to prevent memory leaks.
-    /// </summary>
-    private const int MaxCompiledExpressionCacheSize = 1000;
 
     /// <summary>
     /// Checks if the specified value is null or empty.
@@ -190,19 +172,9 @@ public sealed partial class ThrowIf
     /// <exception cref="InvalidOperationException">Thrown if the expression cannot be processed.</exception>
     private static bool CheckNullOrEmpty<TValue>(TValue obj, Expression<Func<TValue, object?>> valueExpression)
     {
-        if (NullOrEmptyVisitor.Visit(valueExpression) is not Expression<Func<TValue, object?>> expression)
-        {
-            throw new InvalidOperationException("Unable to process the expression.");
-        }
+        var evaluator = SelectorCache.GetNullOrEmptyEvaluator<TValue>(valueExpression) ??
+                        throw new InvalidOperationException("Unable to process the expression.");
 
-        // Limit cache to avoid memory leak
-        if (CompiledExpressionCache.Count > MaxCompiledExpressionCacheSize)
-        {
-            CompiledExpressionCache.Clear();
-        }
-
-        var func = (Func<TValue, object?>)CompiledExpressionCache.GetOrAdd(expression, exp => ((Expression<Func<TValue, object?>>)exp).Compile());
-
-        return Is.InternalIsNullOrEmpty(func(obj));
+        return Is.InternalIsNullOrEmpty(evaluator(obj));
     }
 }
