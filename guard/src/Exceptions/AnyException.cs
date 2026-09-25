@@ -4,7 +4,7 @@ namespace SGuard.Exceptions;
 /// Represents a specific exception that can be thrown to indicate a particular type of error.
 /// </summary>
 [Serializable]
-public sealed class AnyException : Exception
+public sealed class AnyException : ArgumentException
 {
     /// <summary>
     /// Represents a general exception that can be used to signal errors or unexpected conditions within the application.

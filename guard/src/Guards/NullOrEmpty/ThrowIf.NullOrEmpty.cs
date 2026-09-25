@@ -78,7 +78,7 @@ public sealed partial class ThrowIf
     /// <param name="value">The value to check for null or emptiness.</param>
     /// <param name="constructorArgs">An array of arguments to pass to the exception constructor.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
-    /// <exception cref="TException">Thrown if the value is null or empty.</exception>
+    /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
     public static void NullOrEmpty<T, TException>(T value, object[]? constructorArgs, SGuardCallback? callback = null) where TException : Exception
     {
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
@@ -136,7 +136,7 @@ public sealed partial class ThrowIf
     /// <param name="selector">An expression to select a property or field from the value.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="ArgumentNullException">Thrown if the selector is null.</exception>
-    /// <exception cref="TException">Thrown if the value is null or empty.</exception>
+    /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
     public static void NullOrEmpty<TValue, TException>(TValue value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null)
         where TException : Exception, new()
     {
@@ -157,7 +157,7 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="ArgumentNullException">Thrown if the selector is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown if the selector expression cannot be processed.</exception>
-    /// <exception cref="TException">Thrown if the value is null or empty.</exception>
+    /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
     public static void NullOrEmpty<TValue, TException>(TValue value, Expression<Func<TValue, object?>> selector, object?[] constructorArgs,
                                                        SGuardCallback? callback = null) where TException : Exception
     {

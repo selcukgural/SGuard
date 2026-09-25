@@ -12,24 +12,17 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>guard;is;throwIf;sguard;validation;dotnet;csharp;callbacks</PackageTags>
-        <Description>SGuard is a lightweight guard library for .NET that offers explicit boolean checks (Is.*) and throwing guards (ThrowIf.*), a unified GuardCallback/GuardOutcome model, and richly-informative exceptions via CallerArgumentExpression for easier diagnostics. Targets net6.0/net7.0/net8.0/net9.0.
-        </Description>
+        <Description>SGuard is a lightweight guard library for .NET that offers boolean checks (Is.*) and throwing guards (ThrowIf.*), a unified SGuardCallback/GuardOutcome model, and exceptions that name the failing argument via CallerArgumentExpression. Targets net8.0/net9.0/net10.0.</Description>
         <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
         <Title>SGuard</Title>
         <Authors>Selçuk Güral</Authors>
         <Company>Selçuk Güral</Company>
         <RepositoryType>git</RepositoryType>
-        <PackageReleaseNotes>
-            # Release Notes - Version 0.1.2
-
-            * Added a "📊 Benchmarks" section to the main README.md, providing a direct link to the SGuard.Benchmark/benchmarks/ folder for easy developer access to performance results. (#28)
-            * Ensured all benchmark results are discoverable and documented for each guard method (Is.* and ThrowIf.*), including All, Any, Between, GreaterThan, LessThan, and NullOrEmpty.
-            * No breaking changes to the core library or APIs.
-            * Improved developer experience and documentation clarity.
-
-            This update makes it much easier for contributors and users to find and review performance benchmarks for all guard methods.
-        </PackageReleaseNotes>
+        <PackageReleaseNotes>See https://github.com/selcukgural/SGuard/blob/main/Changelog.md</PackageReleaseNotes>
         <PackageIcon>icon.png</PackageIcon>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
     <ItemGroup>
         <InternalsVisibleTo Include="SGuard.Tests" />

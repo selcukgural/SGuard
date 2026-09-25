@@ -50,11 +50,10 @@ public class IsAllTests
     }
 
     [Fact]
-    public void All_ReturnsFalse_ForEmptySource()
+    public void All_ReturnsTrue_ForEmptySource()
     {
-        var source = Array.Empty<int>();
-        bool result = Is.All(source, x => false);
-        Assert.False(result);
+        Assert.True(Is.All(Array.Empty<int>(), x => false));
+        Assert.True(Is.All(new List<int>(), x => false));
     }
 
     [Fact]
@@ -74,11 +73,11 @@ public class IsAllTests
     }
 
     [Fact]
-    public void All_Span_ReturnsFalse_WhenSourceIsEmpty()
+    public void All_Span_ReturnsTrue_WhenSourceIsEmpty()
     {
         var source = Span<int>.Empty;
         bool result = Is.All(source, x => true);
-        Assert.False(result);
+        Assert.True(result);
     }
 
     [Fact]
@@ -111,12 +110,12 @@ public class IsAllTests
     }
 
     [Fact]
-    public void All_Span_InvokesCallbackWithFailure_WhenSourceIsEmpty()
+    public void All_Span_InvokesCallbackWithSuccess_WhenSourceIsEmpty()
     {
         var source = Span<int>.Empty;
         GuardOutcome? outcome = null;
         Is.All(source, x => true, o => outcome = o);
-        Assert.Equal(GuardOutcome.Failure, outcome);
+        Assert.Equal(GuardOutcome.Success, outcome);
     }
 
     [Fact]

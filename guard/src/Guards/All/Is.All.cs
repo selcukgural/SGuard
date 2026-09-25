@@ -46,14 +46,9 @@ public sealed partial class Is
     /// </returns>
     public static bool All<T>(ReadOnlySpan<T> source, Func<T, bool> predicate, SGuardCallback? callback = null)
     {
-        if (source.IsEmpty)
-        {
-            SGuard.InvokeCallbackSafely(false, callback);
-            return false;
-        }
-        
         ArgumentNullException.ThrowIfNull(predicate);
-        
+
+        // An empty span satisfies every predicate, matching the IEnumerable overload and Enumerable.All.
         foreach (var src in source)
         {
             if (predicate(src))

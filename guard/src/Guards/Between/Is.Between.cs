@@ -37,7 +37,9 @@ public sealed partial class Is
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
 
-        var isBetween = value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0;
+        SGuard.ThrowIfInvalidRange(min, max);
+
+        var isBetween = !SGuard.AnyNaN(value, min, max) && value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0;
 
         SGuard.InvokeCallbackSafely(isBetween, callback);
 
@@ -60,6 +62,8 @@ public sealed partial class Is
         ArgumentNullException.ThrowIfNull(min);
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
+
+        SGuard.ThrowIfInvalidRange(min, max, comparison);
 
         var isBetween = string.Compare(value, min, comparison) >= 0 && string.Compare(value, max, comparison) <= 0;
 

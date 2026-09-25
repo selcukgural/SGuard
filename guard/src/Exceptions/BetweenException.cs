@@ -6,8 +6,15 @@ namespace SGuard.Exceptions;
 /// Represents an exception that occurs when a value falls within the specified range.
 /// </summary>
 [Serializable]
-public sealed class BetweenException : Exception
+public sealed class BetweenException : ArgumentException
 {
+    private readonly string? _paramName;
+
+    /// <summary>
+    /// Gets the call-site expression of the checked argument, or <c>null</c> when the exception was created with a message.
+    /// </summary>
+    public override string? ParamName => _paramName;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BetweenException"/> class.
     /// </summary>
@@ -39,6 +46,7 @@ public sealed class BetweenException : Exception
         [CallerArgumentExpression("max")]   string? maxExpr   = null)
         : base(BuildMessage(value, min, max, valueExpr, minExpr, maxExpr))
     {
+        _paramName = valueExpr;
         ExceptionValues.AddTo(Data, "value", value);
         ExceptionValues.AddTo(Data, "min", min);
         ExceptionValues.AddTo(Data, "max", max);

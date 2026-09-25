@@ -292,18 +292,16 @@ public sealed class IsBetweenTests
     }
         
     [Fact]
-    public void Between_WithReversedMinMax_WorksCorrectly()
+    public void Between_WithReversedMinMax_ThrowsArgumentException()
     {
         // Arrange
         var value = 5;
         var min = 10;
         var max = 1;
-            
-        // Act
-        var result = Is.Between(value, min, max);
-            
-        // Assert
-        Assert.False(result);
+
+        // Act & Assert
+        var ex = Assert.Throws<ArgumentException>(() => Is.Between(value, min, max));
+        Assert.Equal("min", ex.ParamName);
     }
         
     #endregion

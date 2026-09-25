@@ -44,11 +44,11 @@ public static class Throw
     }
 
     /// <summary>
-    /// Throws a <see cref="NullOrEmptyException"/> with a predefined message indicating that the value is null or empty.
+    /// Throws a <see cref="NullOrEmptyException"/> with a message naming the expression that is null or empty.
     /// </summary>
-    /// <exception cref="NullOrEmptyException">
-    /// Always thrown with a message stating, "Value is null or empty".
-    /// </exception>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="value">The value that is null or empty.</param>
+    /// <exception cref="NullOrEmptyException">Always thrown.</exception>
     /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

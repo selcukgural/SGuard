@@ -27,7 +27,7 @@ public sealed partial class Is
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
 
-        var isLessThan = lValue.CompareTo(rValue) < 0;
+        var isLessThan = !SGuard.AnyNaN(lValue, rValue) && lValue.CompareTo(rValue) < 0;
         
         SGuard.InvokeCallbackSafely(isLessThan, callback);
         
@@ -81,7 +81,7 @@ public sealed partial class Is
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        var isLessThanOrEqual = lValue.CompareTo(rValue) <= 0;
+        var isLessThanOrEqual = !SGuard.AnyNaN(lValue, rValue) && lValue.CompareTo(rValue) <= 0;
         
         SGuard.InvokeCallbackSafely(isLessThanOrEqual, callback);
         

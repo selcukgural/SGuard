@@ -45,15 +45,14 @@ public sealed class ThrowIfAllTests
     }
 
     [Fact]
-    public void All_Span_DoesNotThrow_WhenSourceIsEmpty()
+    public void All_Span_Throws_WhenSourceIsEmpty()
     {
         // Arrange
-        var source = Span<int>.Empty;
         Func<int, bool> predicate = x => true;
         var customException = new CustomException();
 
-        // Act & Assert - Should not throw
-        ThrowIf.All(source, predicate, customException);
+        // Act & Assert
+        Assert.Throws<CustomException>(() => ThrowIf.All(Span<int>.Empty, predicate, customException));
     }
 
     [Fact]
@@ -123,19 +122,18 @@ public sealed class ThrowIfAllTests
     }
 
     [Fact]
-    public void All_Span_InvokesCallbackWithSuccess_WhenSourceIsEmpty()
+    public void All_Span_InvokesCallbackWithFailure_WhenSourceIsEmpty()
     {
         // Arrange
-        var source = Span<int>.Empty;
         Func<int, bool> predicate = x => true;
         var customException = new CustomException();
         GuardOutcome? outcome = null;
 
         // Act
-        ThrowIf.All(source, predicate, customException, o => outcome = o);
+        Assert.Throws<CustomException>(() => ThrowIf.All(Span<int>.Empty, predicate, customException, o => outcome = o));
 
         // Assert
-        Assert.Equal(GuardOutcome.Success, outcome);
+        Assert.Equal(GuardOutcome.Failure, outcome);
     }
 
     #endregion
@@ -168,18 +166,14 @@ public sealed class ThrowIfAllTests
     }
 
     [Fact]
-    public void All_Enumerable_DoesNotThrow_WhenSourceIsEmpty()
+    public void All_Throws_WhenSourceIsEmpty()
     {
-        // Arrange
-        var source = Array.Empty<int>();
-        Func<int, bool> predicate = x => true;
+        // Arrange: an empty source satisfies every predicate, as with Enumerable.All
         var customException = new CustomException();
 
-        // Act & Assert - Should not throw
-        // NOTE: In previous session notes, it was mentioned that Is.All returns false for empty source.
-        // Even though LINQ's Enumerable.All returns true, SGuard's Is.All might be handling empty differently
-        // OR ThrowIf.All has its own logic.
-        ThrowIf.All(source, predicate, customException);
+        // Act & Assert
+        Assert.Same(customException, Assert.Throws<CustomException>(() => ThrowIf.All(Array.Empty<int>(), x => false, customException)));
+        Assert.Same(customException, Assert.Throws<CustomException>(() => ThrowIf.All(new List<int>(), x => false, customException)));
     }
 
     #endregion

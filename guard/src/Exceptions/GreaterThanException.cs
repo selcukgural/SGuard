@@ -6,8 +6,15 @@ namespace SGuard.Exceptions;
 /// Represents an exception that is thrown when a value is greater than a specified value
 /// </summary>
 [Serializable]
-public sealed class GreaterThanException : Exception
+public sealed class GreaterThanException : ArgumentException
 {
+    private readonly string? _paramName;
+
+    /// <summary>
+    /// Gets the call-site expression of the checked argument, or <c>null</c> when the exception was created with a message.
+    /// </summary>
+    public override string? ParamName => _paramName;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GreaterThanException"/> class.
     /// </summary>
@@ -33,6 +40,7 @@ public sealed class GreaterThanException : Exception
                                 [CallerArgumentExpression("right")] string? rightExpr = null)
         : base(BuildMessage(left, right, leftExpr, rightExpr))
     {
+        _paramName = leftExpr;
         ExceptionValues.AddTo(Data, "left", left);
         ExceptionValues.AddTo(Data, "right", right);
         Data["leftExpr"] = leftExpr;

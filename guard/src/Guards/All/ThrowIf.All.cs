@@ -23,7 +23,10 @@ public sealed partial class ThrowIf
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void All<T>(IEnumerable<T> source, Func<T, bool> predicate, SGuardCallback? callback = null)
     {
-        All(source, predicate, new AllException("All elements satisfied the given predicate."), callback);
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(predicate);
+
+        SGuard.Guard(Is.All(source, predicate), () => Throw.That(new AllException("All elements satisfied the given predicate.")), callback);
     }
 
     /// <summary>
@@ -36,7 +39,7 @@ public sealed partial class ThrowIf
     /// <param name="exception">The exception to throw if all elements in the source satisfy the predicate.</param>
     /// <param name="callback">An optional callback invoked with the guard outcome.</param>
     /// <exception cref="ArgumentNullException">Thrown if the source, predicate, or exception is null.</exception>
-    /// <exception cref="TException">
+    /// <exception cref="Exception">
     /// Thrown when all elements in the source satisfy the given predicate.
     /// </exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -65,16 +68,10 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="predicate"/> or <paramref name="exception"/> is null.
     /// </exception>
-    /// <exception cref="TException">Thrown if all elements in the span satisfy the given predicate.</exception>
+    /// <exception cref="Exception">Thrown if all elements in the span satisfy the given predicate.</exception>
     public static void All<T, TException>(ReadOnlySpan<T> source, Func<T, bool> predicate, [NotNull] TException exception, SGuardCallback? callback = null)
         where TException : Exception
     {
-        if (source.IsEmpty)
-        {
-            SGuard.Guard(false, () => Throw.That(exception), callback);
-            return;
-        }
-        
         ArgumentNullException.ThrowIfNull(predicate);
         ArgumentNullException.ThrowIfNull(exception);
 

@@ -29,7 +29,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
 
-        SGuard.Guard(Is.LessThan(lValue, rValue), () => Throw.LessThanException(lValue, rValue, lValueExpression, rValueExpression), callback);
+        SGuard.Guard(Is.LessThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.LessThanException(lValue, rValue, lValueExpression, rValueExpression), callback);
     }
 
 
@@ -44,7 +44,7 @@ public sealed partial class ThrowIf
     /// <param name="exception">The exception to throw if the condition is met.</param>
     /// <param name="callback">An optional callback invoked with the outcome of the guard evaluation.</param>
     /// <exception cref="ArgumentNullException">Thrown when any of the arguments are null.</exception>
-    /// <exception cref="TException">Thrown when <paramref name="lValue"/> is less than <paramref name="rValue"/>.</exception>
+    /// <exception cref="Exception">Thrown when <paramref name="lValue"/> is less than <paramref name="rValue"/>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, [NotNull] TException exception,
                                                            SGuardCallback? callback = null)
@@ -54,7 +54,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(rValue);
         ArgumentNullException.ThrowIfNull(exception);
         
-        SGuard.Guard(Is.LessThan(lValue, rValue), () => Throw.That(exception), callback);
+        SGuard.Guard(Is.LessThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(exception), callback);
     }
 
 
@@ -84,7 +84,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.LessThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression), callback);
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.LessThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression), callback);
     }
 
 
@@ -99,7 +99,7 @@ public sealed partial class ThrowIf
     /// <param name="exception">The exception to throw if the condition is met. Must not be null.</param>
     /// <param name="callback">An optional callback invoked with the guard outcome, specifying whether the validation succeeded or failed.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/>, <paramref name="rValue"/>, or <paramref name="exception"/> is null.</exception>
-    /// <exception cref="TException">Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.</exception>
+    /// <exception cref="Exception">Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, [NotNull] TException exception,
                                                                   SGuardCallback? callback = null)
@@ -109,7 +109,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(rValue);
         ArgumentNullException.ThrowIfNull(exception);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.That(exception), callback);
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(exception), callback);
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public sealed partial class ThrowIf
     /// The outcome indicates whether the left value was less than or equal to the right value.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.</exception>
-    /// <exception cref="TException">
+    /// <exception cref="Exception">
     /// Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.
     /// The exception instance is created using the specified constructor arguments.
     /// </exception>
@@ -136,7 +136,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public sealed partial class ThrowIf
     /// The outcome indicates whether the left value was less than or equal to the right value.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.</exception>
-    /// <exception cref="TException">
+    /// <exception cref="Exception">
     /// Thrown if <paramref name="lValue"/> is less than or equal to <paramref name="rValue"/>.
     /// The exception instance is created using the specified constructor arguments.
     /// </exception>
@@ -165,6 +165,6 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
     }
 }

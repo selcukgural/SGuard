@@ -16,7 +16,10 @@ public sealed partial class ThrowIf
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Any<T>(IEnumerable<T> source, Func<T, bool> predicate, SGuardCallback? callback = null)
     {
-        Any(source, predicate, new AnyException("At least one element satisfied the given predicate."), callback);
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(predicate);
+
+        SGuard.Guard(Is.Any(source, predicate), () => Throw.That(new AnyException("At least one element satisfied the given predicate.")), callback);
     }
 
     /// <summary>
@@ -29,7 +32,7 @@ public sealed partial class ThrowIf
     /// <param name="exception">The exception to be thrown if the condition is met.</param>
     /// <param name="callback">An optional callback that receives the result of the guard.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="source"/>, <paramref name="predicate"/>, or <paramref name="exception"/> is null.</exception>
-    /// <exception cref="TException">Thrown if any element satisfies the provided predicate.</exception>
+    /// <exception cref="Exception">Thrown if any element satisfies the provided predicate.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Any<T, TException>(IEnumerable<T> source, Func<T, bool> predicate, [NotNull] TException exception, SGuardCallback? callback = null)
         where TException : Exception
@@ -53,12 +56,6 @@ public sealed partial class ThrowIf
     public static void Any<T, TException>(ReadOnlySpan<T> source, Func<T, bool> predicate, [NotNull] TException exception, SGuardCallback? callback = null)
         where TException : Exception
     {
-        if (source.IsEmpty)
-        {
-            SGuard.Guard(false, () => Throw.That(exception), callback);
-            return;
-        }
-
         ArgumentNullException.ThrowIfNull(predicate);
         ArgumentNullException.ThrowIfNull(exception);
         
