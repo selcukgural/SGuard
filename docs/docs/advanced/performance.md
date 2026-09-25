@@ -8,12 +8,18 @@ Understand SGuard's performance characteristics and optimization techniques.
 
 ## Benchmarks
 
-Performance benchmarks for all guard methods are available in the [SGuard.Benchmark/benchmarks/](https://github.com/selcukgural/SGuard/tree/main/SGuard.Benchmark/benchmarks/) folder.
+BenchmarkDotNet results for all guard methods are available in the [SGuard.Benchmark/benchmarks/](https://github.com/selcukgural/SGuard/tree/main/SGuard.Benchmark/benchmarks/) folder.
 
 These benchmarks compare:
 - `Is.*` vs `ThrowIf.*` methods
-- Cached vs non-cached selector validations
-- Different guard types (`NullOrEmpty`, `Between`, `LessThan`, `Any`, `All`, etc.)
+- Calls with and without a callback
+- Passing vs failing (throwing) guards
+- Different guard types (`NullOrEmpty`, `Between`, `LessThan`, `GreaterThan`, `Any`, `All`) and collection sizes
+
+The committed results were recorded in September 2025 on .NET 9 (Apple M3 Max, BenchmarkDotNet 0.15.2), **before**
+the selector cache and the other changes in the current release. They don't include a cached-vs-uncached selector
+comparison or allocation figures. See [Expression Caching](../core-concepts/expression-caching#benchmarks) for the
+selector cache measurement.
 
 ## Key Performance Characteristics
 
@@ -29,17 +35,18 @@ ThrowIf.NullOrEmpty(order, o => o.Customer.Name);
 ThrowIf.NullOrEmpty(anotherOrder, o => o.Customer.Name);
 ```
 
-**Impact**: 10-50% faster for repeated selector-based validations.
+**Impact**: roughly 40–50x faster with about 90% less allocation than recompiling on every call (per the
+Changelog). A cached selector call still costs on the order of a couple of microseconds (~1.5–1.9 µs in the
+[Expression Caching](../core-concepts/expression-caching#benchmarks) measurement), because the C# compiler builds a
+new expression tree at the call site on every call.
 
 ### Comparison Guards
 
-Comparison guards (`LessThan`, `Between`, etc.) are highly optimized:
-- Direct `IComparable<T>.CompareTo` calls
-- No boxing for value types
-- Minimal allocations
+Comparison guards (`LessThan`, `Between`, etc.) call `IComparable<T>.CompareTo` through generic type parameters, so
+value types are not boxed. In the committed benchmarks, `Is.GreaterThan` and `Is.Between` on `int` take under 1 ns.
 
 ```csharp
-// Extremely fast—direct comparison
+// Direct comparison, no allocation
 bool inRange = Is.Between(value, min, max);
 ```
 
@@ -55,7 +62,8 @@ bool hasNull = Is.Any(largeList, x => x is null);
 bool allValid = Is.All(largeList, x => x.IsValid);
 ```
 
-**Impact**: O(1) best case, O(n) worst case.
+**Impact**: O(1) best case, O(n) worst case. In the committed benchmarks, a full pass over 1,000 elements takes
+about 280 ns and grows linearly (about 4 µs for 15,000).
 
 ## Performance Tips
 
@@ -67,29 +75,30 @@ Avoid selectors if you can validate directly:
 // Faster: Direct check
 ThrowIf.NullOrEmpty(user.Email);
 
-// Slower: Selector (but still fast due to caching)
+// Slower: Selector (cached, but still microseconds per call)
 ThrowIf.NullOrEmpty(user, u => u.Email);
 ```
 
 ### 2. Prefer Is.* for Hot Paths
 
-In performance-critical code, `Is.*` avoids exception overhead:
+In performance-critical code, `Is.*` avoids exception overhead. In the committed benchmarks, a passing `ThrowIf.*`
+guard takes about 10 ns, while a failing one (throw plus catch) takes about 8–9 µs:
 
 ```csharp
 // Faster: No exception throwing
 if (Is.Between(value, min, max))
 {
-    // handle valid case
+    // handle the in-range case
 }
 
-// Slower: Exception construction and throwing
+// Slower when it fails: exception construction and throwing
 try
 {
     ThrowIf.Between(value, min, max);
 }
-catch
+catch (BetweenException)
 {
-    // handle invalid case
+    // handle the in-range case
 }
 ```
 
@@ -97,13 +106,14 @@ However, **exceptions should be exceptional**. If validation failures are rare, 
 
 ### 3. Use Ordinal String Comparisons
 
-`StringComparison.Ordinal` is fastest for string comparisons:
+The generic comparison overloads call `string.CompareTo`, which is culture-sensitive. For identifiers and keys, an
+ordinal comparison is usually faster and gives the same result on every machine:
 
 ```csharp
-// Fastest: Binary comparison
+// Binary comparison
 Is.LessThan(a, b, StringComparison.Ordinal);
 
-// Slower: Culture-aware comparison
+// Culture-aware comparison (for user-facing text)
 Is.LessThan(a, b, StringComparison.CurrentCulture);
 ```
 
@@ -115,45 +125,48 @@ Callbacks add a small overhead. Only use when needed:
 // Faster: No callback
 ThrowIf.NullOrEmpty(value);
 
-// Slightly slower: Callback overhead
+// Slightly slower: the callback is invoked, and building it allocates a delegate
 ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() => logger.Log("Failed")));
 ```
 
-The overhead is minimal, but matters in extremely hot loops.
+The committed benchmarks show a difference of well under a nanosecond for most guards. If you use the same
+callback on a hot path, create it once and reuse it.
 
 ### 5. Short-Circuit Complex Validations
 
-Order validations from most likely to fail to least:
+Run cheap checks before expensive ones:
 
 ```csharp
 // Check cheap conditions first
-ThrowIf.NullOrEmpty(items);  // Fast null check
+ThrowIf.NullOrEmpty(items);  // Fast null/empty check
 ThrowIf.Any(items, i => i.IsInvalid);  // More expensive predicate
 ```
 
 ## Benchmark Results Summary
 
-Based on SGuard.Benchmark results:
+From the committed results in `SGuard.Benchmark/benchmarks/` (.NET 9, Apple M3 Max, recorded before the current
+release):
 
-| Guard Type | Operation | Time (ns) | Notes |
-|-----------|-----------|-----------|-------|
-| NullOrEmpty | Direct check | ~5-10 | Extremely fast |
-| NullOrEmpty | Selector (cached) | ~20-30 | Fast with caching |
-| Between | Numeric | ~5-10 | Direct comparison |
-| LessThan | Numeric | ~5-10 | Direct comparison |
-| Any | Short-circuit | ~10-100 | Depends on match position |
-| All | Short-circuit | ~10-100 | Depends on match position |
-| String comparison | Ordinal | ~10-20 | Fast binary compare |
-| String comparison | Culture | ~50-100 | Culture lookup overhead |
+| Guard | Scenario | Mean time |
+|---|---|---|
+| `Is.NullOrEmpty` | `null`, string, `int` | ~0.2–1 ns |
+| `Is.NullOrEmpty` | array, list | ~4 ns |
+| `Is.Between`, `Is.GreaterThan` | `int` | under 1 ns |
+| `Is.GreaterThan` | `string` (culture-sensitive `CompareTo`) | ~15–28 ns |
+| `Is.Any`, `Is.All` | 1,000 / 15,000 elements, full pass | ~280 ns / ~4 µs |
+| `ThrowIf.*` | guard passes | ~10–14 ns |
+| `ThrowIf.*` | guard throws (including the catch) | ~8–9 µs |
+| `ThrowIf.NullOrEmpty` | selector, before the cache existed | ~50–60 µs |
 
-*Note: Actual numbers depend on hardware and runtime. See benchmark folder for detailed results.*
+*Actual numbers depend on hardware and runtime. See the benchmark folder for the full tables.*
 
 ## Real-World Performance
 
 In typical applications:
-- **Guard overhead is negligible** compared to business logic
+- **Guard overhead is small** compared to I/O and business logic
 - **Focus on correctness first**, optimize if profiling shows issues
-- **Expression caching** makes repeated validations essentially free
+- **Expression caching** removes the compilation cost of repeated selector validations; what remains is building
+  the expression tree and evaluating it
 
 ### Example: API Endpoint
 
@@ -161,19 +174,19 @@ In typical applications:
 [HttpPost]
 public IActionResult CreateOrder([FromBody] CreateOrderRequest req)
 {
-    // Validation overhead: ~100-500ns total
+    // A few guards: nanoseconds each, a few microseconds for the selector
     ThrowIf.NullOrEmpty(req);
     ThrowIf.NullOrEmpty(req, r => r.Items);
     ThrowIf.Any(req.Items, i => i.Quantity <= 0);
     
-    // Business logic: ~1-100ms
+    // Business logic: database calls, external services, ...
     var order = _orderService.Create(req);
     
     return Ok(order);
 }
 ```
 
-Guard overhead is **0.001% - 0.05%** of total request time. The real bottlenecks are:
+Guard overhead is typically a tiny fraction of total request time. The real bottlenecks are usually:
 - Database queries
 - External API calls
 - Complex business logic
@@ -183,29 +196,37 @@ Guard overhead is **0.001% - 0.05%** of total request time. The real bottlenecks
 Profile your application first. Optimize guards only if:
 1. Profiling shows guards are a bottleneck (rare)
 2. You're in an extremely hot loop (millions of iterations)
-3. You're targeting sub-millisecond response times
+3. Validation failures are frequent, so exceptions are thrown on a hot path
 
-For 99% of applications, SGuard's performance is more than adequate.
+For most applications, SGuard's performance is more than adequate.
 
 ## Microbenchmarking
 
-To run benchmarks yourself:
+To run the benchmarks yourself (the project targets `net8.0` and `net9.0`, so pick one):
 
 ```bash
 cd SGuard.Benchmark
-dotnet run -c Release
+dotnet run -c Release -f net9.0
 ```
 
-Results are saved to the `benchmarks/` folder with detailed statistics.
+This runs every benchmark class, which takes a while. BenchmarkDotNet writes its reports (including GitHub-flavored
+Markdown) to `BenchmarkDotNet.Artifacts/results/` in the directory you run it from. The files in
+`SGuard.Benchmark/benchmarks/` are copies of an earlier run and are not updated automatically.
 
 ## Memory Allocations
 
-SGuard is designed to minimize allocations:
-- **No allocations** for simple checks (null, comparison guards)
-- **One allocation** for exception creation (only when validation fails)
-- **Cached expressions** reuse compiled delegates
-
-Typical allocation overhead: **0 bytes** for successful validations, **~100-500 bytes** for failures (exception object).
+The committed benchmarks don't measure allocations, so this section describes the behaviour of the code:
+- **`Is.*` comparisons and `Is.NullOrEmpty` without a selector** don't allocate.
+- **Most `ThrowIf.*` overloads allocate a small closure on every call**, even when the guard passes, because the
+  code that creates the exception captures the arguments.
+- **Failing guards** allocate the exception (and throwing it is far more expensive than the allocation).
+- **Overloads that take an exception instance** allocate that instance at the call site on every call; the
+  `TException` and `constructorArgs` overloads create it only on failure.
+- **Selector-based `NullOrEmpty`** allocates the expression tree built at the call site on every call (about
+  0.7–0.8 KB in the [Expression Caching](../core-concepts/expression-caching#benchmarks) measurement); the compiled
+  delegate is reused.
+- **Callbacks** built with `SGuardCallbacks.OnSuccess`/`OnFailure` or a capturing lambda allocate a delegate where
+  they are created.
 
 ## Next Steps
 

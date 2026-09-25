@@ -8,7 +8,31 @@ Learn culture-aware string validation with SGuard's comparison guards.
 
 ## Overview
 
-All comparison guards (`LessThan`, `LessThanOrEqual`, `GreaterThan`, `GreaterThanOrEqual`, `Between`) have **string-specific overloads** that accept `StringComparison` for proper cultural and ordinal handling.
+These guards have **string-specific overloads** that take a `StringComparison` for proper cultural and ordinal handling:
+
+- `Is.LessThan`, `Is.LessThanOrEqual`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, `Is.Between`
+- `ThrowIf.Between`
+
+`ThrowIf.LessThan`, `ThrowIf.LessThanOrEqual`, `ThrowIf.GreaterThan` and `ThrowIf.GreaterThanOrEqual` have **no**
+`StringComparison` overload. To throw on a string ordering, test with `Is.*` and throw yourself:
+
+```csharp
+if (Is.GreaterThan(current, next, StringComparison.Ordinal))
+{
+    throw new InvalidOperationException("Items are not in order.");
+}
+```
+
+:::warning Ordering is not a prefix, path, access or version check
+These guards compare strings **lexicographically** (like sorting). They don't tell you whether a string starts with a
+prefix, whether a path is inside a directory, or which version number is newer:
+
+- `"/zzz"` and `"/app/data/../../etc"` are both *not less than* `"/app/data/"`, so a `LessThan` check lets them through.
+- `"10.0.0"` is *less than* `"2.0.0"` in ordinal order.
+
+Use `StartsWith` for prefixes, the [path check](#file-path-validation) below for directories, and `System.Version` for
+versions.
+:::
 
 ## Why StringComparison Matters
 
@@ -34,17 +58,14 @@ Always specify `StringComparison` to ensure predictable behavior across cultures
 
 ## Ordinal Comparisons
 
-**Best for**: File paths, identifiers, configuration keys, protocol values
+**Best for**: Identifiers, configuration keys, protocol values
 
 ```csharp
 // Case-sensitive ordinal comparison
-bool before = Is.LessThan("apple", "banana", StringComparison.Ordinal);
+bool before = Is.LessThan("apple", "banana", StringComparison.Ordinal); // true
 
-// Case-insensitive ordinal comparison
-bool equal = Is.LessThan("Apple", "apple", StringComparison.OrdinalIgnoreCase); // false
-
-// Throw if ordering is wrong
-ThrowIf.GreaterThan("config.dev", "config.prod", StringComparison.Ordinal);
+// Case-insensitive ordinal comparison: "Apple" and "apple" are equal, so neither is less
+bool less = Is.LessThan("Apple", "apple", StringComparison.OrdinalIgnoreCase); // false
 ```
 
 ### Why Ordinal?
@@ -70,53 +91,78 @@ bool before = Is.LessThan("straße", "strasse", StringComparison.InvariantCultur
 String `Between` guards use inclusive comparisons:
 
 ```csharp
-// Check if version is in range
-bool inRange = Is.Between("2.5", "2.0", "3.0", StringComparison.Ordinal);
+// Is the (fixed-width) shelf code within the range A00..C99?
+bool inRange = Is.Between("B42", "A00", "C99", StringComparison.Ordinal); // true
 
-// Throw if version is NOT in allowed range
-if (!Is.Between(version, "2.0", "3.0", StringComparison.Ordinal))
-{
-    throw new InvalidOperationException("Version out of range");
-}
+// ThrowIf.Between throws when the value IS inside the range
+ThrowIf.Between(code, "X00", "X99", StringComparison.Ordinal); // reject reserved codes X00..X99
 ```
+
+If `min` is greater than `max` under the given comparison, both `Is.Between` and `ThrowIf.Between` throw an
+`ArgumentException` ("The minimum must be less than or equal to the maximum.").
+
+Ranges like this only make sense when the strings are compared the way they sort, as with fixed-width codes. Don't use
+them for version numbers (`"2.10"` sorts before `"2.9"`) or as a prefix check.
 
 ## Real-World Examples
 
 ### Version Comparison
 
+Compare versions as `System.Version`, not as strings. `Version` implements `IComparable<Version>`, so the generic guards
+work with it directly:
+
 ```csharp
 public class VersionValidator
 {
-    public void ValidateVersion(string version)
+    private static readonly Version MinVersion = new(2, 0, 0);
+    private static readonly Version MaxVersion = new(3, 0, 0);
+
+    public void ValidateVersion(string versionText)
     {
-        const string MinVersion = "2.0.0";
-        const string MaxVersion = "3.0.0";
-        
-        ThrowIf.LessThan(version, MinVersion, StringComparison.Ordinal,
+        if (!Version.TryParse(versionText, out var version))
+        {
+            throw new ArgumentException("Invalid version.", nameof(versionText));
+        }
+
+        ThrowIf.LessThan(version, MinVersion,
             new InvalidOperationException($"Version must be {MinVersion} or higher"));
-        
-        ThrowIf.GreaterThan(version, MaxVersion, StringComparison.Ordinal,
+
+        ThrowIf.GreaterThan(version, MaxVersion,
             new InvalidOperationException($"Version must be {MaxVersion} or lower"));
     }
 }
 ```
 
+`Version` compares missing components as lower than present ones (`2.0` < `2.0.0`), so compare versions with the same
+number of components.
+
 ### File Path Validation
 
+To check that a path stays inside a directory, resolve it first and then compare it to a root that ends with a
+directory separator. Don't use `LessThan`/`GreaterThan` for this:
+
 ```csharp
-public void ValidatePath(string path)
+public string ResolveDataPath(string relativePath)
 {
-    const string AllowedPrefix = "/app/data/";
-    
-    // Ensure path starts with allowed prefix (case-insensitive on Windows)
-    if (Is.LessThan(path, AllowedPrefix, StringComparison.OrdinalIgnoreCase))
+    // The root must end with a separator, otherwise "/app/data-other" would match "/app/data"
+    string root = Path.GetFullPath("/app/data/");
+    string fullPath = Path.GetFullPath(Path.Combine(root, relativePath)); // resolves "..", "." and rooted input
+
+    if (!fullPath.StartsWith(root, StringComparison.Ordinal))
     {
         throw new UnauthorizedAccessException("Path outside allowed directory");
     }
+
+    return fullPath;
 }
 ```
 
+Use `StringComparison.OrdinalIgnoreCase` only when the file system is case-insensitive (typically Windows). This check
+doesn't follow symbolic links; if the directory can contain links, resolve them as well.
+
 ### Username Validation
+
+Duplicate checks are equality checks, not ordering checks:
 
 ```csharp
 public class UserValidator
@@ -126,8 +172,7 @@ public class UserValidator
         ThrowIf.NullOrEmpty(username);
         
         // Case-insensitive check for duplicates
-        if (!Is.LessThan(username, existingUsername, StringComparison.OrdinalIgnoreCase) &&
-            !Is.GreaterThan(username, existingUsername, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(username, existingUsername, StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("Username already exists");
         }
@@ -143,11 +188,10 @@ public void ValidateSortOrder(List<string> names)
     for (int i = 0; i < names.Count - 1; i++)
     {
         // Ensure names are sorted by current culture
-        ThrowIf.GreaterThan(
-            names[i], 
-            names[i + 1], 
-            StringComparison.CurrentCulture,
-            new InvalidOperationException($"Names are not sorted: '{names[i]}' > '{names[i + 1]}'"));
+        if (Is.GreaterThan(names[i], names[i + 1], StringComparison.CurrentCulture))
+        {
+            throw new InvalidOperationException($"Names are not sorted: '{names[i]}' > '{names[i + 1]}'");
+        }
     }
 }
 ```
@@ -159,11 +203,8 @@ public class ConfigValidator
 {
     public void ValidateKey(string key)
     {
-        // Configuration keys should use ordinal comparison
-        const string MinKey = "app.";
-        const string MaxKey = "app.~";
-        
-        if (!Is.Between(key, MinKey, MaxKey, StringComparison.Ordinal))
+        // Configuration keys must start with "app." (a prefix check, so use StartsWith)
+        if (!key.StartsWith("app.", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid config key: {key}");
         }
@@ -171,27 +212,29 @@ public class ConfigValidator
 }
 ```
 
+An ordering check such as `Is.Between(key, "app.", "app.~", StringComparison.Ordinal)` would reject valid keys whose next
+character sorts after `~`, for example `"app.é"`.
+
 ### API Version Header Validation
 
 ```csharp
 public class ApiVersionValidator
 {
+    private static readonly Version MinSupported = new(1, 0);
+    private static readonly Version MaxSupported = new(2, 0);
+
     public void ValidateApiVersion(string requestVersion)
     {
-        const string MinSupported = "1.0";
-        const string MaxSupported = "2.0";
-        
-        ThrowIf.LessThan(
-            requestVersion, 
-            MinSupported, 
-            StringComparison.Ordinal,
-            new NotSupportedException($"API version {requestVersion} is no longer supported"));
-        
-        ThrowIf.GreaterThan(
-            requestVersion, 
-            MaxSupported, 
-            StringComparison.Ordinal,
-            new NotSupportedException($"API version {requestVersion} is not yet supported"));
+        if (!Version.TryParse(requestVersion, out var version))
+        {
+            throw new NotSupportedException("Invalid API version");
+        }
+
+        ThrowIf.LessThan(version, MinSupported,
+            new NotSupportedException($"API version {version} is no longer supported"));
+
+        ThrowIf.GreaterThan(version, MaxSupported,
+            new NotSupportedException($"API version {version} is not yet supported"));
     }
 }
 ```
@@ -199,13 +242,13 @@ public class ApiVersionValidator
 ## Combining with Callbacks
 
 ```csharp
-bool isValidVersion = Is.Between(
-    version, 
-    "1.0", 
-    "2.0", 
+bool isValidCode = Is.Between(
+    code, 
+    "A00", 
+    "C99", 
     StringComparison.Ordinal,
-    SGuardCallbacks.OnSuccess(() => logger.LogInformation("Version validated"))
-    + SGuardCallbacks.OnFailure(() => logger.LogWarning("Invalid version")));
+    SGuardCallbacks.OnSuccess(() => logger.LogInformation("Code in range"))
+    + SGuardCallbacks.OnFailure(() => logger.LogWarning("Code out of range")));
 ```
 
 ## Best Practices
@@ -226,10 +269,10 @@ Is.LessThan(a, b, StringComparison.Ordinal)
 
 ### 2. Use Ordinal for Non-User Strings
 
-For identifiers, keys, paths, and protocol values:
+For identifiers, keys and protocol values:
 
 ```csharp
-ThrowIf.GreaterThan(configKey, "app.", StringComparison.Ordinal);
+bool before = Is.LessThan(configKeyA, configKeyB, StringComparison.Ordinal);
 ```
 
 ### 3. Use CurrentCulture for Display
@@ -245,7 +288,10 @@ bool sorted = Is.LessThan(displayName1, displayName2, StringComparison.CurrentCu
 For strings that need predictable behavior across systems but with culture rules:
 
 ```csharp
-ThrowIf.LessThan(value, threshold, StringComparison.InvariantCulture);
+if (Is.LessThan(value, threshold, StringComparison.InvariantCulture))
+{
+    throw new ArgumentException("Value sorts before the threshold.", nameof(value));
+}
 ```
 
 ## Performance
@@ -262,10 +308,10 @@ For performance-critical paths, prefer `Ordinal` or `OrdinalIgnoreCase`.
 
 ```csharp
 // DON'T: Culture-dependent, unpredictable
-if (version.CompareTo("2.0") < 0) { }
+if (name.CompareTo("M") < 0) { }
 
 // DO: Explicit and predictable
-if (Is.LessThan(version, "2.0", StringComparison.Ordinal)) { }
+if (Is.LessThan(name, "M", StringComparison.Ordinal)) { }
 ```
 
 ### Pitfall 2: Case-Sensitive When You Mean Insensitive
@@ -286,6 +332,18 @@ Is.LessThan(userInput, "threshold", StringComparison.CurrentCulture);
 
 // DO: Use Ordinal for non-linguistic strings
 Is.LessThan(userInput, "threshold", StringComparison.Ordinal);
+```
+
+### Pitfall 4: Ordering Instead of Prefix, Path or Version Checks
+
+```csharp
+// DON'T: Lexicographic ordering
+Is.LessThan("10.0.0", "2.0.0", StringComparison.Ordinal);  // true, although 10.0.0 is newer
+Is.LessThan("/zzz", "/app/data/", StringComparison.Ordinal); // false, so a "path < root" check lets it through
+
+// DO
+Is.LessThan(new Version("10.0.0"), new Version("2.0.0"));    // false
+bool isConfigKey = key.StartsWith("app.", StringComparison.Ordinal);
 ```
 
 ## Next Steps

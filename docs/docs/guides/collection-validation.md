@@ -13,7 +13,9 @@ SGuard provides two powerful collection guards:
 - **`Any`**: At least one element matches the predicate
 - **`All`**: All elements match the predicate
 
-Both work with any `IEnumerable<T>` and accept a predicate (`Func<T, bool>`).
+Both work with any `IEnumerable<T>` and accept a predicate (`Func<T, bool>`). `Is.Any`, `Is.All` and the `ThrowIf` overloads
+that take an exception instance also accept a `ReadOnlySpan<T>` (arrays bind to it on C# 14). A `null` source or
+predicate throws `ArgumentNullException`.
 
 ## Any Guard
 
@@ -136,6 +138,8 @@ public void ProcessUsers(List<User> users)
 ```csharp
 public class OrderService
 {
+    private readonly ILogger<OrderService> logger;
+
     public void ValidateOrders(IEnumerable<Order> orders)
     {
         ThrowIf.NullOrEmpty(orders);
@@ -158,8 +162,13 @@ public class OrderService
 ```csharp
 public class InventoryManager
 {
+    private readonly INotificationService notificationService;
+
     public void CheckInventory(List<Product> products)
     {
+        // ThrowIf.All throws for an empty list, so reject that case first with its own message
+        ThrowIf.NullOrEmpty(products);
+
         // Alert if any product is out of stock
         if (Is.Any(products, p => p.Stock == 0))
         {
@@ -251,7 +260,7 @@ bool allValid = Is.All(
 
 ## Empty Collections
 
-Both guards handle empty collections gracefully:
+Empty sources follow LINQ semantics, for the `IEnumerable<T>` and `ReadOnlySpan<T>` overloads alike:
 
 ```csharp
 // Returns false (no elements match)
@@ -260,6 +269,13 @@ Is.Any(emptyList, x => true);   // false
 // Returns true (vacuous truth: all zero elements match)
 Is.All(emptyList, x => false);  // true
 ```
+
+As a consequence:
+
+- `ThrowIf.Any` never throws for an empty source.
+- `ThrowIf.All` **always** throws for an empty source (`AllException`, or your exception), whatever the predicate. A
+  check like `ThrowIf.All(users, u => !u.IsActive)` reports "all users are inactive" for an empty list.
+- `Is.All(items, i => i.IsValid)` returns `true` for an empty list, so it doesn't prove that there is anything valid.
 
 **Best practice**: Check for null/empty collections first:
 

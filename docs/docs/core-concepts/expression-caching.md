@@ -8,7 +8,7 @@ Learn how SGuard optimizes performance through efficient expression caching.
 
 ## Overview
 
-SGuard uses expression caching to reduce overhead for repeated validations, particularly when using selectors with `NullOrEmpty` guards. This optimization is **automatic**, **thread-safe**, and requires no configuration.
+SGuard caches the compiled selectors used by `Is.NullOrEmpty(value, selector)` and `ThrowIf.NullOrEmpty(value, selector)` to reduce overhead for repeated validations. Guards without a selector compile nothing and don't use the cache. This optimization is **automatic**, **thread-safe**, and requires no configuration.
 
 ## What Is Cached?
 
@@ -26,15 +26,15 @@ The compiled expression is stored in a thread-safe cache, eliminating the need t
 
 ## Performance Benefits
 
-### Without Caching (Naive Approach)
-- Every validation recompiles the selector expression
+### Without Caching (Before This Release)
+- Every validation recompiles the selector expression (the earlier cache was keyed by expression instance and never hit)
 - Increased CPU overhead
 - Higher memory allocations
 
 ### With Caching (SGuard's Approach)
 - Expression compiled once, reused many times
 - Reduced CPU overhead
-- Minimal allocations for repeated validations
+- Much lower allocations for repeated validations (the call site still builds an expression tree on every call)
 
 ## Cache Implementation
 
@@ -65,7 +65,7 @@ foreach (var order in orders)
 ## Benchmarks
 
 Measured on .NET 10 with a two-level selector (`o => o.Customer.Name`),
-averaged over 20,000 calls:
+averaged over 20,000 calls, comparing the previous behaviour (recompiling on every call) with the cache:
 
 | Guard | Without caching | With caching |
 |---|---|---|
@@ -74,7 +74,10 @@ averaged over 20,000 calls:
 
 Times are per call; sizes are memory allocated per call. The remaining
 allocation is the expression tree the C# compiler builds at the call site on
-every call.
+every call. This matches the Changelog: selector-based calls are roughly 40–50x
+faster with about 90% less allocation. These figures come from that measurement,
+not from the committed BenchmarkDotNet results in `SGuard.Benchmark/benchmarks/`,
+which were recorded before the cache existed.
 
 ## Limitations
 
@@ -82,9 +85,12 @@ every call.
   separate cache entries. `Is.NullOrEmpty` and `ThrowIf.NullOrEmpty` share the
   same entry for the same selector.
 - **Captured variables are not cached**: A selector that reads a captured
-  variable (e.g. `_ => someLocal.Name`) embeds that variable's current object
-  in its compiled form, so it is compiled on every call to stay correct.
-  Select from the lambda parameter (`x => x.Name`) to benefit from caching.
+  variable (e.g. `_ => someLocal.Name` or `o => o.Items[index]` with a local
+  `index`) embeds that variable's current value in its compiled form, so it is
+  compiled on every call to stay correct. Selectors made only of the lambda
+  parameter, member accesses, conversions, method calls, array indexing and
+  constants of primitive types, enums, `string` or `decimal` are cached. Select
+  from the lambda parameter (`x => x.Name`) to benefit from caching.
 - **No cache eviction**: Entries remain for the application lifetime (this is
   usually fine as the cache size is bounded by the number of unique validation
   patterns in your code). Each selector input type holds at most 1,000
@@ -109,9 +115,9 @@ All caching operations are thread-safe. Multiple threads can safely:
 
 ## Memory Considerations
 
-The cache stores:
-- **Compiled expressions** (one per unique selector pattern)
-- **Cache keys** (expression structure metadata)
+The cache stores, per selector input type:
+- **Compiled delegates** (one per unique selector shape)
+- **Cache keys** (the first expression tree seen for each shape, compared by structure)
 
 In typical applications, the cache remains small because:
 1. The number of unique validation patterns is limited

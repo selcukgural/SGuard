@@ -44,21 +44,24 @@ if (!Is.Between(req.Age, 13, 130))
     throw new ArgumentOutOfRangeException(nameof(req.Age), "Age seems invalid.");
 }
 
-// Numeric comparisons 
-bool inRange = Is.Between(value, min, max); 
+// Numeric comparisons
+bool inRange = Is.Between(value, min, max);
 bool isLess = Is.LessThan(a, b);
+
+// Email format (built-in ASCII pattern; not a full RFC 5322 parser)
+bool validEmail = Is.Email("jane.doe@example.com"); // true
 ```
 
 ### 3. Collection Validation
 
 ```csharp
-// Check if any element matches
+// Check if any element matches (false for an empty collection)
 bool hasPositive = Is.Any(numbers, n => n > 0);
 
-// Check if all elements match
+// Check if all elements match (true for an empty collection)
 bool allNonNull = Is.All(items, it => it is not null);
 
-// Throw if validation fails
+// Throw if any element matches
 ThrowIf.Any(items, i => i is null, 
     new InvalidOperationException("Collection contains null items"));
 ```
@@ -67,16 +70,21 @@ ThrowIf.Any(items, i => i is null,
 
 ```csharp
 // Ordinal comparisons
-bool before = Is.LessThan("apple", "banana", StringComparison.Ordinal);
+bool before = Is.LessThan("apple", "banana", StringComparison.Ordinal); // true
 
-// Throw if ordering violates a rule
-ThrowIf.GreaterThan("zebra", "apple", StringComparison.Ordinal); // throws
+// ThrowIf.Between has a StringComparison overload (throws when the value is inside the range)
+ThrowIf.Between("kiwi", "a", "m", StringComparison.OrdinalIgnoreCase); // throws BetweenException
 ```
+
+String overloads exist for the `Is.*` comparisons and `ThrowIf.Between` only; `ThrowIf.LessThan`/`GreaterThan` and their `OrEqual` variants have none.
 
 ## Key Points
 
-- **Between is inclusive**: Both min and max values are allowed
-- **CallerArgumentExpression**: Automatic, precise error messages
+- **ThrowIf throws when the condition is true**: `ThrowIf.LessThan(x, 0)` throws if `x < 0`; `ThrowIf.Between(v, a, b)` throws if `v` is inside the range
+- **Between is inclusive**: Both min and max values are allowed; `min > max` throws `ArgumentException`
+- **CallerArgumentExpression**: Automatic, precise error messages such as `Value 'req.Email' is null or empty.` (checked values are left out unless `SGuardOptions.IncludeValuesInExceptions` is enabled)
+- **Built-in exceptions derive from `ArgumentException`**: `ParamName` holds the argument expression
+- **NaN fails comparisons**: `Is.*` returns `false` and `ThrowIf.*` throws
 - **Custom exceptions**: Pass your own exception types when needed
 - **Callbacks**: Add side effects on success/failure (logging, metrics, etc.)
 

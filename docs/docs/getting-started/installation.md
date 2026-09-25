@@ -8,8 +8,8 @@ Get started with SGuard in your .NET project.
 
 ## Requirements
 
-- .NET 6, 7, 8, or 9
-- Visual Studio 2022+ or any compatible IDE
+- .NET 8, 9, or 10 (the package targets `net8.0`, `net9.0` and `net10.0`)
+- An IDE or editor that supports your target framework (for example Visual Studio, Rider or VS Code)
 
 ## Install via NuGet
 

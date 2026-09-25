@@ -8,12 +8,20 @@ Master null and empty validation for various types with SGuard.
 
 ## Overview
 
-The `NullOrEmpty` guard is one of the most versatile in SGuard, supporting:
-- Strings
-- Collections (arrays, lists, dictionaries, etc.)
-- Nullable value types
-- Reference types
-- Complex objects with selectors
+The `NullOrEmpty` guard works with any value. What counts as "empty" depends on the type:
+
+| Value | Counts as null or empty |
+|-------|-------------------------|
+| Reference types | `null` |
+| `string` | `null` or `""` (whitespace-only strings are **not** empty) |
+| Arrays, collections, other `IEnumerable` | `null` or no elements |
+| Value types | `default(T)`: `0`, `0m`, `false`, `Guid.Empty`, `default(DateTime)`, any default struct |
+| Nullable value types | no value, **or** a value equal to the default (`int? x = 0` is empty) |
+| Date/time types | zero ticks (`DateTime`, `TimeSpan`, `TimeOnly`, `DateTimeOffset`), `DateOnly.MinValue` |
+| Other class instances | `null` only; a non-null object is **not** inspected property by property |
+
+`ThrowIf.NullOrEmpty` throws a `NullOrEmptyException` (an `ArgumentException`) when the value is null or empty;
+`Is.NullOrEmpty` returns `true` in that case.
 
 ## String Validation
 
@@ -28,6 +36,16 @@ bool isEmpty = Is.NullOrEmpty(name);
 - `null` reference
 - Empty string (`""`)
 
+Whitespace is not treated as empty: `Is.NullOrEmpty("   ")` returns `false`. If blank input must be rejected, check it
+yourself:
+
+```csharp
+if (string.IsNullOrWhiteSpace(username))
+{
+    throw new ArgumentException("Username is required.", nameof(username));
+}
+```
+
 ## Collection Validation
 
 ```csharp
@@ -39,19 +57,41 @@ bool hasItems = !Is.NullOrEmpty(list);
 
 **What's checked:**
 - `null` reference
-- Empty collection (`.Count == 0` or `.Any() == false`)
+- Empty collection (`ICollection.Count == 0`, otherwise the sequence yields no element)
 
-## Nullable Value Types
+For a lazy `IEnumerable` that isn't a collection, the guard starts enumerating it to see whether it has a first element.
+
+## Value Types and Nullable Value Types
 
 ```csharp
 int? count = GetCount();
-ThrowIf.NullOrEmpty(count);
+ThrowIf.NullOrEmpty(count);   // throws if count is null OR 0
 
-bool hasValue = !Is.NullOrEmpty(nullableInt);
+bool isEmpty = Is.NullOrEmpty(0);         // true
+bool isFalse = Is.NullOrEmpty(false);     // true
+bool noId    = Is.NullOrEmpty(Guid.Empty); // true
 ```
 
 **What's checked:**
-- `.HasValue == false`
+- `.HasValue == false` for nullable value types
+- The type's default value: `0` for numbers, `false`, `Guid.Empty`, `default(DateTime)` and any default struct
+
+:::warning
+`NullOrEmpty` rejects legitimate zeros and `false`. Don't use it for values where `0` or `false` is valid input, such as
+a quantity that may be zero, a discount of `0m` or an `IsActive = false` flag. Check `HasValue` (or `is null`) for
+"was it provided?" and use the [comparison guards](./comparison-guards) for ranges:
+
+```csharp
+int? discount = request.Discount;
+
+if (discount is null)
+{
+    throw new ArgumentException("Discount is required.", nameof(request.Discount));
+}
+
+ThrowIf.LessThan(discount.Value, 0); // 0 is allowed, negative values are not
+```
+:::
 
 ## Reference Types
 
@@ -64,6 +104,9 @@ bool exists = !Is.NullOrEmpty(entity);
 
 **What's checked:**
 - `null` reference
+
+Nothing else: a `User` whose `Username` and `Email` are empty strings still passes `ThrowIf.NullOrEmpty(user)`. See
+[Complex Type Validation](#complex-type-validation).
 
 ## Deep Validation with Selectors
 
@@ -78,9 +121,13 @@ ThrowIf.NullOrEmpty(user, u => u.Profile.Email);
 ThrowIf.NullOrEmpty(order, o => o.Customer.Address.City);
 ```
 
+A `null` anywhere on the path (for example `order.Customer` being `null`) counts as empty, so the guard throws instead
+of a `NullReferenceException`. The selected member is then checked with the rules in the table above.
+
 **Benefits:**
-- **Expression caching**: Compiled once, reused efficiently
-- **Precise error messages**: `CallerArgumentExpression` captures the full selector path
+- **Expression caching**: Selectors are compiled once and cached by expression structure. A selector that captures a
+  local variable is recompiled on every call. See [Expression Caching](../core-concepts/expression-caching).
+- **Precise error messages**: `CallerArgumentExpression` captures the selector text
 - **Type-safe**: Compile-time checking of property access
 
 ### Selector Example: Order Validation
@@ -108,19 +155,22 @@ public void ValidateOrder(Order order)
 }
 ```
 
-**Error message for nested validation:**
+**Error message for nested validation** (`ParamName` is the selector text, `o => o.Customer.Email`):
 ```
-Value cannot be null or empty. (Parameter 'order, o => o.Customer.Email')
+Value 'o => o.Customer.Email' is null or empty.
 ```
 
 ## Complex Type Validation
 
-For types with custom "empty" semantics, SGuard checks:
+SGuard doesn't validate an object's properties unless you ask it to:
 
-1. **Null reference**
-2. **String properties**: If empty or whitespace
-3. **Collection properties**: If empty
-4. **Nullable properties**: If no value
+- **Without a selector**, `ThrowIf.NullOrEmpty(user)` only checks that `user` is not `null`. A non-null `User` with an
+  empty `Username`, an empty `Email` and no `Roles` passes.
+- **With a selector that points at a complex type**, for example `ThrowIf.NullOrEmpty(account, a => a.Owner)`, the
+  member counts as empty only if it is `null` or **all** of its readable properties are null or empty (recursively). A
+  `User` with an empty `Email` but a non-empty `Username` is not empty.
+
+So neither form tells you that *each* required property is filled in. Guard each property you require:
 
 ```csharp
 public class User
@@ -130,8 +180,21 @@ public class User
     public List<string> Roles { get; set; }
 }
 
-ThrowIf.NullOrEmpty(user); 
-// Checks: user != null, Username not empty, Email not empty, Roles not empty
+public void ValidateUser(User user)
+{
+    ThrowIf.NullOrEmpty(user);
+    ThrowIf.NullOrEmpty(user.Username);
+    ThrowIf.NullOrEmpty(user.Email);
+    ThrowIf.NullOrEmpty(user.Roles);
+}
+
+// Or through a parent object, where a null parent is also reported as empty:
+public void ValidateAccount(Account account)
+{
+    ThrowIf.NullOrEmpty(account, a => a.Owner.Username);
+    ThrowIf.NullOrEmpty(account, a => a.Owner.Email);
+    ThrowIf.NullOrEmpty(account, a => a.Owner.Roles);
+}
 ```
 
 When a selector points at a complex type, its readable properties are inspected recursively, with these limits:
@@ -198,13 +261,15 @@ public class OrderService
 ## Best Practices
 
 1. **Validate early**: Check at method boundaries and constructors
-2. **Use selectors for nested properties**: Benefit from expression caching
-3. **Combine with other guards**: Mix with comparison guards for complete validation
-4. **Fail fast**: Place `NullOrEmpty` checks before other validations
+2. **Guard each required property**: `NullOrEmpty` on an object doesn't check its members one by one
+3. **Don't use `NullOrEmpty` where `0` or `false` is valid**: use `is null` / `HasValue` and comparison guards instead
+4. **Use selectors for nested properties**: A null parent is reported as empty instead of throwing `NullReferenceException`
+5. **Fail fast**: Place `NullOrEmpty` checks before other validations
 
 ## Performance Tips
 
-- **Selectors are cached**: Don't worry about performance with repeated selector-based validations
+- **Selectors are cached**: Repeated selector-based validations reuse the compiled delegate, unless the selector
+  captures local variables
 - **Direct checks are fastest**: When you don't need selectors, use direct checks
 - See [Performance](../advanced/performance) for benchmarks
 
