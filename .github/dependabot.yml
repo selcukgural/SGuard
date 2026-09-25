@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directories:
+      - "/guard"
+      - "/tests"
+      - "/SGuard.Benchmark"
+    schedule:
+      interval: "weekly"
+    groups:
+      nuget:
+        patterns: ["*"]
+
+  - package-ecosystem: "npm"
+    directory: "/docs"
+    schedule:
+      interval: "weekly"
+    groups:
+      docusaurus:
+        patterns: ["@docusaurus/*"]
+      npm:
+        patterns: ["*"]
+        exclude-patterns: ["@docusaurus/*"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
