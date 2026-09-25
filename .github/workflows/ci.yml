@@ -1,9 +1,9 @@
 name: CI
 
+# Jobs that run project code (restore, build, test) get a read-only token. Only the report job, which runs no
+# project code, can write checks and PR comments.
 permissions:
   contents: read
-  pull-requests: write      
-  checks: write
 
 on:
   push:
@@ -16,6 +16,8 @@ on:
       - 'SGuard.sln'
       - '**/*.csproj'
       - 'coverlet.runsettings'
+      - 'Directory.Build.props'
+      - '**/packages.lock.json'
   pull_request:
     branches: [ main, master ]
     paths:
@@ -26,6 +28,8 @@ on:
       - 'SGuard.sln'
       - '**/*.csproj'
       - 'coverlet.runsettings'
+      - 'Directory.Build.props'
+      - '**/packages.lock.json'
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -34,11 +38,15 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup .NET (8/9/10)
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
@@ -52,11 +60,12 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: ${{ runner.os }}-nuget-
 
+      # Directory.Build.props enables locked mode and fails on vulnerable packages in CI.
       - name: Restore
-        run: dotnet restore SGuard.sln
+        run: dotnet restore SGuard.sln --locked-mode
 
       - name: Build
         run: dotnet build SGuard.sln --configuration Release --no-restore
@@ -69,14 +78,6 @@ jobs:
           --settings coverlet.runsettings
           --collect:"XPlat Code Coverage"
           --logger "trx;LogFileName=test_results.trx"
-
-      - name: Publish Unit Test Results (TRX)
-        if: always()
-        uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
-        with:
-          files: '**/TestResults/**/*.trx'
-          check_name: 'Test Results'
-          comment_mode: failures
 
       - name: Generate Coverage Summary + HTML
         uses: danielpalme/ReportGenerator-GitHub-Action@d3ebf1f760f7d8ab92cc44d9bcfee7ad73722a31 # v5.5.11
@@ -91,19 +92,12 @@ jobs:
       - name: Append coverage table to Job Summary
         if: always()
         run: |
-          echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "## Code Coverage" >> "$GITHUB_STEP_SUMMARY"
           if [ -f coveragereport/Summary.md ]; then
-            cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
+            cat coveragereport/Summary.md >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "_Coverage summary not generated._" >> $GITHUB_STEP_SUMMARY
+            echo "_Coverage summary not generated._" >> "$GITHUB_STEP_SUMMARY"
           fi
-
-      - name: Post sticky PR comment (Coverage)
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
-        with:
-          header: sguard-coverage
-          path: coveragereport/Summary.md
 
       - name: Upload Artifacts
         if: always()
@@ -121,3 +115,41 @@ jobs:
             **/TestResults/**/*.trx
             **/TestResults/**/coverage*.xml
             **/TestResults/**/*.xml
+
+  report:
+    needs: build-and-test
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: Download raw test/coverage files
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: test-and-coverage-raw
+          path: raw
+
+      - name: Download coverage report
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: coverage-report-html
+          path: coveragereport
+
+      - name: Publish Unit Test Results (TRX)
+        uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
+        with:
+          files: 'raw/**/*.trx'
+          check_name: 'Test Results'
+          comment_mode: failures
+
+      - name: Post sticky PR comment (Coverage)
+        if: github.event_name == 'pull_request' && hashFiles('coveragereport/Summary.md') != ''
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
+        with:
+          header: sguard-coverage
+          path: coveragereport/Summary.md

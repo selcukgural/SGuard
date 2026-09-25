@@ -12,6 +12,8 @@ Thank you for your interest in contributing to SGuard! We welcome contributions 
    - `git checkout -b my-feature-branch`
 4. **Make your changes**
    - Add your improvements, bug fixes, or documentation updates.
+   - If you add or update a NuGet package, run `dotnet restore SGuard.sln` and commit the updated
+     `packages.lock.json` files. CI restores in locked mode and fails if they are out of date.
 5. **Test your changes**
    - Ensure all tests pass and your code is robust.
 6. **Commit and push**
