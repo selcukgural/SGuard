@@ -2,16 +2,25 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 2.1.x   | :white_check_mark: |
-| 2.0.x   | :white_check_mark: |
-| < 2.0   | :x:                |
+SGuard is pre-1.0. Security fixes are released as a new version of the package; older versions don't receive backports.
+Please upgrade to the [latest release on NuGet](https://www.nuget.org/packages/SGuard).
+
+| Version        | Supported          |
+| -------------- | ------------------ |
+| Latest release | :white_check_mark: |
+| Older releases | :x:                |
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in SGuard, please report it by emailing [selcukgural@gmail.com].
+Please do not report security vulnerabilities through public GitHub issues, discussions or pull requests.
 
-Please do not report security vulnerabilities through public GitHub issues.
+Report them privately instead:
 
-We will respond to your report within 48 hours and will keep you informed of the progress.
+- **GitHub:** [open a private security advisory](https://github.com/selcukgural/SGuard/security/advisories/new)
+  (Security tab → "Report a vulnerability"), or
+- **Email:** [selcukgural@gmail.com](mailto:selcukgural@gmail.com)
+
+Include the affected version, a description of the issue, and the steps or code needed to reproduce it.
+
+We will respond to your report within 48 hours and keep you informed of the progress. Once a fix is released, we will
+publish a security advisory and credit you, unless you prefer to stay anonymous.

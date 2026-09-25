@@ -187,6 +187,18 @@ public sealed class ThrowIfNullOrEmptyTests
     }
 
     [Fact]
+    public void NullOrEmpty_Selector_DefaultException_IsNewInstance_AndNamesSelector()
+    {
+        var obj = new TestObject { Name = null };
+
+        var first = Assert.Throws<NullOrEmptyException>(() => ThrowIf.NullOrEmpty(obj, o => o.Name));
+        var second = Assert.Throws<NullOrEmptyException>(() => ThrowIf.NullOrEmpty(obj, o => o.Name));
+
+        Assert.NotSame(first, second);
+        Assert.Equal("Value 'o => o.Name' is null or empty.", first.Message);
+    }
+
+    [Fact]
     public void NullOrEmpty_Selector_DefaultException_Valid_DoesNotThrow_AndReportsSuccess()
     {
         var probe = new CallbackProbe();

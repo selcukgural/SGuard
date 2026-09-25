@@ -1,5 +1,5 @@
 using System.Collections;
-#pragma warning dIsable CS8603 // Possible null reference return.
+#pragma warning disable CS8603 // Possible null reference return.
 
 namespace SGuard.Tests;
 
@@ -298,5 +298,38 @@ public sealed class NullOrEmptyVisitorOptimizedTests
     {
         Assert.True(Is.NullOrEmpty(new HolderOf<WithIndexer> { Inner = new WithIndexer() }, x => x.Inner!));
         Assert.False(Is.NullOrEmpty(new HolderOf<WithIndexer> { Inner = new WithIndexer { S = "x" } }, x => x.Inner!));
+    }
+
+    private sealed class TrackingEnumerable(params int[] items) : IEnumerable<int>
+    {
+        public int DisposeCount { get; private set; }
+
+        public IEnumerator<int> GetEnumerator() => new Enumerator(this, items);
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        private sealed class Enumerator(TrackingEnumerable owner, int[] items) : IEnumerator<int>
+        {
+            private int _index = -1;
+
+            public int Current => items[_index];
+            object IEnumerator.Current => Current;
+            public bool MoveNext() => ++_index < items.Length;
+            public void Reset() => _index = -1;
+            public void Dispose() => owner.DisposeCount++;
+        }
+    }
+
+    [Fact]
+    public void Enumerable_Selector_DisposesEnumerator()
+    {
+        var empty = new TrackingEnumerable();
+        var nonEmpty = new TrackingEnumerable(1);
+
+        Assert.True(Is.NullOrEmpty(new HolderOf<TrackingEnumerable> { Inner = empty }, x => x.Inner!));
+        Assert.False(Is.NullOrEmpty(new HolderOf<TrackingEnumerable> { Inner = nonEmpty }, x => x.Inner!));
+
+        Assert.True(empty.DisposeCount >= 1);
+        Assert.True(nonEmpty.DisposeCount >= 1);
     }
 }

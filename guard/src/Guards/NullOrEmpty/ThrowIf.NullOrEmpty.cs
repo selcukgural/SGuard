@@ -7,11 +7,6 @@ namespace SGuard;
 public sealed partial class ThrowIf
 {
     /// <summary>
-    /// A predefined exception instance used for null or empty value checks.
-    /// </summary>
-    private static readonly NullOrEmptyException NullOrEmptyException = new();
-
-    /// <summary>
     /// Checks if the specified value is null or empty.
     /// If the value is null or empty, throws a predefined exception.
     /// </summary>
@@ -92,15 +87,21 @@ public sealed partial class ThrowIf
 
     /// <summary>
     /// Checks if the specified value is null or empty based on the provided selector expression.
-    /// If the value is null or empty, throws a predefined exception.
+    /// If the value is null or empty, throws a <see cref="NullOrEmptyException"/> that names the selector.
     /// </summary>
     /// <typeparam name="TValue">The type of the value to check.</typeparam>
     /// <param name="value">The value to check for null or emptiness.</param>
     /// <param name="selector">An expression to select a property or field from the value.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
-    public static void NullOrEmpty<TValue>(TValue value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null)
+    /// <param name="selectorExpression">The expression passed as <paramref name="selector"/>, captured by the compiler.</param>
+    public static void NullOrEmpty<TValue>(TValue value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(selector))] string? selectorExpression = null)
     {
-        NullOrEmpty(value, selector, NullOrEmptyException, callback);
+        ArgumentNullException.ThrowIfNull(selector);
+
+        var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
+
+        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException<object?>(null, selectorExpression), callback);
     }
 
     /// <summary>

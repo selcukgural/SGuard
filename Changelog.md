@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Built-in exception messages now name the caller's argument expressions
   (e.g. `left=request.Age`). They previously always showed the guard's own
   parameter names (`value=value`).
+- `ThrowIf.NullOrEmpty(value, selector)` throws a new `NullOrEmptyException`
+  on every failure, with a message naming the selector (e.g.
+  `Value 'o => o.Name' is null or empty.`). It previously rethrew one shared
+  instance, whose stack trace and data were overwritten by concurrent callers.
+- Selector-based `NullOrEmpty` checks on enumerable members now dispose the
+  enumerator they create.
 
 ### Added
 

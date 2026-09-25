@@ -133,7 +133,10 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
                 var assignEnum =
                     Expression.Assign(enumeratorVar, Expression.Call(Expression.Convert(memberAccess, typeof(IEnumerable)), getEnumeratorMethod!));
                 var moveNextCall = Expression.Call(enumeratorVar, moveNextMethod!);
-                var block = Expression.Block([enumeratorVar], assignEnum, Expression.IsFalse(moveNextCall));
+                var disposeMethod = typeof(IDisposable).GetMethod(nameof(IDisposable.Dispose));
+                var disposeIfNeeded = Expression.IfThen(Expression.TypeIs(enumeratorVar, typeof(IDisposable)),
+                                                        Expression.Call(Expression.Convert(enumeratorVar, typeof(IDisposable)), disposeMethod!));
+                var block = Expression.Block([enumeratorVar], assignEnum, Expression.TryFinally(Expression.IsFalse(moveNextCall), disposeIfNeeded));
                 specificCheck = block;
             }
         }
