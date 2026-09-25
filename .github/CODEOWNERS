@@ -2,11 +2,11 @@
 * @selcukgural
 
 # Core library files - Ana kütüphane dosyaları
-/sguard/src/ @selcukgural
+/guard/src/ @selcukgural
 
 # Documentation - Dokümantasyon dosyaları
-/sguard/docs/ @selcukgural
-/sguard/README.md @selcukgural
+/docs/ @selcukgural
+/README.md @selcukgural
 *.md @selcukgural
 
 # Configuration files - Yapılandırma dosyaları
@@ -26,16 +26,16 @@ nuget.config @selcukgural
 *.nuspec @selcukgural
 
 # License and legal files - Lisans ve yasal dosyalar
-/sguard/LICENSE @selcukgural
-/sguard/Security.md @selcukgural
-/sguard/CODE_OF_CONDUCT.md @selcukgural
-/sguard/CONTRIBUTING.md @selcukgural
+/LICENSE @selcukgural
+/Security.md @selcukgural
+/CODE_OF_CONDUCT.md @selcukgural
+/CONTRIBUTING.md @selcukgural
 
 # Core exception classes - Ana exception sınıfları
-/sguard/src/Exceptions/ @selcukgural
+/guard/src/Exceptions/ @selcukgural
 
 # Core guard classes - Ana guard sınıfları
-/sguard/src/Guards/ @selcukgural
+/guard/src/Guards/ @selcukgural
 
 # Internal utilities - Dahili araçlar
-/sguard/src/Internal/ @selcukgural
+/guard/src/Internal/ @selcukgural
