@@ -1,7 +1,7 @@
 name: CI
 
 permissions:
-  contents: write           
+  contents: read
   pull-requests: write      
   checks: write
 
@@ -78,12 +78,12 @@ jobs:
           check_name: 'Test Results'
           comment_mode: failures
 
-      - name: Generate Coverage Summary + Badges + HTML
+      - name: Generate Coverage Summary + HTML
         uses: danielpalme/ReportGenerator-GitHub-Action@d3ebf1f760f7d8ab92cc44d9bcfee7ad73722a31 # v5.5.11
         with:
           reports: '**/TestResults/**/coverage.cobertura.xml'
           targetdir: 'coveragereport'
-          reporttypes: 'MarkdownSummary;Html;Badges'
+          reporttypes: 'MarkdownSummary;Html'
           assemblyfilters: '+SGuard*;-*Tests'
           classfilters: '-*.Generated*'
           tag: '${{ github.run_number }}'
@@ -121,15 +121,3 @@ jobs:
             **/TestResults/**/*.trx
             **/TestResults/**/coverage*.xml
             **/TestResults/**/*.xml
-
-      - name: Update badges on main
-        if: github.ref == 'refs/heads/main'
-        run: |
-          mkdir -p badges
-          cp -f coveragereport/badges/* badges/
-      - name: Commit badges
-        if: github.ref == 'refs/heads/main'
-        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
-        with:
-          commit_message: 'chore: update coverage badges [skip ci]'
-          file_pattern: 'badges/*.svg'
