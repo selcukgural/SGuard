@@ -21,15 +21,21 @@ public sealed partial class ThrowIf
     /// <param name="max">The maximum value.</param>
     /// <param name="callback">An optional callback that will be invoked with the guard evaluation outcome.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, or <paramref name="max"/> is null.</exception>
+    /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
+    /// <param name="minExpression">The expression passed as <paramref name="min"/>, captured by the compiler.</param>
+    /// <param name="maxExpression">The expression passed as <paramref name="max"/>, captured by the compiler.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Between<TValue, TMin, TMax>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max, SGuardCallback? callback = null)
+    public static void Between<TValue, TMin, TMax>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(value))] string? valueExpression = null,
+        [CallerArgumentExpression(nameof(min))] string? minExpression = null,
+        [CallerArgumentExpression(nameof(max))] string? maxExpression = null)
         where TValue : IComparable<TMin>, IComparable<TMax>
     {
         ArgumentNullException.ThrowIfNull(min);
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
         
-        SGuard.Guard(Is.Between(value, min, max), () => Throw.BetweenException(value, min, max), callback);
+        SGuard.Guard(Is.Between(value, min, max), () => Throw.BetweenException(value, min, max, valueExpression, minExpression, maxExpression), callback);
     }
 
     /// <summary>
@@ -67,14 +73,20 @@ public sealed partial class ThrowIf
     /// <param name="max">The maximum bound (inclusive).</param>
     /// <param name="comparison">The string comparison rule to use.</param>
     /// <param name="callback">Optional guard outcome callback.</param>
+    /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
+    /// <param name="minExpression">The expression passed as <paramref name="min"/>, captured by the compiler.</param>
+    /// <param name="maxExpression">The expression passed as <paramref name="max"/>, captured by the compiler.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Between(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null)
+    public static void Between(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(value))] string? valueExpression = null,
+        [CallerArgumentExpression(nameof(min))] string? minExpression = null,
+        [CallerArgumentExpression(nameof(max))] string? maxExpression = null)
     {
         ArgumentNullException.ThrowIfNull(min);
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
         
-        SGuard.Guard(Is.Between(value, min, max, comparison), () => Throw.BetweenException(value, min, max), callback);
+        SGuard.Guard(Is.Between(value, min, max, comparison), () => Throw.BetweenException(value, min, max, valueExpression, minExpression, maxExpression), callback);
     }
 
     /// <summary>

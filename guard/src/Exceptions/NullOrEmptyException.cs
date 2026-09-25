@@ -31,7 +31,7 @@ public sealed class NullOrEmptyException : Exception
     /// </summary>
     public NullOrEmptyException(object? value, [CallerArgumentExpression("value")] string? valueExpr = null) : base(BuildMessage(value, valueExpr))
     {
-        Data["value"] = value;
+        ExceptionValues.AddTo(Data, "value", value);
         Data["valueExpr"] = valueExpr;
     }
 
@@ -44,6 +44,7 @@ public sealed class NullOrEmptyException : Exception
     /// <returns>A formatted string containing details about the null or empty value.</returns>
     private static string BuildMessage(object? value, string? valueExpr)
     {
-        return $"Value '{valueExpr}' is null or empty. Actual: value={value}.";
+        var message = $"Value '{valueExpr}' is null or empty.";
+        return ExceptionValues.Included ? $"{message} Actual: value={ExceptionValues.Format(value)}." : message;
     }
 }

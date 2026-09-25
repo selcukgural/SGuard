@@ -34,8 +34,8 @@ public sealed class GreaterThanOrEqualException : Exception
                                        [CallerArgumentExpression("right")] string? rightExpr = null)
         : base(BuildMessage(left, right, leftExpr, rightExpr))
     {
-        Data["left"]     = left;
-        Data["right"]    = right;
+        ExceptionValues.AddTo(Data, "left", left);
+        ExceptionValues.AddTo(Data, "right", right);
         Data["leftExpr"] = leftExpr;
         Data["rightExpr"] = rightExpr;
     }
@@ -50,6 +50,9 @@ public sealed class GreaterThanOrEqualException : Exception
     /// <returns>A formatted error message string describing the violation.</returns>
     private static string BuildMessage(object? left, object? right, string? leftExpr, string? rightExpr)
     {
-        return $"'{left}' is greater than or equal to '{right}'. Actual: left={leftExpr}, right={rightExpr}.";
+        return (ExceptionValues.Included
+               ? $"'{ExceptionValues.Format(left)}' is greater than or equal to '{ExceptionValues.Format(right)}'. "
+               : "Left value is greater than or equal to right value. ") +
+           $"Actual: left={leftExpr}, right={rightExpr}.";
     }
 }

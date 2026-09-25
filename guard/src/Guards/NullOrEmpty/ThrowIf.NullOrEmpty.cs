@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using SGuard.Exceptions;
 
 namespace SGuard;
@@ -17,10 +18,12 @@ public sealed partial class ThrowIf
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">The value to check for null or emptiness.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
-    public static void NullOrEmpty<T>(T value, SGuardCallback? callback = null)
+    /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
+    public static void NullOrEmpty<T>(T value, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(value))] string? valueExpression = null)
     {
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
-        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException(value), callback);
+        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException(value, valueExpression), callback);
     }
 
     /// <summary>
@@ -30,14 +33,14 @@ public sealed partial class ThrowIf
     /// <typeparam name="T">The type of the elements in the ReadOnlySpan.</typeparam>
     /// <param name="value">The ReadOnlySpan to check for null or emptiness.</param>
     /// <param name="callback">An optional callback to execute when the value is null or empty.</param>
-    public static void NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null)
+    /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
+    public static void NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(value))] string? valueExpression = null)
     {
         var isNullOrEmpty = value.IsEmpty;
-        T? firstItem = default;
 
         if (!isNullOrEmpty)
         {
-            firstItem = value[0];
             isNullOrEmpty = true;
             foreach (var item in value)
             {
@@ -51,7 +54,7 @@ public sealed partial class ThrowIf
             }
         }
 
-        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException(firstItem), callback);
+        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException<object?>(null, valueExpression), callback);
     }
 
     /// <summary>
