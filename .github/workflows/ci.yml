@@ -3,6 +3,7 @@ name: CI
 permissions:
   contents: write           
   pull-requests: write      
+  checks: write
 
 on:
   push:
@@ -91,7 +92,11 @@ jobs:
         if: always()
         run: |
           echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
-          cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
+          if [ -f coveragereport/Summary.md ]; then
+            cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "_Coverage summary not generated._" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Post sticky PR comment (Coverage)
         if: github.event_name == 'pull_request'
