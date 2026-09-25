@@ -6,8 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Fixed
-- Selector-based `NullOrEmpty` guards now cache compiled selectors by expression structure. The previous cache was keyed by expression instance and never hit, so every call recompiled the selector; calls are now roughly 40–50x faster with about 90% less allocation. `Is.NullOrEmpty` and `ThrowIf.NullOrEmpty` share the cache. Selectors that read captured variables are still compiled on every call.
+
+- Selector-based `NullOrEmpty` guards now cache compiled selectors by
+  expression structure. The previous cache was keyed by expression instance
+  and never hit, so every call recompiled the selector; calls are now roughly
+  40–50x faster with about 90% less allocation. `Is.NullOrEmpty` and
+  `ThrowIf.NullOrEmpty` share the cache. Selectors that read captured
+  variables are still compiled on every call.
 
 ## [0.1.2] - 2025-10-14
 ### Added

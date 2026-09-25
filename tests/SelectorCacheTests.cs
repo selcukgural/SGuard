@@ -10,7 +10,6 @@ public sealed class SelectorCacheTests
     private sealed class Person
     {
         public string? Name { get; init; }
-        public string? Email { get; init; }
         public Address? Address { get; init; }
     }
 
@@ -125,7 +124,7 @@ public sealed class SelectorCacheTests
     [Fact]
     public void Comparer_CapturedVariable_IsNotCacheable()
     {
-        var captured = new Person();
+        var captured = new Person { Name = "captured" };
         Expression<Func<Person, object?>> selector = _ => captured.Name;
 
         Assert.False(SelectorShapeComparer.IsCacheable(selector));

@@ -240,6 +240,9 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
             case ConstantExpression constant:
                 hash.Add(constant.Value);
                 break;
+            default:
+                // Only reachable for uncacheable selectors, which are never stored.
+                break;
         }
     }
 
