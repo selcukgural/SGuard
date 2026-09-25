@@ -203,6 +203,126 @@ public sealed class ThrowIfAnyTests
 
     #endregion
 
+    #region Any<T, TException>(Span<T> source, Func<T, bool> predicate, TException exception, SGuardCallback? callback = null)
+
+    [Fact]
+    public void Any_Span_ThrowsArgumentNullException_WhenPredicateIsNull()
+    {
+        // Arrange
+        Span<int> source = stackalloc[] { 1, 2, 3 };
+        Func<int, bool>? nullPredicate = null;
+        var exception = new CustomException();
+
+        // Act & Assert
+        var result = Assert.Throws<ArgumentNullException>(() =>
+        {
+            Span<int> localSource = stackalloc[] { 1, 2, 3 };
+            ThrowIf.Any(localSource, nullPredicate!, exception);
+        });
+
+        Assert.Equal("predicate", result.ParamName);
+    }
+
+    [Fact]
+    public void Any_Span_ThrowsArgumentNullException_WhenExceptionIsNull()
+    {
+        // Arrange
+        Span<int> source = stackalloc[] { 1, 2, 3 };
+        Func<int, bool> predicate = x => x > 0;
+        CustomException? nullException = null;
+
+        // Act & Assert
+        var result = Assert.Throws<ArgumentNullException>(() =>
+        {
+            Span<int> localSource = stackalloc[] { 1, 2, 3 };
+            ThrowIf.Any(localSource, predicate, nullException!);
+        });
+
+        Assert.Equal("exception", result.ParamName);
+    }
+
+    [Fact]
+    public void Any_Span_ThrowsCustomException_WhenAnyElementSatisfiesPredicate()
+    {
+        // Arrange
+        Span<int> source = stackalloc[] { 1, 2, 3 };
+        Func<int, bool> predicate = x => x == 2;
+        var customException = new CustomException("Match found in Span");
+
+        // Act & Assert
+        var exception = Assert.Throws<CustomException>(() =>
+        {
+            Span<int> localSource = stackalloc[] { 1, 2, 3 };
+            ThrowIf.Any(localSource, predicate, customException);
+        });
+
+        Assert.Equal("Match found in Span", exception.Message);
+        Assert.Same(customException, exception);
+    }
+
+    [Fact]
+    public void Any_Span_DoesNotThrow_WhenNoElementSatisfiesPredicate()
+    {
+        // Arrange
+        Span<int> source = stackalloc[] { 1, 3, 5 };
+        Func<int, bool> predicate = x => x % 2 == 0;
+        var customException = new CustomException();
+
+        // Act & Assert - Should not throw
+        ThrowIf.Any(source, predicate, customException);
+    }
+
+    [Fact]
+    public void Any_Span_DoesNotThrow_WhenSourceIsEmpty()
+    {
+        // Arrange
+        Span<int> source = Span<int>.Empty;
+        Func<int, bool> predicate = x => true;
+        var customException = new CustomException();
+
+        // Act & Assert - Should not throw
+        ThrowIf.Any(source, predicate, customException);
+    }
+
+    [Fact]
+    public void Any_Span_InvokesCallback_WhenAnyElementSatisfiesPredicate()
+    {
+        // Arrange
+        Span<int> source = stackalloc[] { 1, 2, 3 };
+        Func<int, bool> predicate = x => x == 2;
+        var customException = new CustomException();
+        GuardOutcome? callbackOutcome = null;
+        SGuardCallback callback = outcome => callbackOutcome = outcome;
+
+        // Act & Assert
+        Assert.Throws<CustomException>(() =>
+        {
+            Span<int> localSource = stackalloc[] { 1, 2, 3 };
+            ThrowIf.Any(localSource, predicate, customException, callback);
+        });
+
+        Assert.Equal(GuardOutcome.Failure, callbackOutcome);
+    }
+
+    [Fact]
+    public void Any_Span_InvokesCallback_WhenNoElementSatisfiesPredicate()
+    {
+        // Arrange
+        Span<int> source = stackalloc[] { 1, 3, 5 };
+        Func<int, bool> predicate = x => x % 2 == 0;
+        var customException = new CustomException();
+        GuardOutcome? callbackOutcome = null;
+        SGuardCallback callback = outcome => callbackOutcome = outcome;
+
+        // Act
+        ThrowIf.Any(source, predicate, customException, callback);
+
+        // Assert
+        Assert.Equal(GuardOutcome.Success, callbackOutcome);
+    }
+
+    #endregion
+
     #region Performance and Short-Circuit Tests
 
     [Fact]

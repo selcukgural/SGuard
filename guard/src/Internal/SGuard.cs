@@ -13,7 +13,7 @@ internal static class SGuard
 {
     /// <summary>
     /// Enforces a guard clause that throws an exception if a specified condition is met.
-    /// When occur an exception during the callback invocation, the exception is ignored.
+    /// When occurs an exception during the callback invocation, the exception is ignored.
     /// </summary>
     /// <param name="condition">The condition to evaluate. If true, the specified exception-throwing action will be invoked.</param>
     /// <param name="throwAction">The action to execute if the condition is met, typically throwing an exception.</param>
@@ -36,7 +36,7 @@ internal static class SGuard
 
     /// <summary>
     /// Invokes the specified callback safely while handling any exceptions that may occur during the invocation.
-    /// When occur an exception during the callback invocation, the exception is ignored.
+    /// When occurs an exception during the callback invocation, the exception is ignored.
     /// </summary>
     /// <param name="condition">The condition to evaluate. Determines which outcome will be passed to the callback.</param>
     /// <param name="callback">An optional callback to be invoked with the outcome of the condition evaluation.</param>
@@ -45,7 +45,7 @@ internal static class SGuard
 
     /// <summary>
     /// Invokes the specified callback safely while handling any exceptions that may occur during the invocation.
-    /// When occur an exception during the callback invocation, the exception is ignored.
+    /// When occurs an exception during the callback invocation, the exception is ignored.
     /// </summary>
     /// <param name="condition">The condition used to determine the outcome passed to the callback.</param>
     /// <param name="callback">The callback to be invoked. Receives the outcome based on the provided condition.</param>

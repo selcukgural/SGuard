@@ -31,7 +31,7 @@ public static class ExceptionActivator
     {
         try
         {
-            return (TException?)Activator.CreateInstance(typeof(TException), args ?? Array.Empty<object>()) ??
+            return (TException?)Activator.CreateInstance(typeof(TException), args ?? []) ??
                    throw new InvalidOperationException($"Could not create instance of '{typeof(TException).FullName}'.");
         }
         catch (MissingMethodException)

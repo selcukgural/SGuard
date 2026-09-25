@@ -6,10 +6,34 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeSettings">
+    <configurations />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="368d2faa-bdc4-444a-898e-4c44b568d715" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/docs/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SGuard.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/guard/src/Guards/Email/Is.Email.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SGuard/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SGuard.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/SGuard.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/SGuard.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/guard/SGuard.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/SGuard.csproj.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/guard/SGuard.csproj.DotSettings" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Callbacks/SGuardCallback.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Callbacks/SGuardCallback.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Common/ExceptionActivator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Common/ExceptionActivator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Guards/All/Is.All.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/All/Is.All.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Guards/All/ThrowIf.All.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/All/ThrowIf.All.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Guards/Any/Is.Any.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/Any/Is.Any.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Guards/Any/ThrowIf.Any.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/Any/ThrowIf.Any.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/Is.NullOrEmpty.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Guards/NullOrEmpty/ThrowIf.NullOrEmpty.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Internal/SGuard.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Internal/SGuard.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guard/src/Internal/Visitor/NullOrEmptyVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/guard/src/Internal/Visitor/NullOrEmptyVisitor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/IsAllTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/IsAllTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/IsAnyTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/IsAnyTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/IsNullOrEmptyTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/IsNullOrEmptyTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/SGuard.Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/tests/SGuard.Tests.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/ThrowIfAnyTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/ThrowIfAnyTests.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +42,10 @@
   </component>
   <component name="DpaMonitoringSettings">
     <option name="firstShow" value="false" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="2" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -64,26 +92,11 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/02bfa03b73f94f5b8947ec21da8cdcba74518/57/01eb8ba3/InvalidOperationException.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/02bfa03b73f94f5b8947ec21da8cdcba74518/72/d214aaaf/ArgumentNullException.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/02bfa03b73f94f5b8947ec21da8cdcba74518/a4/0eaada2e/ArgumentException.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9e152ae1f1f0493cba641958893be34e6d18/98/2998a8d2/ConcurrentBag`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/23b393789bb834fac8f4c285f7e317cf0a0b42874eedab1321366c175116c/ArgumentException.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/5e14a4e27990972fa4ae94975603bd298aaf328ee083c03b10569ee4724d57/TestInvoker.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/5ef9e37e2f99ef2688a1586afed1cff6eef912a11aa9b20a56943a255a6e6b/RuntimeHelpers.CoreCLR.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/6d2342c247c64eb7a9b3702e481e4443f83e00/_18cae/IReadOnlyList.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/6d2342c247c64eb7a9b3702e481e4443f83e00/_73335/ITuple.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/6d2342c247c64eb7a9b3702e481e4443f83e00/_aa473/IReadOnlyCollection.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/6d2342c247c64eb7a9b3702e481e4443f83e00/_ec32c/IEnumerable.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7370f75b31302934cf197cfba21d55cbc9a7349a116dfbd47989bf9da3ffd4c8/RuntimePropertyInfo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/77fc0eb92b774686bbae91cb92331703d83600/_231dd/IEnumerable.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/77fc0eb92b774686bbae91cb92331703d83600/_e933c/IDictionary.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/85452eea5fbc567c4fb2b148c6d551d43e9fdb14e47c52c45c97e37eab57f71/ArgumentOutOfRangeException.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/a60d29cc1da0a3ba582d76e277de74172fe7bc65eef658abbd1f31711a24/Tuple.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ab39789ea37d758e3e8d50876435a5602cc024ea1189515a0571eb74ab1157f/XmlNodeList.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/adfc7b773ddc1b2c8c8a31541a79832a2bf2c215cae4f6e6de91c07661c89/ManualConfig.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b5b0d089f5c7786c38ca60661c1a5ae71fb467f3704e9cff2eac5af33d9d819/ArraySegment.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/baa8e7d4791cced365c9d7a682f0113b93d06e1c5c78bc63c611d852c11d83cd/INumber.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/054629aa37f44443aa6189c89c7e4c087f38/16/2f50f412/Enumerable.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285675a6903d43ca89ed13e37e2bfe3c2d4d0/02/a210bc2f/Assert.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/859d232309ed43adb1a6f74c405316a17d10/d2/d1f27f01/EmailAddressAttribute.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/eb1ebc61d2a24f9f94603910cc3f861aca708/b3/0cdb784a/Span`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/eb1ebc61d2a24f9f94603910cc3f861aca708/e5/8cb11b64/SpanMarshaller`2.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bfff78ecaa39c818519fc918bb2d4bbdca6ad93d7170f5cf325f67ccd0b97d43/BooleanAsserts.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SGuard.Benchmark/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SGuard.Benchmark/src/All/Is.All.Benchmark.cs" root0="FORCE_HIGHLIGHTING" />
@@ -105,7 +118,10 @@
     <setting file="file://$PROJECT_DIR$/tests/NullOrEmptyVisitorTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/ThrowIfCallbackExceptionSwallowTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/ThrowIfNullOrEmptyTests.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file:///usr/local/share/dotnet/sdk/9.0.101/Sdks/NuGet.Build.Tasks.Pack/buildCrossTargeting/NuGet.Build.Tasks.Pack.targets" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
@@ -126,19 +142,31 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     ".NET Project.SGuard.Benchmark.executor": "Run",
+    "7ce84f90-6ae2-4e9e-860e-eb90f45871f3.executor": "Debug",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "cidr.known.project.marker": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "e101f5ea-0955-4784-a7c1-9fb078d779f7.executor": "Run",
+    "e4ed925c-df81-4281-90d3-c9f07ddd1822.executor": "Debug",
     "e8fffb31-1d21-4053-88b9-721e10f8111c.executor": "Debug",
     "f9e0363e-a8d4-4255-a860-9e56649d97e9.executor": "Debug",
-    "git-widget-placeholder": "feature/re-update-pipeline",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -149,16 +177,14 @@
     ]
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected=".NET Project.SGuard.Benchmark">
     <configuration name="SGuard.Benchmark" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="PASS_PARENT_ENVS" value="1" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="ENV_FILE_PATHS" value="" />
       <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
       <option name="MIXED_MODE_DEBUG" value="0" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
@@ -223,6 +249,7 @@
       <workItem from="1757833371899" duration="3276000" />
       <workItem from="1757865672177" duration="737000" />
       <workItem from="1757867199293" duration="1843000" />
+      <workItem from="1778232558019" duration="11980000" />
     </task>
     <task id="LOCAL-00001" summary="feat(guards): add GreaterThan comparison guards and improve null/empty visitor&#10;&#10;- Add Is.GreaterThan&lt;TLeft,TRight&gt; method with null guards and callback support&#10;- Add Is.GreaterThanOrEqual&lt;TLeft,TRight&gt; method with null guards and callback support  &#10;- Remove basic NullVisitor implementation&#10;- Replace with comprehensive NullOrEmptyVisitor supporting nested member access chains&#10;- Add type-specific empty checks for string, arrays, collections, dictionaries, and numeric types&#10;- Implement null-safe member chain traversal to prevent NullReferenceException on nested properties&#10;&#10;Breaking changes:&#10;- NullVisitor class removed (internal API)&#10;&#10;New APIs:&#10;- Is.GreaterThan&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool&#10;- Is.GreaterThanOrEqual&lt;TLeft,TRight&gt;(TLeft, TRight, SGuardCallback?) -&gt; bool">
       <option name="closed" value="true" />
@@ -425,16 +452,29 @@
         </breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/tests/IsNullOrEmptyTests.cs</url>
-          <line>82</line>
+          <line>83</line>
           <properties documentPath="$PROJECT_DIR$/tests/IsNullOrEmptyTests.cs" containingFunctionPresentation="Method 'NullOrEmpty_WithEmptyPrimitiveValues_ReturnsTrue'">
             <startOffsets>
-              <option value="2766" />
+              <option value="2852" />
             </startOffsets>
             <endOffsets>
-              <option value="2801" />
+              <option value="2887" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/tests/IsAllTests.cs</url>
+          <line>55</line>
+          <properties documentPath="$PROJECT_DIR$/tests/IsAllTests.cs" containingFunctionPresentation="Method 'All_ReturnsTrue_ForEmptySource'">
+            <startOffsets>
+              <option value="1592" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1633" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

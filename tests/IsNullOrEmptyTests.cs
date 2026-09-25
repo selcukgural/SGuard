@@ -60,9 +60,10 @@ public class IsNullOrEmptyOptimizedTests
     public void NullOrEmpty_WithNullValue_ReturnsTrue()
     {
         // Arrange & Act & Assert
-        Assert.True(Is.NullOrEmpty<string>(null));
-        Assert.True(Is.NullOrEmpty<int?>(null));
-        Assert.True(Is.NullOrEmpty<TestClass>(null));
+        Assert.True(Is.NullOrEmpty<string>((string?)null));
+        Assert.True(Is.NullOrEmpty<int?>((int?)null));
+        Assert.True(Is.NullOrEmpty<TestClass>((TestClass?)null));
+        Assert.True(Is.NullOrEmpty<int>(Span<int>.Empty));
     }
 
     [Theory]
@@ -89,6 +90,13 @@ public class IsNullOrEmptyOptimizedTests
         Assert.True(Is.NullOrEmpty(""));
         Assert.True(Is.NullOrEmpty(string.Empty));
     }
+    
+    [Fact]
+    public void NullOrEmpty_WithSpanString_ReturnsTrue()
+    {
+        Assert.True(Is.NullOrEmpty(Span<char>.Empty));
+        Assert.True(Is.NullOrEmpty(Span<string>.Empty));
+    }
 
     [Fact]
     public void NullOrEmpty_WithNonEmptyString_ReturnsFalse()
@@ -96,6 +104,32 @@ public class IsNullOrEmptyOptimizedTests
         Assert.False(Is.NullOrEmpty("test"));
         Assert.False(Is.NullOrEmpty(" "));
         Assert.False(Is.NullOrEmpty("   "));
+    }
+    
+    [Fact]
+    public void NullOrEmpty_WithNonEmptySpanString_ReturnsFalse()
+    {
+        var spanA = new Span<string>(["a"]);
+        Assert.False(Is.NullOrEmpty(spanA));
+        
+        var spanB = new Span<string>(["a", "b"]);
+        Assert.False(Is.NullOrEmpty(spanB));
+        
+        var spanC = new Span<char>(['c']);
+        Assert.False(Is.NullOrEmpty(spanC));
+    }
+    
+    [Fact]
+    public void NullOrEmpty_WithNonEmptySpanInteger_ReturnsFalse()
+    {
+        var spanA = new Span<int>([1]);
+        Assert.False(Is.NullOrEmpty(spanA));
+        
+        var spanB = new Span<long>([1]);
+        Assert.False(Is.NullOrEmpty(spanB));
+        
+        var spanC = new Span<byte>([1]);
+        Assert.False(Is.NullOrEmpty(spanC));
     }
 
     [Fact]

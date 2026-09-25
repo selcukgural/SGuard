@@ -42,6 +42,37 @@ public sealed partial class ThrowIf
     }
 
     /// <summary>
+    /// Checks if the specified ReadOnlySpan value is null or empty.
+    /// If the value is null or empty, throws a predefined exception.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the ReadOnlySpan.</typeparam>
+    /// <param name="value">The ReadOnlySpan to check for null or emptiness.</param>
+    /// <param name="callback">An optional callback to execute when the value is null or empty.</param>
+    public static void NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null)
+    {
+        var isNullOrEmpty = value.IsEmpty;
+        T? firstItem = default;
+
+        if (!isNullOrEmpty)
+        {
+            firstItem = value[0];
+            isNullOrEmpty = true;
+            foreach (var item in value)
+            {
+                if (item is null)
+                {
+                    continue;
+                }
+                
+                isNullOrEmpty = false;
+                break;
+            }
+        }
+
+        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException(firstItem), callback);
+    }
+
+    /// <summary>
     /// Checks if the specified value is null or empty.
     /// If the value is null or empty, throws the specified exception.
     /// </summary>
@@ -60,7 +91,7 @@ public sealed partial class ThrowIf
 
     /// <summary>
     /// Checks if the specified value is null or empty.
-    /// If the value is null or empty, throws an exception of the specified type, created using the provided constructor arguments.
+    /// If the value is null or empty, throws an exception to the specified type, created using the provided constructor arguments.
     /// </summary>
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <typeparam name="TException">The type of the exception to throw if the value is null or empty.</typeparam>
@@ -111,7 +142,7 @@ public sealed partial class ThrowIf
 
     /// <summary>
     /// Checks if the specified value is null or empty based on the provided selector expression.
-    /// If the value is null or empty, throws a new exception of the specified type.
+    /// If the value is null or empty, throws a new exception to the specified type.
     /// </summary>
     /// <typeparam name="TValue">The type of the value to check.</typeparam>
     /// <typeparam name="TException">The type of the exception to throw if the value is null or empty.</typeparam>
@@ -130,7 +161,7 @@ public sealed partial class ThrowIf
 
     /// <summary>
     /// Checks if the specified value is null or empty based on the provided selector expression.
-    /// If the value is null or empty, throws an exception of the specified type, created using the provided constructor arguments.
+    /// If the value is null or empty, throws an exception to the specified type, created using the provided constructor arguments.
     /// </summary>
     /// <typeparam name="TValue">The type of the value to check.</typeparam>
     /// <typeparam name="TException">The type of the exception to throw if the value is null or empty.</typeparam>
@@ -160,11 +191,15 @@ public sealed partial class ThrowIf
     private static bool CheckNullOrEmpty<TValue>(TValue obj, Expression<Func<TValue, object?>> valueExpression)
     {
         if (NullOrEmptyVisitor.Visit(valueExpression) is not Expression<Func<TValue, object?>> expression)
+        {
             throw new InvalidOperationException("Unable to process the expression.");
+        }
 
         // Limit cache to avoid memory leak
         if (CompiledExpressionCache.Count > MaxCompiledExpressionCacheSize)
+        {
             CompiledExpressionCache.Clear();
+        }
 
         var func = (Func<TValue, object?>)CompiledExpressionCache.GetOrAdd(expression, exp => ((Expression<Func<TValue, object?>>)exp).Compile());
 

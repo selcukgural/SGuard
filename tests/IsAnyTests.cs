@@ -559,6 +559,140 @@ public sealed class IsAnyTests
 
     #endregion
 
+    #region Span<T> Overload Tests
+
+    [Fact]
+    public void Any_Span_ThrowsArgumentNullException_WhenPredicateIsNull()
+    {
+        // Arrange
+        Func<int, bool>? nullPredicate = null;
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentNullException>(
+            () =>
+            {
+                Span<int> source = stackalloc int[] { 1, 2, 3 };
+                Is.Any(source, nullPredicate!);
+            });
+        
+        Assert.Equal("predicate", exception.ParamName);
+    }
+
+    [Fact]
+    public void Any_Span_ReturnsTrue_WhenAtLeastOneElementSatisfiesPredicate()
+    {
+        // Arrange
+        Span<int> source = stackalloc int[] { 1, 2, 3, 4, 5 };
+        Func<int, bool> predicate = x => x > 3;
+
+        // Act
+        var result = Is.Any(source, predicate);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void Any_Span_ReturnsFalse_WhenNoElementSatisfiesPredicate()
+    {
+        // Arrange
+        Span<int> source = stackalloc int[] { 1, 2, 3 };
+        Func<int, bool> predicate = x => x > 5;
+
+        // Act
+        var result = Is.Any(source, predicate);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void Any_Span_ReturnsFalse_WhenSourceIsEmpty()
+    {
+        // Arrange
+        Span<int> source = Span<int>.Empty;
+        Func<int, bool> predicate = x => x > 0;
+
+        // Act
+        var result = Is.Any(source, predicate);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void Any_Span_InvokesCallback_WithSuccessOutcome_WhenPredicateMatches()
+    {
+        // Arrange
+        Span<int> source = stackalloc int[] { 1, 2, 3, 4, 5 };
+        Func<int, bool> predicate = x => x > 3;
+        GuardOutcome? callbackOutcome = null;
+        SGuardCallback callback = outcome => callbackOutcome = outcome;
+
+        // Act
+        var result = Is.Any(source, predicate, callback);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(GuardOutcome.Success, callbackOutcome);
+    }
+
+    [Fact]
+    public void Any_Span_InvokesCallback_WithFailureOutcome_WhenNoPredicateMatches()
+    {
+        // Arrange
+        Span<int> source = stackalloc int[] { 1, 2, 3 };
+        Func<int, bool> predicate = x => x > 5;
+        GuardOutcome? callbackOutcome = null;
+        SGuardCallback callback = outcome => callbackOutcome = outcome;
+
+        // Act
+        var result = Is.Any(source, predicate, callback);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(GuardOutcome.Failure, callbackOutcome);
+    }
+
+    [Fact]
+    public void Any_Span_InvokesCallback_WithFailureOutcome_WhenSourceIsEmpty()
+    {
+        // Arrange
+        Span<int> source = Span<int>.Empty;
+        Func<int, bool> predicate = x => x > 0;
+        GuardOutcome? callbackOutcome = null;
+        SGuardCallback callback = outcome => callbackOutcome = outcome;
+
+        // Act
+        var result = Is.Any(source, predicate, callback);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(GuardOutcome.Failure, callbackOutcome);
+    }
+
+    [Fact]
+    public void Any_Span_ShortCircuits_WhenFirstElementMatches()
+    {
+        // Arrange
+        var evaluationCount = 0;
+        Span<int> source = stackalloc int[] { 1, 2, 3, 4, 5 };
+        Func<int, bool> predicate = x =>
+        {
+            evaluationCount++;
+            return x == 1; // First element matches
+        };
+
+        // Act
+        var result = Is.Any(source, predicate);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(1, evaluationCount); // Should only evaluate first element
+    }
+
+    #endregion
+
     #region Integration with LINQ Tests
 
     [Fact]
