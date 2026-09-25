@@ -10,6 +10,27 @@ Complete reference for exception-throwing guard methods.
 
 `ThrowIf` provides guard methods that throw exceptions when validation fails. All methods use `CallerArgumentExpression` to generate precise error messages automatically.
 
+### Exception messages and checked values
+
+Built-in exceptions (`BetweenException`, `GreaterThanException`, `GreaterThanOrEqualException`, `LessThanException`,
+`LessThanOrEqualException`, `NullOrEmptyException`) name the argument expressions from the call site, but leave the
+checked values out, because messages usually end up in logs and error trackers:
+
+```csharp
+ThrowIf.GreaterThan(request.Age, limit);
+// GreaterThanException: Left value is greater than right value. Actual: left=request.Age, right=limit.
+```
+
+To include the values, set the option once at startup. Each value is written with `ToString()` and truncated to 64
+characters, and `Exception.Data` holds these strings (keys such as `left`, `right`, `value`, `min`, `max`):
+
+```csharp
+SGuardOptions.IncludeValuesInExceptions = true;
+// GreaterThanException: '4217' is greater than '1000'. Actual: left=request.Age, right=limit.
+```
+
+Only enable it when the guarded values can't be passwords, tokens or personal data.
+
 ## NullOrEmpty
 
 Validates that values are not null or empty.

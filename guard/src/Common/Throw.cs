@@ -19,7 +19,7 @@ namespace SGuard;
 public static class Throw
 {
     /// <summary>
-    /// Throws a <see cref="BetweenException"/> with a formatted message that includes the value, minimum, and maximum bounds, as well as their respective expressions.
+    /// Throws a <see cref="BetweenException"/> whose message names the value, minimum and maximum expressions; the values themselves are included only when <see cref="SGuardOptions.IncludeValuesInExceptions"/> is enabled.
     /// </summary>
     /// <typeparam name="TValue">The type of the value being checked.</typeparam>
     /// <typeparam name="TMin">The type of the minimum bound.</typeparam>
@@ -30,11 +30,17 @@ public static class Throw
     /// <exception cref="BetweenException">
     /// Thrown when the value is not within the specified range indicated by the minimum and maximum bounds.
     /// </exception>
+    /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
+    /// <param name="minExpression">The expression passed as <paramref name="min"/>, captured by the compiler.</param>
+    /// <param name="maxExpression">The expression passed as <paramref name="max"/>, captured by the compiler.</param>
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void BetweenException<TValue, TMin, TMax>(TValue value, TMin min, TMax max)
+    public static void BetweenException<TValue, TMin, TMax>(TValue value, TMin min, TMax max,
+        [CallerArgumentExpression(nameof(value))] string? valueExpression = null,
+        [CallerArgumentExpression(nameof(min))] string? minExpression = null,
+        [CallerArgumentExpression(nameof(max))] string? maxExpression = null)
     {
-        throw new BetweenException(value, min, max);
+        throw new BetweenException(value, min, max, valueExpression, minExpression, maxExpression);
     }
 
     /// <summary>
@@ -43,11 +49,12 @@ public static class Throw
     /// <exception cref="NullOrEmptyException">
     /// Always thrown with a message stating, "Value is null or empty".
     /// </exception>
+    /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void NullOrEmptyException<T>(T value)
+    public static void NullOrEmptyException<T>(T value, [CallerArgumentExpression(nameof(value))] string? valueExpression = null)
     {
-        throw new NullOrEmptyException(value);
+        throw new NullOrEmptyException(value, valueExpression);
     }
 
     /// <summary>
@@ -60,11 +67,15 @@ public static class Throw
     /// <exception cref="GreaterThanException">
     /// Always thrown with a message stating that the left value is greater than the right value.
     /// </exception>
+    /// <param name="lValueExpression">The expression passed as <paramref name="lValue"/>, captured by the compiler.</param>
+    /// <param name="rValueExpression">The expression passed as <paramref name="rValue"/>, captured by the compiler.</param>
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void GreaterThanException<TLeft, TRight>(TLeft lValue, TRight rValue)
+    public static void GreaterThanException<TLeft, TRight>(TLeft lValue, TRight rValue,
+        [CallerArgumentExpression(nameof(lValue))] string? lValueExpression = null,
+        [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
     {
-        throw new GreaterThanException(lValue, rValue);
+        throw new GreaterThanException(lValue, rValue, lValueExpression, rValueExpression);
     }
 
     /// <summary>
@@ -78,11 +89,15 @@ public static class Throw
     /// <exception cref="GreaterThanOrEqualException">
     /// Always thrown with a message stating that the left value is greater than or equal to the right value.
     /// </exception>
+    /// <param name="lValueExpression">The expression passed as <paramref name="lValue"/>, captured by the compiler.</param>
+    /// <param name="rValueExpression">The expression passed as <paramref name="rValue"/>, captured by the compiler.</param>
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void GreaterThanOrEqualException<TLeft, TRight>(TLeft lValue, TRight rValue)
+    public static void GreaterThanOrEqualException<TLeft, TRight>(TLeft lValue, TRight rValue,
+        [CallerArgumentExpression(nameof(lValue))] string? lValueExpression = null,
+        [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
     {
-        throw new GreaterThanOrEqualException(lValue, rValue);
+        throw new GreaterThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression);
     }
 
     /// <summary>
@@ -96,11 +111,15 @@ public static class Throw
     /// <exception cref="LessThanException">
     /// Always thrown with a message stating that the left value is less than the right value.
     /// </exception>
+    /// <param name="lValueExpression">The expression passed as <paramref name="lValue"/>, captured by the compiler.</param>
+    /// <param name="rValueExpression">The expression passed as <paramref name="rValue"/>, captured by the compiler.</param>
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void LessThanException<TLeft, TRight>(TLeft lValue, TRight rValue)
+    public static void LessThanException<TLeft, TRight>(TLeft lValue, TRight rValue,
+        [CallerArgumentExpression(nameof(lValue))] string? lValueExpression = null,
+        [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
     {
-        throw new LessThanException(lValue, rValue);
+        throw new LessThanException(lValue, rValue, lValueExpression, rValueExpression);
     }
 
     /// <summary>
@@ -114,11 +133,15 @@ public static class Throw
     /// <exception cref="LessThanOrEqualException">
     /// Always thrown with a message stating that the left value is less than or equal to the right value.
     /// </exception>
+    /// <param name="lValueExpression">The expression passed as <paramref name="lValue"/>, captured by the compiler.</param>
+    /// <param name="rValueExpression">The expression passed as <paramref name="rValue"/>, captured by the compiler.</param>
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void LessThanOrEqualException<TLeft, TRight>(TLeft lValue, TRight rValue)
+    public static void LessThanOrEqualException<TLeft, TRight>(TLeft lValue, TRight rValue,
+        [CallerArgumentExpression(nameof(lValue))] string? lValueExpression = null,
+        [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
     {
-        throw new LessThanOrEqualException(lValue, rValue);
+        throw new LessThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression);
     }
 
     /// <summary>

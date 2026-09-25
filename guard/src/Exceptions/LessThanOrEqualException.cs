@@ -36,8 +36,8 @@ public sealed class LessThanOrEqualException : Exception
         [CallerArgumentExpression("right")] string? rightExpr = null)
         : base(BuildMessage(left, right, leftExpr, rightExpr))
     {
-        Data["left"]      = left;
-        Data["right"]     = right;
+        ExceptionValues.AddTo(Data, "left", left);
+        ExceptionValues.AddTo(Data, "right", right);
         Data["leftExpr"]  = leftExpr;
         Data["rightExpr"] = rightExpr;
     }
@@ -51,6 +51,9 @@ public sealed class LessThanOrEqualException : Exception
     /// <param name="rightExpr">The string representation of the right-hand side expression.</param>
     /// <returns>A formatted error message describing the comparison failure.</returns>
     private static string BuildMessage(object? left, object? right, string? leftExpr, string? rightExpr)
-        => $"'{left}' is less than or equal to '{right}'. Actual: left={leftExpr}, right={rightExpr}.";
+        => (ExceptionValues.Included
+               ? $"'{ExceptionValues.Format(left)}' is less than or equal to '{ExceptionValues.Format(right)}'. "
+               : "Left value is less than or equal to right value. ") +
+           $"Actual: left={leftExpr}, right={rightExpr}.";
 
 }

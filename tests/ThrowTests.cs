@@ -84,10 +84,9 @@ public sealed class ThrowTests
 
         Assert.False(string.IsNullOrWhiteSpace(typed.Message));
 
-        if (typed.Data.Contains("left"))  Assert.Equal(l, typed.Data["left"]);
-        if (typed.Data.Contains("right")) Assert.Equal(r, typed.Data["right"]);
-        if (typed.Data.Contains("leftExpr"))  Assert.False(string.IsNullOrWhiteSpace(typed.Data["leftExpr"]?.ToString()));
-        if (typed.Data.Contains("rightExpr")) Assert.False(string.IsNullOrWhiteSpace(typed.Data["rightExpr"]?.ToString()));
+        // Values are left out unless SGuardOptions.IncludeValuesInExceptions is enabled.
+        Assert.False(typed.Data.Contains("left"));
+        Assert.False(typed.Data.Contains("right"));
     }
 
     [Fact]
@@ -151,7 +150,7 @@ public sealed class ThrowTests
         var candidates = throwType.GetMethods(flags)
                                   .Where(m => m.Name == methodName && m.IsGenericMethodDefinition == (genericArgs.Length > 0))
                                   .Where(m => genericArgs.Length == 0 || m.GetGenericArguments().Length == genericArgs.Length)
-                                  .Where(m => m.GetParameters().Length == (parameters?.Length ?? 0))
+                                  .Where(m => m.GetParameters().Count(p => !p.IsOptional) == (parameters?.Length ?? 0))
                                   .ToArray();
 
         var candidate = candidates.FirstOrDefault();
@@ -164,7 +163,10 @@ public sealed class ThrowTests
 
         try
         {
-            method.Invoke(null, parameters);
+            var arguments = method.GetParameters()
+                                  .Select((p, i) => i < (parameters?.Length ?? 0) ? parameters![i] : p.DefaultValue)
+                                  .ToArray();
+            method.Invoke(null, arguments);
             throw new InvalidOperationException("Expected an exception to be thrown, but none was thrown.");
         }
         catch (TargetInvocationException ex)

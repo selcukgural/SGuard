@@ -18,14 +18,18 @@ public sealed partial class ThrowIf
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="lValue"/> is less than <paramref name="rValue"/>.</exception>
+    /// <param name="lValueExpression">The expression passed as <paramref name="lValue"/>, captured by the compiler.</param>
+    /// <param name="rValueExpression">The expression passed as <paramref name="rValue"/>, captured by the compiler.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void LessThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
+    public static void LessThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(lValue))] string? lValueExpression = null,
+        [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
         where TLeft : IComparable<TRight>
     {
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
 
-        SGuard.Guard(Is.LessThan(lValue, rValue), () => Throw.LessThanException(lValue, rValue), callback);
+        SGuard.Guard(Is.LessThan(lValue, rValue), () => Throw.LessThanException(lValue, rValue, lValueExpression, rValueExpression), callback);
     }
 
 
@@ -69,14 +73,18 @@ public sealed partial class ThrowIf
     /// <exception cref="Exception">
     /// Thrown if the left value is less than or equal to the right value. The exception is determined by internal logic.
     /// </exception>
+    /// <param name="lValueExpression">The expression passed as <paramref name="lValue"/>, captured by the compiler.</param>
+    /// <param name="rValueExpression">The expression passed as <paramref name="rValue"/>, captured by the compiler.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void LessThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
+    public static void LessThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(lValue))] string? lValueExpression = null,
+        [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
         where TLeft : IComparable<TRight>
     {
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.LessThanOrEqualException(lValue, rValue), callback);
+        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue), () => Throw.LessThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression), callback);
     }
 
 

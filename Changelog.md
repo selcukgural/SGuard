@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   40–50x faster with about 90% less allocation. `Is.NullOrEmpty` and
   `ThrowIf.NullOrEmpty` share the cache. Selectors that read captured
   variables are still compiled on every call.
+- Built-in exception messages now name the caller's argument expressions
+  (e.g. `left=request.Age`). They previously always showed the guard's own
+  parameter names (`value=value`).
+
+### Added
+
+- `SGuardOptions.IncludeValuesInExceptions` to include checked values in
+  built-in exception messages and `Exception.Data`. Values are written with
+  `ToString()` and truncated to 64 characters.
+
+### Changed
+
+- Built-in exceptions (`Between`, `GreaterThan`, `GreaterThanOrEqual`,
+  `LessThan`, `LessThanOrEqual`, `NullOrEmpty`) no longer include the checked
+  values in `Message` or `Exception.Data` unless
+  `SGuardOptions.IncludeValuesInExceptions` is enabled. When enabled,
+  `Exception.Data` holds the formatted strings instead of the values.
+- `ThrowIf.Between`, `GreaterThan`, `GreaterThanOrEqual`, `LessThan`,
+  `LessThanOrEqual`, `NullOrEmpty` and the matching `Throw.*Exception` helpers
+  take optional `[CallerArgumentExpression]` parameters. Callers only need to
+  recompile; assemblies compiled against the previous version must be rebuilt.
 - Selector-based `NullOrEmpty` guards no longer overflow the stack on
   self-referencing or recursively generic types. A type already being inspected
   on the same path, or nested more than 8 complex types deep, is only checked

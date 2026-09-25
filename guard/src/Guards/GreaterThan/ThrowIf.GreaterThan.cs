@@ -17,14 +17,18 @@ public sealed partial class ThrowIf
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown if the left value or the right value is null.</exception>
     /// <exception cref="Exception">Thrown if the left value is greater than the right value, with specific exception handling logic.</exception>
+    /// <param name="lValueExpression">The expression passed as <paramref name="lValue"/>, captured by the compiler.</param>
+    /// <param name="rValueExpression">The expression passed as <paramref name="rValue"/>, captured by the compiler.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void GreaterThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
+    public static void GreaterThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(lValue))] string? lValueExpression = null,
+        [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
         where TLeft : IComparable<TRight>
     {
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.GreaterThanException(lValue, rValue), callback);
+        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.GreaterThanException(lValue, rValue, lValueExpression, rValueExpression), callback);
     }
 
     /// <summary>
@@ -103,14 +107,18 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback invoked with the evaluation outcome.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="lValue"/> or <paramref name="rValue"/> is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown if <paramref name="lValue"/> is greater than or equal to <paramref name="rValue"/>.</exception>
+    /// <param name="lValueExpression">The expression passed as <paramref name="lValue"/>, captured by the compiler.</param>
+    /// <param name="rValueExpression">The expression passed as <paramref name="rValue"/>, captured by the compiler.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void GreaterThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
+    public static void GreaterThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null,
+        [CallerArgumentExpression(nameof(lValue))] string? lValueExpression = null,
+        [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
         where TLeft : IComparable<TRight>
     {
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.GreaterThanOrEqualException(lValue, rValue), callback);
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.GreaterThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression), callback);
     }
 
 

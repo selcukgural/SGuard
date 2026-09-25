@@ -39,9 +39,9 @@ public sealed class BetweenException : Exception
         [CallerArgumentExpression("max")]   string? maxExpr   = null)
         : base(BuildMessage(value, min, max, valueExpr, minExpr, maxExpr))
     {
-        Data["value"]     = value;
-        Data["min"]       = min;
-        Data["max"]       = max;
+        ExceptionValues.AddTo(Data, "value", value);
+        ExceptionValues.AddTo(Data, "min", min);
+        ExceptionValues.AddTo(Data, "max", max);
         Data["valueExpr"] = valueExpr;
         Data["minExpr"]   = minExpr;
         Data["maxExpr"]   = maxExpr;
@@ -61,7 +61,9 @@ public sealed class BetweenException : Exception
         object? value, object? min, object? max,
         string? valueExpr, string? minExpr, string? maxExpr)
     {
-        return $"Value '{value}' is between '{min}' and '{max}'. " +
+        return (ExceptionValues.Included
+                   ? $"Value '{ExceptionValues.Format(value)}' is between '{ExceptionValues.Format(min)}' and '{ExceptionValues.Format(max)}'. "
+                   : "Value is between the specified bounds. ") +
                $"Actual: value={valueExpr}, min={minExpr}, max={maxExpr}.";
     }
 
