@@ -22,8 +22,8 @@ public sealed partial class ThrowIf
     }
 
     /// <summary>
-    /// Checks if the specified ReadOnlySpan value is null or empty.
-    /// If the value is null or empty, throws a predefined exception.
+    /// Throws a <see cref="NullOrEmptyException"/> if the specified span is empty.
+    /// Like arrays and collections, a span with elements is not empty, even if all of its elements are <c>null</c>.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the ReadOnlySpan.</typeparam>
     /// <param name="value">The ReadOnlySpan to check for null or emptiness.</param>
@@ -32,24 +32,7 @@ public sealed partial class ThrowIf
     public static void NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(value))] string? valueExpression = null)
     {
-        var isNullOrEmpty = value.IsEmpty;
-
-        if (!isNullOrEmpty)
-        {
-            isNullOrEmpty = true;
-            foreach (var item in value)
-            {
-                if (item is null)
-                {
-                    continue;
-                }
-                
-                isNullOrEmpty = false;
-                break;
-            }
-        }
-
-        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException<object?>(null, valueExpression), callback);
+        SGuard.Guard(value.IsEmpty, () => Throw.NullOrEmptyException<object?>(null, valueExpression), callback);
     }
 
     /// <summary>

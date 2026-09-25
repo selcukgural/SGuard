@@ -90,7 +90,8 @@ ThrowIf.NullOrEmpty<TValue, TException>(TValue value, Expression<Func<TValue, ob
     where TException : Exception;
 ```
 
-The `ReadOnlySpan<T>` overload throws for an empty span and for a span whose elements are all `null`. A `null` value
+The `ReadOnlySpan<T>` overload throws only for an empty span; as with arrays and collections, a span whose elements
+are all `null` is not empty. A `null` value
 throws `NullOrEmptyException` like an empty one. A `null` selector or exception instance throws
 `ArgumentNullException`.
 

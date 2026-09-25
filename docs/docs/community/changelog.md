@@ -56,6 +56,9 @@ Assemblies compiled against 0.1.2 must be rebuilt.
   Previously an empty array and an empty list gave opposite results.
 - The span overloads of `Is.All`, `Is.Any`, `ThrowIf.All` and `ThrowIf.Any`
   validate their arguments even when the span is empty.
+- `Is.NullOrEmpty` and `ThrowIf.NullOrEmpty` on a `ReadOnlySpan<T>` treat
+  only an empty span as empty. A span whose elements were all `null` used to
+  count as empty, while the same array or list did not.
 
 ### Removed
 

@@ -25,35 +25,22 @@ public sealed partial class Is
     }
     
     /// <summary>
-    /// Determines whether the specified value is null, empty, or matches a predefined empty pattern,
-    /// and optionally invokes a callback with the evaluation result.
+    /// Determines whether the specified span is empty, and optionally invokes a callback with the result.
+    /// Like arrays and collections, a span with elements is not empty, even if all of its elements are <c>null</c>.
     /// </summary>
-    /// <typeparam name="T">The type of the value to evaluate.</typeparam>
-    /// <param name="value">The value to evaluate for null, emptiness, or empty patterns.</param>
+    /// <typeparam name="T">The type of the elements in the span.</typeparam>
+    /// <param name="value">The span to evaluate.</param>
     /// <param name="callback">
     /// An optional callback that is invoked with the result of the evaluation.
     /// The callback is executed safely, ignoring any exceptions thrown during its invocation.
     /// </param>
     /// <returns>
-    /// <c>true</c> if the value is null, empty, or matches predefined empty patterns; otherwise, <c>false</c>.
+    /// <c>true</c> if the span has no elements; otherwise, <c>false</c>.
     /// </returns>
     public static bool NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null)
     {
         var result = value.IsEmpty;
 
-        if (!result)
-        {
-            result = true;
-            foreach (var item in value)
-            {
-                if (item is not null)
-                {
-                    result = false;
-                    break;
-                }
-            }
-        }
-        
         SGuard.InvokeCallbackSafely(result, callback);
         
         return result;

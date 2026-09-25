@@ -50,9 +50,9 @@ Without a selector, a value is null or empty when it is:
 
 A non-null class instance is not inspected property by property; use a selector for that.
 
-The `ReadOnlySpan<T>` overload returns `true` for an empty span and for a span whose elements are all `null`. Arrays
-bind to the generic `T` overload (an array with elements is not empty, even if they are all `null`); call
-`.AsSpan()` to use the span overload.
+The `ReadOnlySpan<T>` overload returns `true` only for an empty span. As with arrays and collections, a span with
+elements is not empty, even if all of its elements are `null`. (Arrays bind to the generic `T` overload; both give the
+same result.)
 
 With a selector:
 
