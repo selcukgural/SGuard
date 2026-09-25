@@ -28,7 +28,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.GreaterThanException(lValue, rValue, lValueExpression, rValueExpression), callback);
+        SGuard.Guard(Is.GreaterThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.GreaterThanException(lValue, rValue, lValueExpression, rValueExpression), callback);
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+        SGuard.Guard(Is.GreaterThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
+        SGuard.Guard(Is.GreaterThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public sealed partial class ThrowIf
     /// <param name="exception">The exception to throw if the condition is met.</param>
     /// <param name="callback">Optional. A callback to invoke indicating the outcome of the guard evaluation.</param>
     /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="lValue"/>, <paramref name="rValue"/>, or <paramref name="exception"/> is null.</exception>
-    /// <exception cref="TException">Thrown when <paramref name="lValue"/> is greater than <paramref name="rValue"/>.</exception>
+    /// <exception cref="Exception">Thrown when <paramref name="lValue"/> is greater than <paramref name="rValue"/>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void GreaterThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, [NotNull] TException exception,
                                                               SGuardCallback? callback = null) where TLeft : IComparable<TRight>
@@ -94,7 +94,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(rValue);
         ArgumentNullException.ThrowIfNull(exception);
         
-        SGuard.Guard(Is.GreaterThan(lValue, rValue), () => Throw.That(exception), callback);
+        SGuard.Guard(Is.GreaterThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(exception), callback);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.GreaterThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression), callback);
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.GreaterThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression), callback);
     }
 
 
@@ -141,7 +141,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(rValue);
         ArgumentNullException.ThrowIfNull(exception);
         
-        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.That(exception), callback);
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(exception), callback);
     }
 
 
@@ -162,7 +162,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
     }
 
     /// <summary>
@@ -185,6 +185,6 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
+        SGuard.Guard(Is.GreaterThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
     }
 }

@@ -6,8 +6,15 @@ namespace SGuard.Exceptions;
 /// The exception that is thrown when all the objects in an array are null or empty.
 /// </summary>
 [Serializable]
-public sealed class NullOrEmptyException : Exception
+public sealed class NullOrEmptyException : ArgumentException
 {
+    private readonly string? _paramName;
+
+    /// <summary>
+    /// Gets the call-site expression of the checked argument, or <c>null</c> when the exception was created with a message.
+    /// </summary>
+    public override string? ParamName => _paramName;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="NullOrEmptyException"/> class.
     /// </summary>
@@ -31,6 +38,7 @@ public sealed class NullOrEmptyException : Exception
     /// </summary>
     public NullOrEmptyException(object? value, [CallerArgumentExpression("value")] string? valueExpr = null) : base(BuildMessage(value, valueExpr))
     {
+        _paramName = valueExpr;
         ExceptionValues.AddTo(Data, "value", value);
         Data["valueExpr"] = valueExpr;
     }

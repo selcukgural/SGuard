@@ -6,7 +6,14 @@ namespace SGuard;
 /// </summary>
 public enum GuardOutcome
 {
+    /// <summary>
+    /// <c>Is.*</c> returned <c>true</c>, or a <c>ThrowIf.*</c> guard passed without throwing.
+    /// </summary>
     Success,
+
+    /// <summary>
+    /// <c>Is.*</c> returned <c>false</c>, or a <c>ThrowIf.*</c> guard is about to throw.
+    /// </summary>
     Failure
 }
 

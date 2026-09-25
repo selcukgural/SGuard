@@ -63,4 +63,56 @@ internal static class SGuard
             // Ignore
         }
     }
+
+    /// <summary>
+    /// Determines whether the value is a floating-point NaN. Comparison guards treat NaN operands as failing: <c>Is.*</c>
+    /// returns <c>false</c> and <c>ThrowIf.*</c> throws, so NaN never passes a bound check.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNaN<T>(T value) => value switch
+    {
+        double d => double.IsNaN(d),
+        float f => float.IsNaN(f),
+        Half h => Half.IsNaN(h),
+        _ => false
+    };
+
+    /// <summary>
+    /// Determines whether either operand is a floating-point NaN.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool AnyNaN<T1, T2>(T1 first, T2 second) => IsNaN(first) || IsNaN(second);
+
+    /// <summary>
+    /// Determines whether any operand is a floating-point NaN.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool AnyNaN<T1, T2, T3>(T1 first, T2 second, T3 third) => IsNaN(first) || IsNaN(second) || IsNaN(third);
+
+    /// <summary>
+    /// Throws an <see cref="ArgumentException"/> when <paramref name="min"/> is greater than <paramref name="max"/>. Bounds of
+    /// different types can't be compared and are not checked.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void ThrowIfInvalidRange<TMin, TMax>(TMin min, TMax max)
+    {
+        if (typeof(TMin) == typeof(TMax) && Comparer<TMin>.Default.Compare(min, Unsafe.As<TMax, TMin>(ref max)) > 0)
+        {
+            throw new ArgumentException(InvalidRangeMessage, nameof(min));
+        }
+    }
+
+    /// <summary>
+    /// Throws an <see cref="ArgumentException"/> when <paramref name="min"/> is greater than <paramref name="max"/>.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void ThrowIfInvalidRange(string min, string max, StringComparison comparison)
+    {
+        if (string.Compare(min, max, comparison) > 0)
+        {
+            throw new ArgumentException(InvalidRangeMessage, nameof(min));
+        }
+    }
+
+    private const string InvalidRangeMessage = "The minimum must be less than or equal to the maximum.";
 }

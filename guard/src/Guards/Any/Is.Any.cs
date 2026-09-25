@@ -53,12 +53,6 @@ public sealed partial class Is
     /// </exception>
     public static bool Any<T>(ReadOnlySpan<T> source, Func<T, bool> predicate, SGuardCallback? callback = null)
     {
-        if (source.IsEmpty)
-        {
-            SGuard.InvokeCallbackSafely(false, callback);
-            return false;
-        }
-        
         ArgumentNullException.ThrowIfNull(predicate);
 
         foreach (var src in source)

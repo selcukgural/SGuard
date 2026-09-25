@@ -82,7 +82,7 @@ jobs:
       - name: Generate Coverage Summary + HTML
         uses: danielpalme/ReportGenerator-GitHub-Action@d3ebf1f760f7d8ab92cc44d9bcfee7ad73722a31 # v5.5.11
         with:
-          reports: '**/TestResults/**/coverage.cobertura.xml'
+          reports: 'tests/TestResults/*/coverage.cobertura.xml' # the In/ copy written for the TRX logger is the same data
           targetdir: 'coveragereport'
           reporttypes: 'MarkdownSummary;Html'
           assemblyfilters: '+SGuard*;-*Tests'
