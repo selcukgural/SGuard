@@ -37,11 +37,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0 }
 
       - name: Setup .NET (8/9/10)
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: |
             8.0.x
@@ -49,7 +49,7 @@ jobs:
             10.0.x
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
@@ -72,14 +72,14 @@ jobs:
 
       - name: Publish Unit Test Results (TRX)
         if: always()
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
         with:
           files: '**/TestResults/**/*.trx'
           check_name: 'Test Results'
           comment_mode: failures
 
       - name: Generate Coverage Summary + Badges + HTML
-        uses: danielpalme/ReportGenerator-GitHub-Action@v5
+        uses: danielpalme/ReportGenerator-GitHub-Action@d3ebf1f760f7d8ab92cc44d9bcfee7ad73722a31 # v5.5.11
         with:
           reports: '**/TestResults/**/coverage.cobertura.xml'
           targetdir: 'coveragereport'
@@ -100,21 +100,21 @@ jobs:
 
       - name: Post sticky PR comment (Coverage)
         if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
         with:
           header: sguard-coverage
           path: coveragereport/Summary.md
 
       - name: Upload Artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-report-html
           path: coveragereport
 
       - name: Upload raw test/coverage files
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-and-coverage-raw
           path: |
@@ -129,7 +129,7 @@ jobs:
           cp -f coveragereport/badges/* badges/
       - name: Commit badges
         if: github.ref == 'refs/heads/main'
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
         with:
           commit_message: 'chore: update coverage badges [skip ci]'
           file_pattern: 'badges/*.svg'
