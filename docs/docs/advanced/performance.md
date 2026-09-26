@@ -16,10 +16,9 @@ These benchmarks compare:
 - Passing vs failing (throwing) guards
 - Different guard types (`NullOrEmpty`, `Between`, `LessThan`, `GreaterThan`, `Any`, `All`) and collection sizes
 
-The committed results were recorded in September 2025 on .NET 9 (Apple M3 Max, BenchmarkDotNet 0.15.2), **before**
-the selector cache and the other changes in the current release. They don't include a cached-vs-uncached selector
-comparison or allocation figures. See [Expression Caching](../core-concepts/expression-caching#benchmarks) for the
-selector cache measurement.
+The committed results were recorded in September 2026 on .NET 8 and .NET 10 (Apple M3 Max, BenchmarkDotNet 0.15.8,
+short runs), with allocations. See [Expression Caching](../core-concepts/expression-caching#benchmarks) for a
+cached-vs-uncached selector comparison.
 
 ## Key Performance Characteristics
 
@@ -152,22 +151,18 @@ ThrowIf.Any(items, i => i.IsInvalid);  // More expensive predicate
 
 ## Benchmark Results Summary
 
-From the committed results in `SGuard.Benchmark/benchmarks/` (.NET 9, Apple M3 Max, recorded before the current
-release):
+From the committed results in `SGuard.Benchmark/benchmarks/` (Apple M3 Max):
 
-| Guard | Scenario | Mean time |
-|---|---|---|
-| `Is.NullOrEmpty` | `null`, string, `int` | ~0.2–1 ns |
-| `Is.NullOrEmpty` | array, list | ~4 ns |
-| `Is.Between`, `Is.GreaterThan` | `int` | under 1 ns |
-| `Is.GreaterThan` | `string` (culture-sensitive `CompareTo`) | ~15–28 ns |
-| `Is.Any`, `Is.All` | 1,000 / 15,000 elements, full pass | ~280 ns / ~4 µs |
-| `ThrowIf.*` | guard passes | ~10–14 ns (under 1 ns since passing guards stopped allocating)¹ |
-| `ThrowIf.*` | guard throws (including the catch) | ~8–9 µs |
-| `ThrowIf.NullOrEmpty` | selector, before the cache existed | ~50–60 µs |
-
-¹ Measured separately with BenchmarkDotNet on .NET 8 and .NET 10 for comparisons and `NullOrEmpty` on strings and
-numbers; collections take a few nanoseconds.
+| Guard | Scenario | .NET 10 | .NET 8 | Allocated |
+|---|---|---|---|---|
+| `Is.NullOrEmpty` | `null`, string, `int`, array, list | under 1 ns | ~0–2.5 ns | – |
+| `Is.Between`, `Is.GreaterThan` | `int` | under 1 ns | under 1 ns | – |
+| `Is.GreaterThan` | `string` (culture-sensitive `CompareTo`) | ~14–29 ns | ~14–27 ns | – |
+| `Is.Any`, `Is.All` | 1,000 / 15,000 elements, full pass | ~280 ns / ~4 µs | ~540 ns / ~8 µs | – |
+| `ThrowIf.*` | guard passes | ~0.6–1 ns | ~0.6–3 ns | – |
+| `ThrowIf.*` | guard passes, with a callback | ~0.5–1.3 ns | ~1.3–4 ns | – |
+| `ThrowIf.*` | guard throws (including the catch) | ~2 µs | ~13 µs | ~0.2–0.7 KB |
+| `ThrowIf.NullOrEmpty` | cached selector, guard passes | ~230 ns | ~300 ns | 568 B |
 
 *Actual numbers depend on hardware and runtime. See the benchmark folder for the full tables.*
 
@@ -213,20 +208,25 @@ For most applications, SGuard's performance is more than adequate.
 
 ## Microbenchmarking
 
-To run the benchmarks yourself (the project targets `net8.0` and `net9.0`, so pick one):
+To run the benchmarks yourself (the project targets `net8.0`, `net9.0` and `net10.0`; `-f` picks the host):
 
 ```bash
 cd SGuard.Benchmark
-dotnet run -c Release -f net9.0
+
+# Everything on .NET 8 and .NET 10, as the committed results were recorded (about two hours)
+dotnet run -c Release -f net10.0 -- --filter '*' --runtimes net8.0 net10.0 --job short
+
+# One class on the host runtime
+dotnet run -c Release -f net10.0 -- --filter '*ThrowIfNullOrEmpt*'
 ```
 
-This runs every benchmark class, which takes a while. BenchmarkDotNet writes its reports (including GitHub-flavored
-Markdown) to `BenchmarkDotNet.Artifacts/results/` in the directory you run it from. The files in
-`SGuard.Benchmark/benchmarks/` are copies of an earlier run and are not updated automatically.
+BenchmarkDotNet writes its reports (including GitHub-flavored Markdown) to `BenchmarkDotNet.Artifacts/results/` in the
+directory you run it from. The files in `SGuard.Benchmark/benchmarks/` are copies of a run and are not updated
+automatically.
 
 ## Memory Allocations
 
-The committed benchmarks don't measure allocations, so this section describes the behaviour of the code:
+The committed benchmarks report allocations in their `Allocated` column. In short:
 - **`Is.*` comparisons and `Is.NullOrEmpty` without a selector** don't allocate.
 - **A passing `ThrowIf.*` guard doesn't allocate** (except as noted below for selectors and exception instances). The
   test suite checks this for the comparison, `Between` and `NullOrEmpty` guards.
