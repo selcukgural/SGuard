@@ -5,10 +5,18 @@ This project contains performance benchmarks for various methods in the SGuard l
 ## How to Run
 
 1. Open a terminal in the `SGuard.Benchmark` directory.
-2. Run the benchmarks for one target framework (the project targets `net8.0` and `net9.0`, so `-f` is required):
+2. Run the benchmarks. The project targets `net8.0`, `net9.0` and `net10.0`, so `-f` is required; it selects the host,
+   and `--runtimes` selects the runtimes the benchmarks run on:
    ```bash
-   dotnet run -c Release -f net9.0
+   # Everything, on .NET 8 and .NET 10, as the committed results were recorded
+   dotnet run -c Release -f net10.0 -- --filter '*' --runtimes net8.0 net10.0 --job short
+
+   # One class, on the host runtime, with BenchmarkDotNet's default (longer, more precise) job
+   dotnet run -c Release -f net10.0 -- --filter '*ThrowIfNullOrEmpt*'
    ```
+   Without arguments every benchmark runs on the host runtime. Any other
+   [BenchmarkDotNet command-line option](https://benchmarkdotnet.org/articles/guides/console-args.html) works too.
+   Every benchmark reports allocations (`MemoryDiagnoser`).
 3. Results are written to `BenchmarkDotNet.Artifacts/results/`. The markdown files under `benchmarks/` are not updated
    automatically; copy the new results there if you want to commit them.
 
@@ -40,11 +48,18 @@ Detailed benchmark results for each method can be found in the corresponding mar
 - [Is.NullOrEmpty.Benchmark.md](benchmarks/NullOrEmpty/Is.NullOrEmpty.Benchmark.md)
 - [ThrowIf.NullOrEmpty.Benchmark.md](benchmarks/NullOrEmpty/ThrowIf.NullOrEmpty.Benchmark.md)
 
-The committed results were recorded on .NET 9 before selector caching was added, so they don't reflect the selector
-cache (see [Changelog.md](../Changelog.md)).
+The committed results were recorded in September 2026 on an Apple M3 Max with BenchmarkDotNet 0.15.8, on .NET 8.0.3
+and .NET 10.0.5, with the command above (`--job short`: 3 iterations, so treat small differences as noise). Each
+table has a row per runtime and an `Allocated` column. A mean of `0.0000 ns` means the call was too cheap to measure
+or the JIT removed it.
 
 Summary:
-- For small lists, execution time is in nanoseconds; for large lists, it increases to microseconds.
-- A passing `ThrowIf.*` guard takes about 10 ns; a failing one (throw plus catch) takes several microseconds.
+- A passing guard costs about as much as a hand-written `if`: under 1 ns on .NET 10 and 0.6–3 ns on .NET 8, with
+  no allocation. A callback adds under a nanosecond.
+- A failing `ThrowIf.*` guard (throw plus catch) takes about 2 µs on .NET 10 and 13 µs on .NET 8, and allocates the
+  exception (roughly 0.2–0.7 KB).
+- `Any`/`All` over 1,000 elements take about 280 ns on .NET 10 (540 ns on .NET 8) and grow linearly.
+- A cached selector (`ThrowIf.NullOrEmpty(value, x => x.Member)`) takes about 230 ns (300 ns on .NET 8) and 568 B,
+  most of it for building the expression tree at the call site.
 
 For more details, see the markdown files for each method in the benchmarks folder.
