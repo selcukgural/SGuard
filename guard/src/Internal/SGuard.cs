@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace SGuard;
@@ -12,26 +11,26 @@ namespace SGuard;
 internal static class SGuard
 {
     /// <summary>
-    /// Enforces a guard clause that throws an exception if a specified condition is met.
-    /// When occurs an exception during the callback invocation, the exception is ignored.
+    /// Reports the outcome of a <c>ThrowIf.*</c> guard to the callback and returns <paramref name="condition"/>. The caller
+    /// throws when it returns <c>true</c>, so the callback sees <see cref="GuardOutcome.Failure"/> just before the exception.
+    /// Exceptions thrown by the callback are ignored.
     /// </summary>
-    /// <param name="condition">The condition to evaluate. If true, the specified exception-throwing action will be invoked.</param>
-    /// <param name="throwAction">The action to execute if the condition is met, typically throwing an exception.</param>
-    /// <param name="callback">An optional callback invoked with the result of the guard check, indicating success or failure.</param>
+    /// <remarks>
+    /// Guards call this in an <c>if</c> and throw from its body rather than passing a throwing lambda, so a passing guard
+    /// allocates no closure or delegate and stays small enough to inline.
+    /// </remarks>
+    /// <param name="condition">Whether the guard fails, i.e. the caller is about to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <returns><paramref name="condition"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Guard([DoesNotReturnIf(true)] bool condition, Action throwAction, SGuardCallback? callback)
+    public static bool Fails(bool condition, SGuardCallback? callback)
     {
-        try
+        if (callback is not null)
         {
-            if (condition)
-            {
-                throwAction();
-            }
+            Invoke(callback, condition ? GuardOutcome.Failure : GuardOutcome.Success);
         }
-        finally
-        {
-            InvokeCallbackSafely(condition, callback, GuardOutcome.Failure, GuardOutcome.Success);
-        }
+
+        return condition;
     }
 
     /// <summary>
@@ -41,22 +40,24 @@ internal static class SGuard
     /// <param name="condition">The condition to evaluate. Determines which outcome will be passed to the callback.</param>
     /// <param name="callback">An optional callback to be invoked with the outcome of the condition evaluation.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void InvokeCallbackSafely(bool condition, SGuardCallback? callback)=> InvokeCallbackSafely(condition, callback, GuardOutcome.Success, GuardOutcome.Failure);
+    public static void InvokeCallbackSafely(bool condition, SGuardCallback? callback)
+    {
+        if (callback is not null)
+        {
+            Invoke(callback, condition ? GuardOutcome.Success : GuardOutcome.Failure);
+        }
+    }
 
     /// <summary>
-    /// Invokes the specified callback safely while handling any exceptions that may occur during the invocation.
-    /// When occurs an exception during the callback invocation, the exception is ignored.
+    /// Invokes the callback and ignores any exception it throws. Kept out of line so that the exception handler doesn't
+    /// stop the guards from being inlined.
     /// </summary>
-    /// <param name="condition">The condition used to determine the outcome passed to the callback.</param>
-    /// <param name="callback">The callback to be invoked. Receives the outcome based on the provided condition.</param>
-    /// <param name="successOutcome">The <see cref="GuardOutcome"/> value to pass to the callback if the condition is true.</param>
-    /// <param name="failureOutcome">The <see cref="GuardOutcome"/> value to pass to the callback if the condition is false.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void InvokeCallbackSafely(bool condition, SGuardCallback? callback, GuardOutcome successOutcome, GuardOutcome failureOutcome)
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void Invoke(SGuardCallback callback, GuardOutcome outcome)
     {
         try
         {
-            callback?.Invoke(condition ? successOutcome : failureOutcome);
+            callback(outcome);
         }
         catch
         {
