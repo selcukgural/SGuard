@@ -11,8 +11,14 @@ namespace SGuard;
 public sealed partial class ThrowIf
 {
     /// <summary>
-    /// Throws an exception if the specified value is between the provided minimum and maximum values.
+    /// Throws an exception if the specified value is between the provided minimum and maximum values, inclusive.
     /// </summary>
+    /// <remarks>
+    /// The guard throws when the value is <b>inside</b> the range. To reject values outside a range, use
+    /// <see cref="ThrowIf.LessThan{TLeft, TRight}(TLeft, TRight, SGuardCallback?, string?, string?)"/> and
+    /// <see cref="ThrowIf.GreaterThan{TLeft, TRight}(TLeft, TRight, SGuardCallback?, string?, string?)"/>, or
+    /// <c>!Is.Between(...)</c>.
+    /// </remarks>
     /// <typeparam name="TValue">The type of the value to evaluate.</typeparam>
     /// <typeparam name="TMin">The type of the minimum value.</typeparam>
     /// <typeparam name="TMax">The type of the maximum value.</typeparam>
@@ -163,12 +169,12 @@ public sealed partial class ThrowIf
 
 
     /// <summary>
-    /// Validates that the specified value is between the provided minimum and maximum values, inclusive,
-    /// and throws an exception if the condition is met.
+    /// Throws an exception of type <typeparamref name="TException"/> if the specified string is between the given bounds,
+    /// inclusive, using the specified StringComparison.
     /// </summary>
     /// <param name="value">The value to evaluate.</param>
-    /// <param name="min">The lower bound of the allowed range.</param>
-    /// <param name="max">The upper bound of the allowed range.</param>
+    /// <param name="min">The minimum bound (inclusive).</param>
+    /// <param name="max">The maximum bound (inclusive).</param>
     /// <param name="comparison">The StringComparison method to use when comparing the string values.</param>
     /// <param name="callback">An optional callback that will be invoked with the guard evaluation outcome.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, or <paramref name="max"/> is null.</exception>

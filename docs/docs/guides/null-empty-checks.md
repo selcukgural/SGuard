@@ -61,6 +61,13 @@ bool hasItems = !Is.NullOrEmpty(list);
 
 For a lazy `IEnumerable` that isn't a collection, the guard starts enumerating it to see whether it has a first element.
 
+:::warning
+Starting the enumeration runs the code behind the sequence. An `IQueryable` (Entity Framework, for example) sends a
+query to the database, an iterator method runs up to its first `yield`, and a sequence that can only be read once
+(a network or file reader) loses its first element. Materialize the sequence first (`ToList()`) or check it with a call
+that is cheap for your source, such as `await query.AnyAsync()`.
+:::
+
 ## Value Types and Nullable Value Types
 
 ```csharp
@@ -203,6 +210,13 @@ When a selector points at a complex type, its readable properties are inspected 
 - A type that is already being inspected higher up the same path (for example `Node.Next` of type `Node`) is only checked
   for null, so self-referencing types don't recurse forever. A non-null reference counts as non-empty.
 - The same null-only check applies below 8 levels of nested complex types.
+
+:::warning
+Inspecting a complex type calls the getter of every readable public property on it, and on the types below it. Getters
+with side effects run: an Entity Framework lazy-loading proxy loads each navigation property from the database, and a
+computed property does its work. Point the selector at the scalar member you need (`a => a.Owner.Email`) rather than
+at an entity or a type with expensive getters.
+:::
 
 ## Real-World Examples
 
