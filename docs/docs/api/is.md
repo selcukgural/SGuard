@@ -56,14 +56,16 @@ same result.)
 
 With a selector:
 
-- `null` anywhere on the path (including `value` itself) counts as empty;
+- `null` anywhere on the path (including `value` itself) counts as empty. The path can go through members, indexers,
+  array elements and instance methods (`o => o.Items[0].Name.Trim()`); other expressions, such as method arguments or
+  the operands of `+`, are evaluated as written;
 - the selected member is checked with the rules above;
 - a member of a complex type counts as empty only if **all** of its readable properties are null or empty
   (recursively; a type already being inspected on the same path, or nested more than 8 levels deep, is only
   null-checked; indexers are skipped).
 
-Selectors are compiled once and cached by expression structure, including selectors that capture local variables;
-see [Expression Caching](../core-concepts/expression-caching).
+Selectors are compiled once and cached by expression structure, including selectors that capture local variables or
+use operators such as `+` and `??`; see [Expression Caching](../core-concepts/expression-caching).
 
 ### Examples
 

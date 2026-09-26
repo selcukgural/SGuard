@@ -81,8 +81,7 @@ ThrowIf.NullOrEmpty(user, u => u.Email);
 
 In performance-critical code, `Is.*` avoids exception overhead. A passing `ThrowIf.*` guard costs about as much as a
 hand-written `if` (under a nanosecond for a comparison), but a failing one throws, and a throw plus catch costs
-about 2 µs on .NET 10 and 12–15 µs on .NET 8 (BenchmarkDotNet, Apple M3 Max; the committed .NET 9 results show about
-8–9 µs):
+about 2 µs on .NET 10 and 12–15 µs on .NET 8 (BenchmarkDotNet, Apple M3 Max):
 
 ```csharp
 // Faster: No exception throwing

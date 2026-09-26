@@ -175,7 +175,9 @@ var audit = SGuardCallbacks.OnFailure(() =>
 ThrowIf.LessThan(age, 18, audit);
 ```
 
-Record which argument failed rather than its value, unless you know the value can't be personal data.
+Record which argument failed rather than its value, unless you know the value can't be personal data. Exceptions
+thrown by the callback are swallowed, so use this for best-effort records only; see
+[Callback Exceptions Are Swallowed](#3-callback-exceptions-are-swallowed).
 
 ### Notifications
 

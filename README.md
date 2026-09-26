@@ -14,17 +14,26 @@ SGuard is a lightweight, extensible guard clause library for .NET, providing exp
 - **Throwing Guards (`ThrowIf.*`)**: Throw when a condition is true, with `CallerArgumentExpression`-powered messages.
 - **Any & All Guards**: Predicate-based validation for collections (`IEnumerable<T>` and `ReadOnlySpan<T>`).
 - **Comparison Guards**: `Between` (inclusive), `LessThan`, `LessThanOrEqual`, `GreaterThan`, `GreaterThanOrEqual` for any `IComparable<T>` type. The `Is.*` comparisons and `ThrowIf.Between` also have string overloads that take a `StringComparison`. With a floating-point `NaN` operand, `Is.*` comparisons return `false` and `ThrowIf.*` comparisons throw.
-- **Null/Empty Checks**: Null, default values (`0`, `Guid.Empty`, ...), empty strings (whitespace is not empty), collections and spans. With a selector (`o => o.Customer.Email`), SGuard follows the member path; a complex-type member counts as empty only when all of its readable properties are null or empty.
+- **Null/Empty Checks**: Null, default values (`0`, `Guid.Empty`, ...), empty strings (whitespace is not empty), collections and spans. With a selector (`o => o.Customer.Email`, `o => o.Items[0].Sku`), SGuard follows the path through members, indexers and method calls, and a `null` on it counts as empty; a complex-type member counts as empty only when all of its readable properties are null or empty.
 - **Email Validation**: `Is.Email` with a built-in pattern or your own regex (with a match timeout).
 - **Custom Exception Support**: Overloads for custom exception instances and types, with constructor argument support.
 - **Callback Model**: Unified `SGuardCallback` and `GuardOutcome` for success/failure handling.
-- **Expression Caching**: Selectors are compiled once and cached by expression structure (thread-safe).
+- **Expression Caching**: Selectors are compiled once and cached by expression structure (thread-safe), including selectors that capture local variables or use operators such as `+` and `??`.
+- **Allocation-free Guards**: A passing guard costs about as much as a hand-written `if` (around a nanosecond) and allocates nothing.
 - **Clear Exception Messages**: Built-in exceptions derive from `ArgumentException` and name the failing argument expression; checked values are left out of messages by default.
 - **Multi-targeting**: Supports .NET 8, 9, and 10.
 
 ## 📊 Benchmarks
 
-Performance benchmarks for all guard methods are available in the [SGuard.Benchmark/benchmarks/](SGuard.Benchmark/benchmarks/) folder. Explore these to see real-world performance comparisons for `Is.*` and `ThrowIf.*` methods.
+BenchmarkDotNet results for every guard, on .NET 8 and .NET 10 and with allocations, are in the [SGuard.Benchmark/benchmarks/](SGuard.Benchmark/benchmarks/) folder. In short (Apple M3 Max, .NET 10 / .NET 8):
+
+| Scenario | Time | Allocated |
+|---|---|---|
+| Passing guard (`ThrowIf.*`, `Is.*`) | ~1 ns / ~1–3 ns | none |
+| Failing `ThrowIf.*` guard (throw + catch) | ~2 µs / ~13 µs | the exception |
+| Cached selector (`ThrowIf.NullOrEmpty(order, o => o.Customer.Name)`) | ~0.2–0.5 µs / ~0.3–0.7 µs | the expression tree built at the call site |
+
+A failing guard costs a throw, so validate input that is often invalid (public endpoints, message consumers) with `Is.*` and keep `ThrowIf.*` for arguments only a bug would make invalid. See the [performance guide](https://selcukgural.github.io/SGuard/docs/advanced/performance) for details.
 
 ## 📦 Installation
 `dotnet add package SGuard`
@@ -54,7 +63,8 @@ Performance benchmarks for all guard methods are available in the [SGuard.Benchm
     - Between checks are inclusive by design for predictable validation.
 
 - Performance and ergonomics
-    - Selector expressions are compiled once and cached by expression structure, so repeated checks don't pay the compilation cost again (selectors that capture local variables are cached too).
+    - A passing guard doesn't allocate and costs about as much as a hand-written `if`.
+    - Selector expressions are compiled once and cached by expression structure, so repeated checks don't pay the compilation cost again. This includes selectors that capture local variables or use operators such as `+` and `??`.
     - The selector cache is thread-safe.
 
 - Modern .NET support
@@ -336,6 +346,9 @@ public void UpdateEmail(string email)
 
     // Proceed with updating the email...
 }
+
+// Note: exceptions thrown inside a callback are swallowed, so a failing audit writer
+// records nothing and reports nothing. Write records that must not be lost after the guard.
 
 ```
 ## 💬 Join the Community Chat
