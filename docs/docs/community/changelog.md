@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-26
+
 This release contains breaking changes; see **Changed** and **Removed**.
 Assemblies compiled against 0.1.2 must be rebuilt.
 
