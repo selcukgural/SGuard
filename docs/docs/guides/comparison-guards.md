@@ -52,6 +52,19 @@ bool inRange = Is.Between(value, min, max);
 ThrowIf.Between(value, min, max);
 ```
 
+:::warning
+`ThrowIf.Between` throws when the value is **inside** the range. It does not enforce a range: `ThrowIf.Between(age, 18,
+120)` rejects every valid age and lets `5` through. To require `min <= value <= max`, reject each side instead:
+
+```csharp
+ThrowIf.LessThan(age, 18);
+ThrowIf.GreaterThan(age, 120);
+
+// or, with your own exception
+if (!Is.Between(age, 18, 120)) throw new ArgumentOutOfRangeException(nameof(age));
+```
+:::
+
 **Examples:**
 ```csharp
 Is.Between(5, 1, 10);   // true (5 is in range)

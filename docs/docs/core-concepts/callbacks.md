@@ -144,6 +144,12 @@ ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() =>
 
 This ensures your validation logic remains robust even if side effects fail.
 
+:::warning
+Because failures are swallowed, a callback is not a reliable place for audit or security logging. If a logger or audit
+writer throws inside the callback, nothing is recorded and nothing reports the failure. Write records that must not be
+lost after the guard returns (or in a `catch` around a `ThrowIf.*` call), where an error in the writer surfaces normally.
+:::
+
 ### When the Callback Is Not Invoked
 
 If the method throws because of an invalid **argument**, it throws before evaluating the guard and the callback is
@@ -209,6 +215,9 @@ public void UpdateEmail(string email)
     // Proceed with update...
 }
 ```
+
+This suits best-effort records. For an audit trail that must be complete, see the warning under
+[Callback Exceptions Are Swallowed](#callback-exceptions-are-swallowed).
 
 ### Metrics and Monitoring
 

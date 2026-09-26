@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The XML documentation of `Is.Between` described the bounds as exclusive; both
+  bounds are inclusive, as the code and the rest of the documentation state.
+  The `ThrowIf.Between<TException>` string overload no longer calls the bounds
+  an "allowed range".
+
+### Documentation
+
+- Warnings that `ThrowIf.Between` throws when the value is inside the range,
+  that `NullOrEmpty` enumerates lazy sequences (running `IQueryable` queries)
+  and calls property getters when a selector points at a complex type, and
+  that callbacks are not suitable for audit or security logging because their
+  exceptions are swallowed.
+
 ## [0.2.0] - 2026-09-26
 
 This release contains breaking changes; see **Changed** and **Removed**.

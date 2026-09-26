@@ -161,6 +161,11 @@ ThrowIf.GreaterThan<TLeft, TRight, TException>(TLeft lValue, TRight rValue, obje
 Throws if `min <= value <= max` (inclusive), i.e. when the value **is** inside the range. Throws
 `ArgumentException` if `min` is greater than `max` (bounds of the same type, and the string overloads).
 
+:::warning
+This is the opposite of a range check. To reject values *outside* a range, use `ThrowIf.LessThan(value, min)` and
+`ThrowIf.GreaterThan(value, max)`, or `!Is.Between(value, min, max)`.
+:::
+
 ```csharp
 // Generic
 ThrowIf.Between<TValue, TMin, TMax>(TValue value, TMin min, TMax max, SGuardCallback? callback = null,

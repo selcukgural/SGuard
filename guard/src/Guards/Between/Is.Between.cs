@@ -11,8 +11,8 @@ namespace SGuard;
 public sealed partial class Is
 {
     /// <summary>
-    /// Throws an exception if value is less than or equal to min, or greater than or equal to max.
-    /// Boundaries are exclusive.
+    /// Determines whether the value is within the range from <paramref name="min"/> to <paramref name="max"/>. Both bounds
+    /// are inclusive.
     /// </summary>
     /// <typeparam name="TValue">The type of the value being checked.</typeparam>
     /// <typeparam name="TMin">The type of the minimum boundary value.</typeparam>
@@ -47,8 +47,8 @@ public sealed partial class Is
     }
 
     /// <summary>
-    /// Throws an exception if value is less than or equal to min, or greater than or equal to max.
-    /// Boundaries are exclusive using the given StringComparison.
+    /// Determines whether the string is within the range from <paramref name="min"/> to <paramref name="max"/> under the
+    /// given StringComparison. Both bounds are inclusive.
     /// </summary>
     /// <param name="value">The string value to be checked.</param>
     /// <param name="min">The minimum boundary (inclusive).</param>

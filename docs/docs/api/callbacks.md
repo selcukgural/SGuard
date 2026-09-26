@@ -299,6 +299,9 @@ ThrowIf.NullOrEmpty(value, SGuardCallbacks.OnFailure(() =>
 // The guard's own exception is still thrown normally
 ```
 
+Don't use callbacks for records that must not be lost, such as audit or security logs: a failing writer is silently
+ignored. See [Callback Exceptions Are Swallowed](../core-concepts/callbacks#callback-exceptions-are-swallowed).
+
 ## Best Practices
 
 1. **Keep callbacks lightweight**: Avoid expensive operations
