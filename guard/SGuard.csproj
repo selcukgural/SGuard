@@ -7,7 +7,7 @@
         <PackageVersion>0.3.0</PackageVersion>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <FileVersion>1.0.0</FileVersion>
-        <PackageProjectUrl>https://github.com/selcukgural/sguard</PackageProjectUrl>
+        <PackageProjectUrl>https://selcukgural.github.io/SGuard/</PackageProjectUrl>
         <RepositoryUrl>https://github.com/selcukgural/sguard</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
