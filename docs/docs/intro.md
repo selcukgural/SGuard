@@ -19,11 +19,12 @@ SGuard is a lightweight, extensible guard clause library for .NET, providing exp
 - **Throwing Guards (`ThrowIf.*`)**: Throw when a condition is true, with `CallerArgumentExpression`-powered messages.
 - **Any & All Guards**: Predicate-based validation for collections (`IEnumerable<T>` and `ReadOnlySpan<T>`).
 - **Comparison Guards**: `Between` (inclusive), `LessThan`, `LessThanOrEqual`, `GreaterThan`, `GreaterThanOrEqual` for any `IComparable<T>` type. The `Is.*` comparisons and `ThrowIf.Between` also have string overloads that take a `StringComparison`. With a floating-point `NaN` operand, `Is.*` comparisons return `false` and `ThrowIf.*` comparisons throw.
-- **Null/Empty Checks**: Null, default values (`0`, `Guid.Empty`, ...), empty strings (whitespace is not empty), collections and spans. With a selector (`o => o.Customer.Email`), SGuard follows the member path; a complex-type member counts as empty only when all of its readable properties are null or empty.
+- **Null/Empty Checks**: Null, default values (`0`, `Guid.Empty`, ...), empty strings (whitespace is not empty), collections and spans. With a selector (`o => o.Customer.Email`, `o => o.Items[0].Sku`), SGuard follows the path through members, indexers and method calls, and a `null` on it counts as empty; a complex-type member counts as empty only when all of its readable properties are null or empty.
 - **Email Validation**: `Is.Email` with a built-in pattern or your own regex (with a match timeout).
 - **Custom Exception Support**: Overloads for custom exception instances and types, with constructor argument support.
 - **Callback Model**: Unified `SGuardCallback` and `GuardOutcome` for success/failure handling.
-- **Expression Caching**: Selectors are compiled once and cached by expression structure (thread-safe).
+- **Expression Caching**: Selectors are compiled once and cached by expression structure (thread-safe), including selectors that capture local variables or use operators such as `+` and `??`.
+- **Allocation-free Guards**: A passing guard costs about as much as a hand-written `if` (around a nanosecond) and allocates nothing.
 - **Clear Exception Messages**: Built-in exceptions derive from `ArgumentException` and name the failing argument expression; checked values are left out of messages by default.
 - **Multi-targeting**: Supports .NET 8, 9, and 10.
 

@@ -4,15 +4,15 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <PackageVersion>0.2.0</PackageVersion>
+        <PackageVersion>0.3.0</PackageVersion>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <FileVersion>1.0.0</FileVersion>
-        <PackageProjectUrl>https://github.com/selcukgural/sguard</PackageProjectUrl>
+        <PackageProjectUrl>https://selcukgural.github.io/SGuard/</PackageProjectUrl>
         <RepositoryUrl>https://github.com/selcukgural/sguard</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>guard;is;throwIf;sguard;validation;dotnet;csharp;callbacks</PackageTags>
-        <Description>SGuard is a lightweight guard library for .NET that offers boolean checks (Is.*) and throwing guards (ThrowIf.*), a unified SGuardCallback/GuardOutcome model, and exceptions that name the failing argument via CallerArgumentExpression. Targets net8.0/net9.0/net10.0.</Description>
+        <Description>SGuard is a lightweight guard library for .NET that offers boolean checks (Is.*) and throwing guards (ThrowIf.*), a unified SGuardCallback/GuardOutcome model, and exceptions that name the failing argument via CallerArgumentExpression. A passing guard doesn't allocate, and selectors are compiled once and cached. Targets net8.0/net9.0/net10.0.</Description>
         <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
         <Title>SGuard</Title>
         <Authors>Selçuk Güral</Authors>

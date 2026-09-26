@@ -74,7 +74,8 @@ ThrowIf.Between("kiwi", "a", "m", StringComparison.OrdinalIgnoreCase); // throws
 
 - **Expression caching**: selector expressions are compiled once and cached by expression structure in a thread-safe cache (including selectors that capture local variables or use operators such as `+` and `??`)
 - **No work when you don't need it**: plain comparisons and null/empty checks without a selector don't compile expressions
-- **Custom exception types** created from a `TException` type or `constructorArgs` are instantiated through reflection only when the guard fails; pass an exception instance if you want to avoid that
+- **Allocation-free guards**: a passing guard costs about as much as a hand-written `if` and allocates nothing
+- **Custom exception types** are created only when the guard fails: with `new TException()` for the `new()` overloads, and through reflection for `constructorArgs`
 
 See [Performance](../advanced/performance) for benchmarks and details.
 

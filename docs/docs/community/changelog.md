@@ -11,6 +11,95 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-26
+
+A performance release. Guards run on every call of the code they protect, so
+this release removes their remaining costs.
+
+**Highlights**
+
+- A passing guard no longer allocates and costs about as much as a
+  hand-written `if`: about 1 ns instead of 5–13 ns and up to 160 bytes.
+- Selectors that capture local variables or use operators (`+`, `??`, `?:`,
+  `new`) are cached like other selectors: about 0.5–1 µs per call instead of
+  50–85 µs and 9–10 KB.
+- Selectors whose path goes through an indexer, an array element or a method
+  call (`o => o.Items[0]`, `o => o.Name.Trim()`) work; they used to throw.
+- The benchmarks now run on .NET 8 and .NET 10 and report allocations.
+
+**Upgrading from 0.2.0**
+
+The public API is unchanged, so assemblies compiled against 0.2.0 work
+without being rebuilt. One behaviour change: `Is.NullOrEmpty` with a selector
+now applies the same rules as `ThrowIf.NullOrEmpty`, so a nullable value type
+holding its default value (`int? x = 0`) counts as empty.
+
+### Changed
+
+- A passing `ThrowIf.*` guard no longer allocates. Guards used to pass a
+  throwing lambda to an internal helper, which allocated a closure (and on
+  .NET 8 a delegate) on every call, 32–120 bytes, even when nothing was
+  thrown. A passing guard now costs about as much as a hand-written `if`
+  (about 0.6 ns for an `int` comparison, down from 5–10 ns). Callbacks are
+  invoked as before: `Failure` just before the guard throws, `Success`
+  otherwise, with exceptions from the callback ignored.
+- Selectors that capture local variables (`_ => captured.Name`,
+  `o => o.Items[index]`) are now cached like other selectors: the compiled
+  delegate is shared and each call passes its own captured values. They used
+  to be compiled on every call, about 85 µs and 10 KB each; a call now takes
+  about 0.5 µs, most of it spent building the expression tree at the call site.
+- Selectors that use operators (`+`, `==`, `!`, ...), `??`, `?:`, `is`, `new`
+  or array creation are cached too; they were compiled on every call, about
+  50 µs and 9 KB each, and now take about 1 µs. Only selectors with a nested
+  lambda, an invocation or a member or collection initializer are still
+  compiled on every call.
+- Each value on a selector's path is read once. Paths were evaluated again for
+  every null check, so a getter on the path ran once per level below it.
+- `Is.NullOrEmpty` with a selector now applies the same rules to the selected
+  value as `ThrowIf.NullOrEmpty`. A nullable value type holding its default
+  value (`int? x = 0`) now counts as empty for both, as it does without a
+  selector.
+- Passing guards no longer box `decimal` operands on .NET 8. The argument null
+  checks called `ArgumentNullException.ThrowIfNull`, which takes an `object`,
+  and the NaN check matched type patterns on the operands; a passing
+  `ThrowIf.Between` on `decimal` allocated 160 bytes.
+- `NullOrEmpty` checks a reference-typed value for collections before the
+  value-type patterns and skips the default-value comparison, which is
+  already covered by the null check: about 0.7 ns instead of 5–7 ns for a
+  list or array.
+- `Is.Any`, `Is.All`, `ThrowIf.Any` and `ThrowIf.All` read arrays and
+  `List<T>` as spans, so they no longer allocate an enumerator on .NET 8.
+- The `ThrowIf.*<TException>` overloads with a `new()` constraint create the
+  exception with `new TException()` instead of reflection.
+
+### Fixed
+
+- `NullOrEmpty` selectors whose path goes through an indexer, an array element
+  or a method call (`o => o.Items[0]`, `o => o.Tags[0]`, `o => o.Name.Trim()`),
+  or that combine members (`o => o.First + o.Last`), threw `ArgumentException`
+  or `InvalidOperationException` while being compiled. They now work: a null on
+  the path counts as empty, as with member paths, and other expressions are
+  evaluated as written.
+- The XML documentation of `Is.Between` described the bounds as exclusive; both
+  bounds are inclusive, as the code and the rest of the documentation state.
+  The `ThrowIf.Between<TException>` string overload no longer calls the bounds
+  an "allowed range".
+
+### Documentation
+
+- Warnings that `ThrowIf.Between` throws when the value is inside the range,
+  that `NullOrEmpty` enumerates lazy sequences (running `IQueryable` queries)
+  and calls property getters when a selector points at a complex type, and
+  that callbacks are not suitable for audit or security logging because their
+  exceptions are swallowed.
+- The performance guide recommends `Is.*` over `ThrowIf.*` for input that is
+  often invalid or can be sent invalid on purpose, since each rejected request
+  pays for a throw (about 2 µs on .NET 10, 13 µs on .NET 8).
+- The benchmark results in `SGuard.Benchmark/benchmarks/` are re-recorded on
+  .NET 8 and .NET 10 with allocations, and the README summarises them. The
+  benchmark project accepts BenchmarkDotNet's command-line options
+  (`--filter`, `--runtimes`, `--job`).
+
 ## [0.2.0] - 2026-09-26
 
 This release contains breaking changes; see **Changed** and **Removed**.

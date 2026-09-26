@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-26
+
+A performance release. Guards run on every call of the code they protect, so
+this release removes their remaining costs.
+
+**Highlights**
+
+- A passing guard no longer allocates and costs about as much as a
+  hand-written `if`: about 1 ns instead of 5–13 ns and up to 160 bytes.
+- Selectors that capture local variables or use operators (`+`, `??`, `?:`,
+  `new`) are cached like other selectors: about 0.5–1 µs per call instead of
+  50–85 µs and 9–10 KB.
+- Selectors whose path goes through an indexer, an array element or a method
+  call (`o => o.Items[0]`, `o => o.Name.Trim()`) work; they used to throw.
+- The benchmarks now run on .NET 8 and .NET 10 and report allocations.
+
+**Upgrading from 0.2.0**
+
+The public API is unchanged, so assemblies compiled against 0.2.0 work
+without being rebuilt. One behaviour change: `Is.NullOrEmpty` with a selector
+now applies the same rules as `ThrowIf.NullOrEmpty`, so a nullable value type
+holding its default value (`int? x = 0`) counts as empty.
+
 ### Changed
 
 - A passing `ThrowIf.*` guard no longer allocates. Guards used to pass a
@@ -32,10 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   value as `ThrowIf.NullOrEmpty`. A nullable value type holding its default
   value (`int? x = 0`) now counts as empty for both, as it does without a
   selector.
-- Passing guards no longer box `decimal` operands on
-  .NET 8. The argument null checks called `ArgumentNullException.ThrowIfNull`,
-  which takes an `object`, and the NaN check matched type patterns on the
-  operands; a passing `ThrowIf.Between` on `decimal` allocated 160 bytes.
+- Passing guards no longer box `decimal` operands on .NET 8. The argument null
+  checks called `ArgumentNullException.ThrowIfNull`, which takes an `object`,
+  and the NaN check matched type patterns on the operands; a passing
+  `ThrowIf.Between` on `decimal` allocated 160 bytes.
 - `NullOrEmpty` checks a reference-typed value for collections before the
   value-type patterns and skips the default-value comparison, which is
   already covered by the null check: about 0.7 ns instead of 5–7 ns for a
@@ -53,7 +76,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   or `InvalidOperationException` while being compiled. They now work: a null on
   the path counts as empty, as with member paths, and other expressions are
   evaluated as written.
-
 - The XML documentation of `Is.Between` described the bounds as exclusive; both
   bounds are inclusive, as the code and the rest of the documentation state.
   The `ThrowIf.Between<TException>` string overload no longer calls the bounds
@@ -66,6 +88,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and calls property getters when a selector points at a complex type, and
   that callbacks are not suitable for audit or security logging because their
   exceptions are swallowed.
+- The performance guide recommends `Is.*` over `ThrowIf.*` for input that is
+  often invalid or can be sent invalid on purpose, since each rejected request
+  pays for a throw (about 2 µs on .NET 10, 13 µs on .NET 8).
+- The benchmark results in `SGuard.Benchmark/benchmarks/` are re-recorded on
+  .NET 8 and .NET 10 with allocations, and the README summarises them. The
+  benchmark project accepts BenchmarkDotNet's command-line options
+  (`--filter`, `--runtimes`, `--job`).
 
 ## [0.2.0] - 2026-09-26
 
