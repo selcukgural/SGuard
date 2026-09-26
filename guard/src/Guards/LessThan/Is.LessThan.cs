@@ -24,8 +24,8 @@ public sealed partial class Is
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool LessThan<TLeft, TRight>(TLeft lValue, TRight rValue, SGuardCallback? callback = null) where TLeft : IComparable<TRight>
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
 
         var isLessThan = !SGuard.AnyNaN(lValue, rValue) && lValue.CompareTo(rValue) < 0;
         
@@ -46,8 +46,8 @@ public sealed partial class Is
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool LessThan(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         var isLessThan = string.Compare(lValue, rValue, comparison) < 0;
 
@@ -78,8 +78,8 @@ public sealed partial class Is
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool LessThanOrEqual<TLeft, TRight>(TLeft lValue, TRight rValue, SGuardCallback? callback = null) where TLeft : IComparable<TRight>
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         var isLessThanOrEqual = !SGuard.AnyNaN(lValue, rValue) && lValue.CompareTo(rValue) <= 0;
         
@@ -100,8 +100,8 @@ public sealed partial class Is
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool LessThanOrEqual(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         var isLessThanOrEqual = string.Compare(lValue, rValue, comparison) <= 0;
         

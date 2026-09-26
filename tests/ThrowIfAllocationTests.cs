@@ -45,6 +45,13 @@ public sealed class ThrowIfAllocationTests
         { "NullOrEmpty Guid", () => ThrowIf.NullOrEmpty(Id) },
         { "NullOrEmpty array", () => ThrowIf.NullOrEmpty(Array) },
         { "NullOrEmpty list", () => ThrowIf.NullOrEmpty(List) },
+        { "GreaterThan decimal", () => ThrowIf.GreaterThan(1m, 2m) },
+        { "Between decimal", () => ThrowIf.Between(20m, 1m, 10m) },
+        { "NullOrEmpty decimal", () => ThrowIf.NullOrEmpty(5m) },
+        { "Any array", () => ThrowIf.Any(Array, x => x > 10) },
+        { "Any list", () => ThrowIf.Any(List, x => x > 10) },
+        { "All array", () => ThrowIf.All(Array, x => x > 10) },
+        { "All list", () => ThrowIf.All(List, x => x > 10) },
     };
 
     [OptimizedBuildTheory]

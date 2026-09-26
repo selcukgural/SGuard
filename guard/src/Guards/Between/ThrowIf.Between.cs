@@ -37,9 +37,9 @@ public sealed partial class ThrowIf
         [CallerArgumentExpression(nameof(max))] string? maxExpression = null)
         where TValue : IComparable<TMin>, IComparable<TMax>
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
         
         if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
         {
@@ -66,9 +66,9 @@ public sealed partial class ThrowIf
                                                                [NotNull] TException exception, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(exception);
         
         if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
@@ -94,9 +94,9 @@ public sealed partial class ThrowIf
         [CallerArgumentExpression(nameof(min))] string? minExpression = null,
         [CallerArgumentExpression(nameof(max))] string? maxExpression = null)
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
         
         if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
         {
@@ -117,9 +117,9 @@ public sealed partial class ThrowIf
     public static void Between<TException>(string value, string min, string max, StringComparison comparison, [NotNull] TException exception,
                                            SGuardCallback? callback = null) where TException : Exception
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(exception);
         
         if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
@@ -146,13 +146,13 @@ public sealed partial class ThrowIf
                                                                SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception, new()
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
         
         if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
         {
-            Throw.That(ExceptionActivator.Create<TException>(null));
+            Throw.That(new TException());
         }
     }
 
@@ -175,9 +175,9 @@ public sealed partial class ThrowIf
                                                                object[]? constructorArgs, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
         
         if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
         {
@@ -201,13 +201,13 @@ public sealed partial class ThrowIf
     public static void Between<TException>(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null)
         where TException : Exception, new()
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
         
         if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
         {
-            Throw.That(ExceptionActivator.Create<TException>(null));
+            Throw.That(new TException());
         }
     }
 
@@ -227,9 +227,9 @@ public sealed partial class ThrowIf
     public static void Between<TException>(string value, string min, string max, StringComparison comparison, object[]? constructorArgs,
                                            SGuardCallback? callback = null) where TException : Exception
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
         
         if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
         {
