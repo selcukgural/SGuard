@@ -35,10 +35,9 @@ ThrowIf.NullOrEmpty(order, o => o.Customer.Name);
 ThrowIf.NullOrEmpty(anotherOrder, o => o.Customer.Name);
 ```
 
-**Impact**: roughly 40–50x faster with about 90% less allocation than recompiling on every call (per the
-Changelog). A cached selector call still costs on the order of a couple of microseconds (~1.5–1.9 µs in the
-[Expression Caching](../core-concepts/expression-caching#benchmarks) measurement), because the C# compiler builds a
-new expression tree at the call site on every call.
+**Impact**: roughly 150–200x faster with about 90% less allocation than recompiling on every call. A cached selector
+call still costs about half a microsecond and ~0.9 KB (see [Expression Caching](../core-concepts/expression-caching#benchmarks)),
+mostly because the C# compiler builds a new expression tree at the call site on every call.
 
 ### Comparison Guards
 
@@ -75,7 +74,7 @@ Avoid selectors if you can validate directly:
 // Faster: Direct check
 ThrowIf.NullOrEmpty(user.Email);
 
-// Slower: Selector (cached, but still microseconds per call)
+// Slower: Selector (cached, but still about half a microsecond per call)
 ThrowIf.NullOrEmpty(user, u => u.Email);
 ```
 
@@ -154,9 +153,12 @@ release):
 | `Is.Between`, `Is.GreaterThan` | `int` | under 1 ns |
 | `Is.GreaterThan` | `string` (culture-sensitive `CompareTo`) | ~15–28 ns |
 | `Is.Any`, `Is.All` | 1,000 / 15,000 elements, full pass | ~280 ns / ~4 µs |
-| `ThrowIf.*` | guard passes | ~10–14 ns |
+| `ThrowIf.*` | guard passes | ~10–14 ns (under 1 ns since passing guards stopped allocating)¹ |
 | `ThrowIf.*` | guard throws (including the catch) | ~8–9 µs |
 | `ThrowIf.NullOrEmpty` | selector, before the cache existed | ~50–60 µs |
+
+¹ Measured separately with BenchmarkDotNet on .NET 8 and .NET 10 for comparisons and `NullOrEmpty` on strings and
+numbers; collections take a few nanoseconds.
 
 *Actual numbers depend on hardware and runtime. See the benchmark folder for the full tables.*
 
@@ -174,7 +176,7 @@ In typical applications:
 [HttpPost]
 public IActionResult CreateOrder([FromBody] CreateOrderRequest req)
 {
-    // A few guards: nanoseconds each, a few microseconds for the selector
+    // A few guards: nanoseconds each, about half a microsecond for the selector
     ThrowIf.NullOrEmpty(req);
     ThrowIf.NullOrEmpty(req, r => r.Items);
     ThrowIf.Any(req.Items, i => i.Quantity <= 0);

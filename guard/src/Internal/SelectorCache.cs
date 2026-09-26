@@ -5,15 +5,16 @@ using System.Reflection;
 namespace SGuard;
 
 /// <summary>
-/// Compiles selector expressions rewritten by <see cref="NullOrEmptyVisitor"/> and caches the resulting delegates
+/// Compiles <c>NullOrEmpty</c> selectors with <see cref="NullOrEmptySelectorBuilder"/> and caches the resulting delegates
 /// by expression structure.
 /// </summary>
 /// <remarks>
 /// The C# compiler creates a new expression tree every time a lambda is evaluated, so the tree instance cannot be used
-/// as a cache key. Selectors are keyed by their shape instead: parameters, member accesses, conversions, method calls and
-/// primitive constants. Any other node, such as a captured variable (closure), makes the selector uncacheable, because
-/// its compiled delegate would embed a value that differs between calls with the same shape. Uncacheable selectors are
-/// compiled on every call.
+/// as a cache key. Selectors are keyed by their shape instead: parameters, member accesses, conversions, method calls,
+/// array accesses and constants. Captured variables reach the tree as constants holding the closure object; those are
+/// compiled as reads from an array argument and keyed by their type, so the delegate is shared and each call passes its
+/// own closure. Primitive constants (such as an index) stay in the compiled code and are keyed by value. Any other node
+/// makes the selector uncacheable, and it is compiled on every call.
 /// </remarks>
 internal static class SelectorCache
 {
@@ -23,37 +24,33 @@ internal static class SelectorCache
     /// </summary>
     internal const int MaxEntriesPerType = 1000;
 
-    private static readonly NullOrEmptyVisitor Visitor = new();
-
     /// <summary>
-    /// Returns a delegate that evaluates the selector and yields <c>null</c> when the selected member (or any member on
-    /// the path to it) is null or empty; otherwise, the selected value.
+    /// Evaluates the selector and determines whether the selected member (or any member on the path to it) is null or
+    /// empty.
     /// </summary>
     /// <typeparam name="T">The selector input type.</typeparam>
+    /// <param name="value">The value the selector is applied to.</param>
     /// <param name="selector">The selector expression, typed as <c>Func&lt;T, object&gt;</c>.</param>
-    /// <returns>The compiled evaluator, or <c>null</c> if the selector could not be rewritten.</returns>
-    public static Func<T, object?>? GetNullOrEmptyEvaluator<T>(LambdaExpression selector)
+    public static bool IsNullOrEmpty<T>(T value, LambdaExpression selector)
     {
         if (!SelectorShapeComparer.IsCacheable(selector))
         {
-            return Compile<T>(selector);
+            return Is.InternalIsNullOrEmpty(Compile<T>(selector, parameterizeConstants: false)(value, []));
         }
 
         var cache = Cache<T>.Entries;
 
-        if (cache.TryGetValue(selector, out var cached))
+        if (!cache.TryGetValue(selector, out var evaluator))
         {
-            return cached;
+            evaluator = Compile<T>(selector, parameterizeConstants: true);
+
+            if (cache.Count < MaxEntriesPerType)
+            {
+                cache.TryAdd(selector, evaluator);
+            }
         }
 
-        var evaluator = Compile<T>(selector);
-
-        if (evaluator is not null && cache.Count < MaxEntriesPerType)
-        {
-            cache.TryAdd(selector, evaluator);
-        }
-
-        return evaluator;
+        return Is.InternalIsNullOrEmpty(evaluator(value, SelectorShapeComparer.CollectConstants(selector)));
     }
 
     /// <summary>
@@ -61,12 +58,36 @@ internal static class SelectorCache
     /// </summary>
     internal static int Count<T>() => Cache<T>.Entries.Count;
 
-    private static Func<T, object?>? Compile<T>(LambdaExpression selector)
-        => Visitor.Visit(selector) is Expression<Func<T, object?>> rewritten ? rewritten.Compile() : null;
+    private static Evaluator<T> Compile<T>(LambdaExpression selector, bool parameterizeConstants)
+    {
+        var constants = Expression.Parameter(typeof(object[]), "constants");
+        var body = parameterizeConstants ? new ConstantParameterizer(constants).Visit(selector.Body) : selector.Body;
+
+        return Expression.Lambda<Evaluator<T>>(NullOrEmptySelectorBuilder.Build(body), selector.Parameters[0], constants).Compile();
+    }
+
+    /// <summary>
+    /// A compiled selector: yields <c>null</c> when the selected value is null or empty; otherwise, the value.
+    /// </summary>
+    private delegate object? Evaluator<in T>(T value, object?[] constants);
 
     private static class Cache<T>
     {
-        public static readonly ConcurrentDictionary<LambdaExpression, Func<T, object?>> Entries = new(SelectorShapeComparer.Instance);
+        public static readonly ConcurrentDictionary<LambdaExpression, Evaluator<T>> Entries = new(SelectorShapeComparer.Instance);
+    }
+
+    /// <summary>
+    /// Replaces each parameterized constant with a read from the constants array, numbering them in the order
+    /// <see cref="SelectorShapeComparer.CollectConstants"/> collects them.
+    /// </summary>
+    private sealed class ConstantParameterizer(ParameterExpression constants) : ExpressionVisitor
+    {
+        private int _next;
+
+        protected override Expression VisitConstant(ConstantExpression node)
+            => SelectorShapeComparer.IsParameterized(node)
+                   ? Expression.Convert(Expression.ArrayIndex(constants, Expression.Constant(_next++)), node.Type)
+                   : node;
     }
 }
 
@@ -135,10 +156,59 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
                 }
 
                 return true;
-            case ConstantExpression constant:
-                return constant.Value is null || IsPrimitiveConstant(constant.Type);
+            case ConstantExpression:
+                return true;
             default:
                 return false;
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the constant is passed to the compiled selector at run time rather than compiled into it: any
+    /// non-null constant other than a primitive, enum, string or decimal value, such as the closure object that holds
+    /// captured variables.
+    /// </summary>
+    public static bool IsParameterized(ConstantExpression constant)
+        => constant.Value is not null && !IsPrimitiveConstant(constant.Type);
+
+    /// <summary>
+    /// Collects the values of the parameterized constants of a cacheable selector, in the order the compiled selector
+    /// reads them.
+    /// </summary>
+    public static object?[] CollectConstants(LambdaExpression lambda)
+    {
+        List<object?>? constants = null;
+        Collect(lambda.Body, ref constants);
+        return constants?.ToArray() ?? [];
+
+        // Same traversal order as ExpressionVisitor, which numbers the constants when the selector is compiled.
+        static void Collect(Expression? node, ref List<object?>? constants)
+        {
+            switch (node)
+            {
+                case MemberExpression member:
+                    Collect(member.Expression, ref constants);
+                    break;
+                case UnaryExpression unary:
+                    Collect(unary.Operand, ref constants);
+                    break;
+                case BinaryExpression binary:
+                    Collect(binary.Left, ref constants);
+                    Collect(binary.Right, ref constants);
+                    break;
+                case MethodCallExpression call:
+                    Collect(call.Object, ref constants);
+
+                    foreach (var argument in call.Arguments)
+                    {
+                        Collect(argument, ref constants);
+                    }
+
+                    break;
+                case ConstantExpression constant when IsParameterized(constant):
+                    (constants ??= []).Add(constant.Value);
+                    break;
+            }
         }
     }
 
@@ -193,7 +263,12 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
 
                 return true;
             case ConstantExpression xConstant:
-                return Equals(xConstant.Value, ((ConstantExpression)y).Value);
+                var yConstant = (ConstantExpression)y;
+
+                // Parameterized constants are passed at run time, so only their type (compared above) matters.
+                return IsParameterized(xConstant)
+                    ? IsParameterized(yConstant)
+                    : !IsParameterized(yConstant) && Equals(xConstant.Value, yConstant.Value);
             default:
                 // Only reachable for uncacheable selectors, which are never stored.
                 return false;
@@ -238,7 +313,7 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
 
                 break;
             case ConstantExpression constant:
-                hash.Add(constant.Value);
+                hash.Add(IsParameterized(constant) ? null : constant.Value);
                 break;
             default:
                 // Only reachable for uncacheable selectors, which are never stored.

@@ -66,9 +66,7 @@ public sealed partial class Is
             return true;
         }
 
-        var evaluator = SelectorCache.GetNullOrEmptyEvaluator<T>(selector);
-
-        var isNullOrEmpty = evaluator?.Invoke(value) is null;
+        var isNullOrEmpty = SelectorCache.IsNullOrEmpty(value, selector);
 
         SGuard.InvokeCallbackSafely(isNullOrEmpty, callback);
 

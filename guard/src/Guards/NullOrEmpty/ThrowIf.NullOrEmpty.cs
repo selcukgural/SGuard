@@ -94,7 +94,7 @@ public sealed partial class ThrowIf
     {
         ArgumentNullException.ThrowIfNull(selector);
 
-        var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
+        var isNullOrEmpty = value is null || SelectorCache.IsNullOrEmpty(value, selector);
 
         if (SGuard.Fails(isNullOrEmpty, callback))
         {
@@ -119,7 +119,7 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(selector);
         ArgumentNullException.ThrowIfNull(exception);
 
-        var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
+        var isNullOrEmpty = value is null || SelectorCache.IsNullOrEmpty(value, selector);
 
         if (SGuard.Fails(isNullOrEmpty, callback))
         {
@@ -142,7 +142,7 @@ public sealed partial class ThrowIf
         where TException : Exception, new()
     {
         ArgumentNullException.ThrowIfNull(selector);
-        var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
+        var isNullOrEmpty = value is null || SelectorCache.IsNullOrEmpty(value, selector);
         if (SGuard.Fails(isNullOrEmpty, callback))
         {
             Throw.That(new TException());
@@ -160,32 +160,16 @@ public sealed partial class ThrowIf
     /// <param name="constructorArgs">An array of arguments to pass to the exception constructor.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="ArgumentNullException">Thrown if the selector is null.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if the selector expression cannot be processed.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if no constructor of <typeparamref name="TException"/> matches <paramref name="constructorArgs"/>.</exception>
     /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
     public static void NullOrEmpty<TValue, TException>(TValue value, Expression<Func<TValue, object?>> selector, object?[] constructorArgs,
                                                        SGuardCallback? callback = null) where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(selector);
-        var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
+        var isNullOrEmpty = value is null || SelectorCache.IsNullOrEmpty(value, selector);
         if (SGuard.Fails(isNullOrEmpty, callback))
         {
             Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
         }
-    }
-
-    /// <summary>
-    /// Evaluates whether the specified object is null or empty based on the provided expression.
-    /// </summary>
-    /// <typeparam name="TValue">The type of the object to evaluate.</typeparam>
-    /// <param name="obj">The object to evaluate.</param>
-    /// <param name="valueExpression">An expression to select a property or field from the object.</param>
-    /// <returns>True if the selected value is null or empty; otherwise, false.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if the expression cannot be processed.</exception>
-    private static bool CheckNullOrEmpty<TValue>(TValue obj, Expression<Func<TValue, object?>> valueExpression)
-    {
-        var evaluator = SelectorCache.GetNullOrEmptyEvaluator<TValue>(valueExpression) ??
-                        throw new InvalidOperationException("Unable to process the expression.");
-
-        return Is.InternalIsNullOrEmpty(evaluator(obj));
     }
 }

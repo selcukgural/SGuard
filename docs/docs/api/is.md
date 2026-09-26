@@ -62,8 +62,8 @@ With a selector:
   (recursively; a type already being inspected on the same path, or nested more than 8 levels deep, is only
   null-checked; indexers are skipped).
 
-Selectors are compiled once and cached by expression structure. Selectors that capture local variables are recompiled on
-every call; see [Expression Caching](../core-concepts/expression-caching).
+Selectors are compiled once and cached by expression structure, including selectors that capture local variables;
+see [Expression Caching](../core-concepts/expression-caching).
 
 ### Examples
 
@@ -269,8 +269,8 @@ bool isValid = Is.Between(
 
 - `Is.*` never allocates an exception for a `false` result.
 - Comparisons call `CompareTo` directly.
-- Selector-based `NullOrEmpty` checks reuse cached compiled selectors (roughly 40–50x faster than the previous
-  uncached behaviour, according to the [Changelog](../community/changelog)).
+- Selector-based `NullOrEmpty` checks reuse cached compiled selectors, including selectors that capture local
+  variables. See [Expression Caching](../core-concepts/expression-caching#benchmarks) for measurements.
 
 ## When to Use Is.* vs ThrowIf.*
 

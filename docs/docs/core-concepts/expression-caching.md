@@ -64,19 +64,18 @@ foreach (var order in orders)
 
 ## Benchmarks
 
-Measured on .NET 10 with a two-level selector (`o => o.Customer.Name`),
-averaged over 20,000 calls, comparing the previous behaviour (recompiling on every call) with the cache:
+Measured with BenchmarkDotNet (Apple M3 Max, .NET 10 / .NET 8) for a passing `ThrowIf.NullOrEmpty` guard:
 
-| Guard | Without caching | With caching |
+| Selector | Compiled on every call | Cached |
 |---|---|---|
-| `ThrowIf.NullOrEmpty` | ~83 µs, ~8 KB | ~1.9 µs, ~0.8 KB |
-| `Is.NullOrEmpty` | ~77 µs, ~7.7 KB | ~1.5 µs, ~0.7 KB |
+| `o => o.Customer.Address.City` | ~80 µs, ~8 KB | ~0.42 µs / ~0.58 µs, 880 B |
+| `o => captured.Customer.Name` (captured local) | ~85 µs, ~10 KB | ~0.52 µs / ~0.64 µs, ~1 KB |
+| *Building the expression tree alone* | | ~0.30 µs / ~0.41 µs, 824 B |
 
-Times are per call; sizes are memory allocated per call. The remaining
-allocation is the expression tree the C# compiler builds at the call site on
-every call. This matches the Changelog: selector-based calls are roughly 40–50x
-faster with about 90% less allocation. These figures come from that measurement,
-not from the committed BenchmarkDotNet results in `SGuard.Benchmark/benchmarks/`,
+Times are per call; sizes are memory allocated per call. Most of what remains is
+the expression tree the C# compiler builds at the call site on every call (last
+row), which no cache can avoid. These figures come from that measurement, not
+from the committed BenchmarkDotNet results in `SGuard.Benchmark/benchmarks/`,
 which were recorded before the cache existed.
 
 ## Limitations
@@ -84,13 +83,13 @@ which were recorded before the cache existed.
 - **Caching is per-expression structure**: Different selectors create
   separate cache entries. `Is.NullOrEmpty` and `ThrowIf.NullOrEmpty` share the
   same entry for the same selector.
-- **Captured variables are not cached**: A selector that reads a captured
+- **Captured variables are cached too**: A selector that reads a captured
   variable (e.g. `_ => someLocal.Name` or `o => o.Items[index]` with a local
-  `index`) embeds that variable's current value in its compiled form, so it is
-  compiled on every call to stay correct. Selectors made only of the lambda
-  parameter, member accesses, conversions, method calls, array indexing and
-  constants of primitive types, enums, `string` or `decimal` are cached. Select
-  from the lambda parameter (`x => x.Name`) to benefit from caching.
+  `index`) is compiled once; each call passes its own captured values to the
+  compiled delegate. Selectors made of the lambda parameter, captured
+  variables, member accesses, conversions, method calls, array indexing and
+  constants are cached. Selectors with other expressions, such as `+`, `??` or
+  `new`, still work but are compiled on every call.
 - **No cache eviction**: Entries remain for the application lifetime (this is
   usually fine as the cache size is bounded by the number of unique validation
   patterns in your code). Each selector input type holds at most 1,000
