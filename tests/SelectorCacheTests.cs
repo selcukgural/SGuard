@@ -51,6 +51,23 @@ public sealed class SelectorCacheTests
 
     private sealed class SeveralConstants;
 
+    private sealed class Operators
+    {
+        public string? First { get; init; }
+        public string? Second { get; init; }
+    }
+
+    private sealed class Numbers
+    {
+        public int Left { get; init; }
+        public int Right { get; init; }
+    }
+
+    private sealed class Branches
+    {
+        public bool UseFirst { get; init; }
+    }
+
     private sealed class KeyHolder
     {
         public string Key { get; init; } = "";
@@ -178,6 +195,72 @@ public sealed class SelectorCacheTests
 
             return Is.NullOrEmpty(new SeveralConstants(), selector);
         }
+    }
+
+    [Fact]
+    public void Operators_Conditionals_AndNew_AreCached()
+    {
+        var names = new[] { new Operators { First = "a", Second = "" }, new Operators { First = null, Second = "" } };
+
+        foreach (var value in names)
+        {
+            Is.NullOrEmpty(value, v => v.First + v.Second);
+            Is.NullOrEmpty(value, v => v.First ?? v.Second!);
+            Is.NullOrEmpty(value, v => v.First != null ? v.First : v.Second!);
+            Is.NullOrEmpty(value, v => new { v.First });
+            Is.NullOrEmpty(value, v => new[] { v.First });
+            Is.NullOrEmpty(value, v => v.First is string);
+            Is.NullOrEmpty(value, v => !(v.First == null));
+        }
+
+        Assert.Equal(7, SelectorCache.Count<Operators>());
+    }
+
+    [Fact]
+    public void Comparer_DifferentOperators_AreNotEqual()
+    {
+        Expression<Func<Numbers, object?>> add = n => n.Left + n.Right;
+        Expression<Func<Numbers, object?>> subtract = n => n.Left - n.Right;
+        Expression<Func<Numbers, object?>> swapped = n => n.Right + n.Left;
+
+        Assert.False(SelectorShapeComparer.Instance.Equals(add, subtract));
+        Assert.False(SelectorShapeComparer.Instance.Equals(add, swapped));
+    }
+
+    [Fact]
+    public void Comparer_DifferentTypeOperands_AreNotEqual()
+    {
+        Expression<Func<Operators, object?>> isString = o => o.First is string;
+        Expression<Func<Operators, object?>> isObject = o => o.First is object;
+
+        Assert.True(SelectorShapeComparer.IsCacheable(isString));
+        Assert.False(SelectorShapeComparer.Instance.Equals(isString, isObject));
+    }
+
+    [Fact]
+    public void CapturedValues_InBothBranches_AreReadFromTheRightBranch()
+    {
+        var results = new List<bool>();
+
+        foreach (var (useFirst, first, second) in new[] { (true, "x", ""), (false, "x", ""), (true, "", "y"), (false, "", "y") })
+        {
+            var firstHolder = new ClosureHolder { Value = first };
+            var secondHolder = new ClosureHolder { Value = second };
+            results.Add(Is.NullOrEmpty(new Branches { UseFirst = useFirst }, b => b.UseFirst ? firstHolder.Value! : secondHolder.Value!));
+        }
+
+        Assert.Equal([false, true, true, false], results);
+        Assert.Equal(1, SelectorCache.Count<Branches>());
+    }
+
+    [Fact]
+    public void NestedLambda_IsNotCacheable_ButStillEvaluates()
+    {
+        Expression<Func<Indexed, object?>> selector = x => x.Items.FirstOrDefault(item => item != null);
+
+        Assert.False(SelectorShapeComparer.IsCacheable(selector));
+        Assert.False(Is.NullOrEmpty(new Indexed { Items = [null, "value"] }, selector!));
+        Assert.True(Is.NullOrEmpty(new Indexed { Items = [null] }, selector!));
     }
 
     [Fact]

@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   delegate is shared and each call passes its own captured values. They used
   to be compiled on every call, about 85 µs and 10 KB each; a call now takes
   about 0.5 µs, most of it spent building the expression tree at the call site.
+- Selectors that use operators (`+`, `==`, `!`, ...), `??`, `?:`, `is`, `new`
+  or array creation are cached too; they were compiled on every call, about
+  50 µs and 9 KB each, and now take about 1 µs. Only selectors with a nested
+  lambda, an invocation or a member or collection initializer are still
+  compiled on every call.
 - Each value on a selector's path is read once. Paths were evaluated again for
   every null check, so a getter on the path ran once per level below it.
 - `Is.NullOrEmpty` with a selector now applies the same rules to the selected

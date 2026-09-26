@@ -86,10 +86,11 @@ which were recorded before the cache existed.
 - **Captured variables are cached too**: A selector that reads a captured
   variable (e.g. `_ => someLocal.Name` or `o => o.Items[index]` with a local
   `index`) is compiled once; each call passes its own captured values to the
-  compiled delegate. Selectors made of the lambda parameter, captured
-  variables, member accesses, conversions, method calls, array indexing and
-  constants are cached. Selectors with other expressions, such as `+`, `??` or
-  `new`, still work but are compiled on every call.
+  compiled delegate. Operators (`+`, `==`, `!`, ...), `??`, `?:`, `is`,
+  `new` and array creation are cached as well. Only a selector containing a
+  nested lambda (`o => o.Items.First(i => i.Active)`), an invocation, or a
+  member or collection initializer (`new Dto { Name = o.Name }`) is compiled on
+  every call; it still works, but costs tens of microseconds.
 - **No cache eviction**: Entries remain for the application lifetime (this is
   usually fine as the cache size is bounded by the number of unique validation
   patterns in your code). Each selector input type holds at most 1,000

@@ -10,11 +10,12 @@ namespace SGuard;
 /// </summary>
 /// <remarks>
 /// The C# compiler creates a new expression tree every time a lambda is evaluated, so the tree instance cannot be used
-/// as a cache key. Selectors are keyed by their shape instead: parameters, member accesses, conversions, method calls,
-/// array accesses and constants. Captured variables reach the tree as constants holding the closure object; those are
-/// compiled as reads from an array argument and keyed by their type, so the delegate is shared and each call passes its
-/// own closure. Primitive constants (such as an index) stay in the compiled code and are keyed by value. Any other node
-/// makes the selector uncacheable, and it is compiled on every call.
+/// as a cache key. Selectors are keyed by their shape instead: parameters, member accesses, method calls, operators,
+/// conditionals, <c>new</c> expressions and constants. Captured variables reach the tree as constants holding the
+/// closure object; those are compiled as reads from an array argument and keyed by their type, so the delegate is shared
+/// and each call passes its own closure. Primitive constants (such as an index) stay in the compiled code and are keyed
+/// by value. A selector containing a nested lambda, a block, an invocation or a member or list initializer is not
+/// cacheable and is compiled on every call.
 /// </remarks>
 internal static class SelectorCache
 {
@@ -129,39 +130,67 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
 
     private static bool IsCacheable(Expression? node, IReadOnlyList<ParameterExpression> parameters)
     {
-        switch (node)
+        if (node is null)
         {
-            case null:
-                return true;
-            case ParameterExpression parameter:
-                return IndexOf(parameters, parameter) >= 0;
-            case MemberExpression member:
-                return IsCacheable(member.Expression, parameters);
-            case UnaryExpression { NodeType: ExpressionType.Convert or ExpressionType.ConvertChecked or ExpressionType.TypeAs or ExpressionType.ArrayLength } unary:
-                return IsCacheable(unary.Operand, parameters);
-            case BinaryExpression { NodeType: ExpressionType.ArrayIndex } binary:
-                return IsCacheable(binary.Left, parameters) && IsCacheable(binary.Right, parameters);
-            case MethodCallExpression call:
-                if (!IsCacheable(call.Object, parameters))
-                {
-                    return false;
-                }
-
-                foreach (var argument in call.Arguments)
-                {
-                    if (!IsCacheable(argument, parameters))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            case ConstantExpression:
-                return true;
-            default:
-                return false;
+            return true;
         }
+
+        if (!IsSupported(node) || (node is ParameterExpression parameter && IndexOf(parameters, parameter) < 0))
+        {
+            return false;
+        }
+
+        for (var i = 0; i < ChildCount(node); i++)
+        {
+            if (!IsCacheable(Child(node, i), parameters))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
+
+    /// <summary>
+    /// Determines whether the node's meaning is fully described by what this comparer compares: its node type, type,
+    /// the member, method, constructor or type operand it refers to, and its children. Lambdas, blocks, invocations and
+    /// member or list initializers are not; neither is a binary operator with a conversion lambda.
+    /// </summary>
+    private static bool IsSupported(Expression node)
+        => node is ParameterExpression or ConstantExpression or DefaultExpression or MemberExpression or MethodCallExpression
+                   or ConditionalExpression or NewExpression or NewArrayExpression or TypeBinaryExpression
+                   or UnaryExpression { NodeType: not ExpressionType.Quote } or BinaryExpression { Conversion: null };
+
+    /// <summary>
+    /// Gets the number of child expressions of a supported node.
+    /// </summary>
+    private static int ChildCount(Expression node) => node switch
+    {
+        MemberExpression or UnaryExpression or TypeBinaryExpression => 1,
+        BinaryExpression => 2,
+        ConditionalExpression => 3,
+        MethodCallExpression call => 1 + call.Arguments.Count,
+        NewExpression newExpression => newExpression.Arguments.Count,
+        NewArrayExpression newArray => newArray.Expressions.Count,
+        _ => 0
+    };
+
+    /// <summary>
+    /// Gets a child expression of a supported node, in the order <see cref="ExpressionVisitor"/> visits them. The
+    /// constants of a cached selector are numbered in this order when it is compiled, so the two must agree.
+    /// </summary>
+    private static Expression? Child(Expression node, int index) => node switch
+    {
+        MemberExpression member => member.Expression,
+        UnaryExpression unary => unary.Operand,
+        TypeBinaryExpression typeBinary => typeBinary.Expression,
+        BinaryExpression binary => index == 0 ? binary.Left : binary.Right,
+        ConditionalExpression conditional => index switch { 0 => conditional.Test, 1 => conditional.IfTrue, _ => conditional.IfFalse },
+        MethodCallExpression call => index == 0 ? call.Object : call.Arguments[index - 1],
+        NewExpression newExpression => newExpression.Arguments[index],
+        NewArrayExpression newArray => newArray.Expressions[index],
+        _ => throw new ArgumentOutOfRangeException(nameof(index))
+    };
 
     /// <summary>
     /// Determines whether the constant is passed to the compiled selector at run time rather than compiled into it: any
@@ -181,33 +210,26 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
         Collect(lambda.Body, ref constants);
         return constants?.ToArray() ?? [];
 
-        // Same traversal order as ExpressionVisitor, which numbers the constants when the selector is compiled.
         static void Collect(Expression? node, ref List<object?>? constants)
         {
-            switch (node)
+            if (node is ConstantExpression constant)
             {
-                case MemberExpression member:
-                    Collect(member.Expression, ref constants);
-                    break;
-                case UnaryExpression unary:
-                    Collect(unary.Operand, ref constants);
-                    break;
-                case BinaryExpression binary:
-                    Collect(binary.Left, ref constants);
-                    Collect(binary.Right, ref constants);
-                    break;
-                case MethodCallExpression call:
-                    Collect(call.Object, ref constants);
-
-                    foreach (var argument in call.Arguments)
-                    {
-                        Collect(argument, ref constants);
-                    }
-
-                    break;
-                case ConstantExpression constant when IsParameterized(constant):
+                if (IsParameterized(constant))
+                {
                     (constants ??= []).Add(constant.Value);
-                    break;
+                }
+
+                return;
+            }
+
+            if (node is null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < ChildCount(node); i++)
+            {
+                Collect(Child(node, i), ref constants);
             }
         }
     }
@@ -228,51 +250,39 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
             return false;
         }
 
-        switch (x)
+        var sameNode = x switch
         {
-            case ParameterExpression xParameter:
-                return IndexOf(xParameters, xParameter) == IndexOf(yParameters, (ParameterExpression)y);
-            case MemberExpression xMember:
-                var yMember = (MemberExpression)y;
-                return MembersEqual(xMember.Member, yMember.Member) &&
-                       AreEqual(xMember.Expression, yMember.Expression, xParameters, yParameters);
-            case UnaryExpression xUnary:
-                var yUnary = (UnaryExpression)y;
-                return xUnary.Method == yUnary.Method && AreEqual(xUnary.Operand, yUnary.Operand, xParameters, yParameters);
-            case BinaryExpression xBinary:
-                var yBinary = (BinaryExpression)y;
-                return xBinary.Method == yBinary.Method &&
-                       AreEqual(xBinary.Left, yBinary.Left, xParameters, yParameters) &&
-                       AreEqual(xBinary.Right, yBinary.Right, xParameters, yParameters);
-            case MethodCallExpression xCall:
-                var yCall = (MethodCallExpression)y;
+            ParameterExpression xParameter => IndexOf(xParameters, xParameter) == IndexOf(yParameters, (ParameterExpression)y),
+            // Parameterized constants are passed at run time, so only their type (compared above) matters.
+            ConstantExpression xConstant => IsParameterized(xConstant)
+                ? IsParameterized((ConstantExpression)y)
+                : !IsParameterized((ConstantExpression)y) && Equals(xConstant.Value, ((ConstantExpression)y).Value),
+            MemberExpression xMember => MembersEqual(xMember.Member, ((MemberExpression)y).Member),
+            MethodCallExpression xCall => xCall.Method == ((MethodCallExpression)y).Method,
+            UnaryExpression xUnary => xUnary.Method == ((UnaryExpression)y).Method,
+            BinaryExpression xBinary => xBinary.Method == ((BinaryExpression)y).Method &&
+                                        xBinary.IsLiftedToNull == ((BinaryExpression)y).IsLiftedToNull,
+            NewExpression xNew => xNew.Constructor == ((NewExpression)y).Constructor,
+            TypeBinaryExpression xTypeBinary => xTypeBinary.TypeOperand == ((TypeBinaryExpression)y).TypeOperand,
+            DefaultExpression or ConditionalExpression or NewArrayExpression => true,
+            // Only reachable for uncacheable selectors, which are never stored.
+            _ => false
+        };
 
-                if (xCall.Method != yCall.Method || xCall.Arguments.Count != yCall.Arguments.Count ||
-                    !AreEqual(xCall.Object, yCall.Object, xParameters, yParameters))
-                {
-                    return false;
-                }
-
-                for (var i = 0; i < xCall.Arguments.Count; i++)
-                {
-                    if (!AreEqual(xCall.Arguments[i], yCall.Arguments[i], xParameters, yParameters))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            case ConstantExpression xConstant:
-                var yConstant = (ConstantExpression)y;
-
-                // Parameterized constants are passed at run time, so only their type (compared above) matters.
-                return IsParameterized(xConstant)
-                    ? IsParameterized(yConstant)
-                    : !IsParameterized(yConstant) && Equals(xConstant.Value, yConstant.Value);
-            default:
-                // Only reachable for uncacheable selectors, which are never stored.
-                return false;
+        if (!sameNode || ChildCount(x) != ChildCount(y))
+        {
+            return false;
         }
+
+        for (var i = 0; i < ChildCount(x); i++)
+        {
+            if (!AreEqual(Child(x, i), Child(y, i), xParameters, yParameters))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static void AddHash(ref HashCode hash, Expression? node, IReadOnlyList<ParameterExpression> parameters)
@@ -291,33 +301,32 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
             case ParameterExpression parameter:
                 hash.Add(IndexOf(parameters, parameter));
                 break;
-            case MemberExpression member:
-                hash.Add(member.Member.MetadataToken);
-                AddHash(ref hash, member.Expression, parameters);
-                break;
-            case UnaryExpression unary:
-                AddHash(ref hash, unary.Operand, parameters);
-                break;
-            case BinaryExpression binary:
-                AddHash(ref hash, binary.Left, parameters);
-                AddHash(ref hash, binary.Right, parameters);
-                break;
-            case MethodCallExpression call:
-                hash.Add(call.Method.MetadataToken);
-                AddHash(ref hash, call.Object, parameters);
-
-                foreach (var argument in call.Arguments)
-                {
-                    AddHash(ref hash, argument, parameters);
-                }
-
-                break;
             case ConstantExpression constant:
                 hash.Add(IsParameterized(constant) ? null : constant.Value);
                 break;
-            default:
-                // Only reachable for uncacheable selectors, which are never stored.
+            case MemberExpression member:
+                hash.Add(member.Member.MetadataToken);
                 break;
+            case MethodCallExpression call:
+                hash.Add(call.Method.MetadataToken);
+                break;
+            case NewExpression newExpression:
+                hash.Add(newExpression.Constructor?.MetadataToken);
+                break;
+            case TypeBinaryExpression typeBinary:
+                hash.Add(typeBinary.TypeOperand);
+                break;
+        }
+
+        if (!IsSupported(node))
+        {
+            // Only reachable for uncacheable selectors, which are never stored.
+            return;
+        }
+
+        for (var i = 0; i < ChildCount(node); i++)
+        {
+            AddHash(ref hash, Child(node, i), parameters);
         }
     }
 

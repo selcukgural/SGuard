@@ -50,8 +50,10 @@ Detailed benchmark results for each method can be found in the corresponding mar
 
 The committed results were recorded in September 2026 on an Apple M3 Max with BenchmarkDotNet 0.15.8, on .NET 8.0.3
 and .NET 10.0.5, with the command above (`--job short`: 3 iterations, so treat small differences as noise). Each
-table has a row per runtime and an `Allocated` column. A mean of `0.0000 ns` means the call was too cheap to measure
-or the JIT removed it.
+table has a row per runtime and an `Allocated` column. A mean of `0.0000 ns` (with a `ZeroMeasurement` warning in the
+BenchmarkDotNet log) means the call is indistinguishable from an empty method returning the same value, i.e. it costs
+less than BenchmarkDotNet can resolve (a fraction of a nanosecond). The benchmarks return their results, so the calls
+are not optimized away.
 
 Summary:
 - A passing guard costs about as much as a hand-written `if`: under 1 ns on .NET 10 and 0.6–3 ns on .NET 8, with
