@@ -16,8 +16,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (about 0.6 ns for an `int` comparison, down from 5–10 ns). Callbacks are
   invoked as before: `Failure` just before the guard throws, `Success`
   otherwise, with exceptions from the callback ignored.
+- Selectors that capture local variables (`_ => captured.Name`,
+  `o => o.Items[index]`) are now cached like other selectors: the compiled
+  delegate is shared and each call passes its own captured values. They used
+  to be compiled on every call, about 85 µs and 10 KB each; a call now takes
+  about 0.5 µs, most of it spent building the expression tree at the call site.
+- Each value on a selector's path is read once. Paths were evaluated again for
+  every null check, so a getter on the path ran once per level below it.
+- `Is.NullOrEmpty` with a selector now applies the same rules to the selected
+  value as `ThrowIf.NullOrEmpty`. A nullable value type holding its default
+  value (`int? x = 0`) now counts as empty for both, as it does without a
+  selector.
 
 ### Fixed
+
+- `NullOrEmpty` selectors whose path goes through an indexer, an array element
+  or a method call (`o => o.Items[0]`, `o => o.Tags[0]`, `o => o.Name.Trim()`),
+  or that combine members (`o => o.First + o.Last`), threw `ArgumentException`
+  or `InvalidOperationException` while being compiled. They now work: a null on
+  the path counts as empty, as with member paths, and other expressions are
+  evaluated as written.
 
 - The XML documentation of `Is.Between` described the bounds as exclusive; both
   bounds are inclusive, as the code and the rest of the documentation state.

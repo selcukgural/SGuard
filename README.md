@@ -54,7 +54,7 @@ Performance benchmarks for all guard methods are available in the [SGuard.Benchm
     - Between checks are inclusive by design for predictable validation.
 
 - Performance and ergonomics
-    - Selector expressions are compiled once and cached by expression structure, so repeated checks don't pay the compilation cost again (selectors that capture local variables are still compiled on every call).
+    - Selector expressions are compiled once and cached by expression structure, so repeated checks don't pay the compilation cost again (selectors that capture local variables are cached too).
     - The selector cache is thread-safe.
 
 - Modern .NET support

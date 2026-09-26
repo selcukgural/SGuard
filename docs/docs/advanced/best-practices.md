@@ -290,7 +290,7 @@ public void ValidateOrder_InsufficientStock_ThrowsCorrectException()
 ### Use Selectors in Loops Carefully
 
 Compiled selectors are cached, but each selector call still builds an expression tree and hashes it to find the cached delegate, which costs
-microseconds rather than the nanoseconds of a direct check (see [Expression Caching](../core-concepts/expression-caching)):
+about half a microsecond rather than the nanoseconds of a direct check (see [Expression Caching](../core-concepts/expression-caching)):
 
 ```csharp
 // Fastest: direct check (but throws NullReferenceException if order.Customer is null)

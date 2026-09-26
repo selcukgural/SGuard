@@ -131,9 +131,19 @@ ThrowIf.NullOrEmpty(order, o => o.Customer.Address.City);
 A `null` anywhere on the path (for example `order.Customer` being `null`) counts as empty, so the guard throws instead
 of a `NullReferenceException`. The selected member is then checked with the rules in the table above.
 
+The path can also go through indexers, array elements and instance methods, and a `null` on it counts as empty in the
+same way, like C#'s `?.`. Each value on the path is read once. Other expressions, such as method arguments or the
+operands of `+`, are evaluated as written:
+
+```csharp
+ThrowIf.NullOrEmpty(order, o => o.Items[0].Sku);       // null Items or a null first item counts as empty
+ThrowIf.NullOrEmpty(user, u => u.Name.Trim());         // a null Name counts as empty; "   " is empty after Trim
+ThrowIf.NullOrEmpty(user, u => u.First + u.Last);      // evaluated as written, then checked
+```
+
 **Benefits:**
-- **Expression caching**: Selectors are compiled once and cached by expression structure. A selector that captures a
-  local variable is recompiled on every call. See [Expression Caching](../core-concepts/expression-caching).
+- **Expression caching**: Selectors are compiled once and cached by expression structure, including selectors that
+  capture local variables. See [Expression Caching](../core-concepts/expression-caching).
 - **Precise error messages**: `CallerArgumentExpression` captures the selector text
 - **Type-safe**: Compile-time checking of property access
 
@@ -282,8 +292,9 @@ public class OrderService
 
 ## Performance Tips
 
-- **Selectors are cached**: Repeated selector-based validations reuse the compiled delegate, unless the selector
-  captures local variables
+- **Selectors are cached**: Repeated selector-based validations reuse the compiled delegate, also when the selector
+  captures local variables. A call still costs about half a microsecond, mostly for the expression tree the compiler
+  builds at the call site
 - **Direct checks are fastest**: When you don't need selectors, use direct checks
 - See [Performance](../advanced/performance) for benchmarks
 

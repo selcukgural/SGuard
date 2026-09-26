@@ -7,22 +7,22 @@ using System.Reflection;
 namespace SGuard;
 
 /// <summary>
-/// An internal class that visits member and unary expressions to check for null, empty, or default values.
+/// Builds the body of a compiled <c>NullOrEmpty</c> selector: an expression that yields <c>null</c> when the selected value is
+/// null or empty, and the value (as <see cref="object"/>) otherwise.
 /// </summary>
 /// <remarks>
-/// This class is optimized for performance by leveraging:
-/// - Type-level reflection caching to avoid redundant reflection calls.
-/// - Fast-path checks for common .NET types (e.g., string, arrays, collections).
-/// - Avoidance of LINQ in performance-critical paths.
-/// 
-/// The visitor traverses expression trees and generates expressions that evaluate whether
-/// a given member or unary expression is null, empty, or holds a default value for its type.
+/// A <c>null</c> on the path to the selected value, that is on the instance of a member access, an instance method call
+/// (including indexers) or an array access, makes the result <c>null</c>, as C#'s <c>?.</c> would. Each value on the path
+/// is evaluated once. Other expressions, such as method arguments or the operands of <c>+</c>, are evaluated as written
+/// and keep their types.
 /// </remarks>
-internal sealed class NullOrEmptyVisitor : ExpressionVisitor
+internal static class NullOrEmptySelectorBuilder
 {
     // Static caches to avoid repeated reflection/interface work
     private static readonly ConcurrentDictionary<Type, PropertyInfo?> CountPropertyCache = new();
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> TypePropertyCache = new();
+
+    private static readonly Expression NullObject = Expression.Constant(null, typeof(object));
 
     /// <summary>
     /// The maximum number of nested complex types whose properties are inspected. Deeper complex members are only checked
@@ -30,40 +30,98 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
     /// </summary>
     internal const int MaxComplexTypeDepth = 8;
 
-    protected override Expression VisitMember(MemberExpression node)
+    /// <summary>
+    /// Builds the null-or-empty evaluation of a selector body.
+    /// </summary>
+    /// <param name="body">The selector body, usually a member path converted to <see cref="object"/>.</param>
+    /// <returns>An expression of type <see cref="object"/> that is <c>null</c> when the selected value is null or empty.</returns>
+    public static Expression Build(Expression body)
     {
-        var nullConst = Expression.Constant(null, typeof(object));
-        var members = new List<MemberExpression>();
-
-        for (var current = node; current is not null; current = current.Expression as MemberExpression)
+        // The compiler boxes value-typed selections with a Convert to object; check the value itself.
+        if (body is UnaryExpression { NodeType: ExpressionType.Convert, Method: null } convert && convert.Type == typeof(object))
         {
-            members.Add(current);
+            body = convert.Operand;
         }
-        
-        members.Reverse();
 
-        var instance = members[0].Expression!;
-        return BuildChain(0, instance);
+        return Path(body, value => Evaluated(value, selected => BuildNullOrEmptyCheckExpression(selected, selected.Type, [], 0)));
+    }
 
-        Expression BuildChain(int index, Expression currentInstance)
+    /// <summary>
+    /// Rebuilds a step of the path to the selected value, with a null check on its instance, and passes the rebuilt value to
+    /// <paramref name="next"/>. <paramref name="next"/> returns the expression of type <see cref="object"/> to evaluate
+    /// when nothing on the path is null.
+    /// </summary>
+    private static Expression Path(Expression node, Func<Expression, Expression> next)
+    {
+        switch (node)
         {
-            var currentMember = members[index];
-            var access = Expression.MakeMemberAccess(currentInstance, currentMember.Member);
-
-            if (index == members.Count - 1)
-            {
-                var finalCheck = BuildNullOrEmptyCheckExpression(access, access.Type, [], 0);
-                var instanceIsNull = Expression.Equal(Expression.Convert(currentInstance, typeof(object)), nullConst);
-                return Expression.Condition(instanceIsNull, nullConst, finalCheck);
-            }
-            else
-            {
-                var instanceIsNull = Expression.Equal(Expression.Convert(currentInstance, typeof(object)), nullConst);
-                var next = BuildChain(index + 1, access);
-                return Expression.Condition(instanceIsNull, nullConst, next);
-            }
+            case MemberExpression { Expression: { } instance } member:
+                return Path(instance, value => NotNull(value, v => next(Expression.MakeMemberAccess(v, member.Member))));
+            case MethodCallExpression { Object: { } instance } call:
+                return Path(instance, value => NotNull(value, v => next(Expression.Call(v, call.Method, call.Arguments))));
+            case BinaryExpression { NodeType: ExpressionType.ArrayIndex } index:
+                return Path(index.Left, value => NotNull(value, v => next(Expression.ArrayIndex(v, index.Right))));
+            case IndexExpression { Object: { } instance } index:
+                return Path(instance, value => NotNull(value, v => next(Expression.MakeIndex(v, index.Indexer, index.Arguments))));
+            case UnaryExpression { NodeType: ExpressionType.ArrayLength } length:
+                return Path(length.Operand, value => NotNull(value, v => next(Expression.ArrayLength(v))));
+            case UnaryExpression { NodeType: ExpressionType.Convert or ExpressionType.ConvertChecked or ExpressionType.TypeAs } unary:
+                // A cast of null is null, except to a non-nullable value type, which would throw.
+                return Path(unary.Operand, value =>
+                    CanBeNull(value.Type) && !CanBeNull(unary.Type)
+                        ? NotNull(value, v => next(Expression.MakeUnary(unary.NodeType, v, unary.Type, unary.Method)))
+                        : next(Expression.MakeUnary(unary.NodeType, value, unary.Type, unary.Method)));
+            default:
+                // The root of the path (the parameter, a captured value, a static member) or any other expression.
+                return next(node);
         }
     }
+
+    /// <summary>
+    /// Evaluates <paramref name="value"/> once and yields <c>null</c> if it is null; otherwise, the result of
+    /// <paramref name="next"/> for the evaluated value.
+    /// </summary>
+    private static Expression NotNull(Expression value, Func<Expression, Expression> next)
+    {
+        if (!CanBeNull(value.Type))
+        {
+            return next(value);
+        }
+
+        return Evaluated(value, v => Expression.Condition(IsNull(v), NullObject, next(v)));
+    }
+
+    /// <summary>
+    /// Tests the value for null without boxing it or calling a user-defined <c>==</c> operator.
+    /// </summary>
+    private static Expression IsNull(Expression value)
+    {
+        if (!CanBeNull(value.Type))
+        {
+            return Expression.Constant(false);
+        }
+
+        return value.Type.IsValueType
+            ? Expression.Equal(value, Expression.Constant(null, value.Type))
+            : Expression.ReferenceEqual(value, Expression.Constant(null, value.Type));
+    }
+
+    /// <summary>
+    /// Stores <paramref name="value"/> in a variable, unless it is already one, so that <paramref name="next"/> can use it
+    /// more than once without evaluating it again.
+    /// </summary>
+    private static Expression Evaluated(Expression value, Func<Expression, Expression> next)
+    {
+        if (value is ParameterExpression)
+        {
+            return next(value);
+        }
+
+        var variable = Expression.Variable(value.Type);
+        return Expression.Block(typeof(object), [variable], Expression.Assign(variable, value), next(variable));
+    }
+
+    private static bool CanBeNull(Type type) => !type.IsValueType || Nullable.GetUnderlyingType(type) is not null;
 
     /// <summary>
     /// Builds an expression to check if a member is null, empty, or default for its type.
@@ -80,7 +138,7 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
                                                               int complexTypeDepth)
     {
         var memberAsObject = Expression.Convert(memberAccess, typeof(object));
-        var isNull = Expression.Equal(memberAsObject, Expression.Constant(null, typeof(object)));
+        var isNull = IsNull(memberAccess);
 
         Expression specificCheck;
 
@@ -232,9 +290,10 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
                 foreach (var prop in props)
                 {
                     var propAccess = Expression.Property(memberAccess, prop);
-                    var propCheck = BuildNullOrEmptyCheckExpression(propAccess, prop.PropertyType, complexTypePath, complexTypeDepth + 1);
-                    var isNull2 = Expression.Equal(Expression.Convert(propAccess, typeof(object)), Expression.Constant(null));
-                    var condition = Expression.OrElse(isNull2, Expression.Equal(propCheck, Expression.Constant(null, typeof(object))));
+                    var propCheck = Evaluated(propAccess, value => BuildNullOrEmptyCheckExpression(value, prop.PropertyType, complexTypePath,
+                                                                                               complexTypeDepth + 1));
+                    // propCheck is null when the property is null or empty.
+                    var condition = Expression.ReferenceEqual(propCheck, NullObject);
                     allNullOrEmpty = allNullOrEmpty is null ? condition : Expression.AndAlso(allNullOrEmpty, condition);
                 }
 
@@ -269,25 +328,5 @@ internal sealed class NullOrEmptyVisitor : ExpressionVisitor
             implemented = type.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == openGeneric);
             return implemented is not null;
         }
-    }
-
-    /// <summary>
-    /// Visits a unary expression and converts it to an object type if necessary.
-    /// </summary>
-    /// <param name="node">The unary expression to visit.</param>
-    /// <returns>
-    /// An expression of a type object. If the operand of the unary expression is already of type object,
-    /// it is returned as-is; otherwise, it is converted to type object.
-    /// </returns>
-    protected override Expression VisitUnary(UnaryExpression node)
-    {
-        if (node.NodeType == ExpressionType.Convert && node.Type == typeof(object))
-        {
-            var visited = Visit(node.Operand);
-            return visited.Type == typeof(object) ? visited : Expression.Convert(visited, typeof(object));
-        }
-
-        var visitedOperand = Visit(node.Operand);
-        return Expression.Convert(visitedOperand, typeof(object));
     }
 }
