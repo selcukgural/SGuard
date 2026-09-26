@@ -18,7 +18,10 @@ public sealed partial class ThrowIf
         [CallerArgumentExpression(nameof(value))] string? valueExpression = null)
     {
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
-        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException(value, valueExpression), callback);
+        if (SGuard.Fails(isNullOrEmpty, callback))
+        {
+            Throw.NullOrEmptyException(value, valueExpression);
+        }
     }
 
     /// <summary>
@@ -32,7 +35,10 @@ public sealed partial class ThrowIf
     public static void NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(value))] string? valueExpression = null)
     {
-        SGuard.Guard(value.IsEmpty, () => Throw.NullOrEmptyException<object?>(null, valueExpression), callback);
+        if (SGuard.Fails(value.IsEmpty, callback))
+        {
+            Throw.NullOrEmptyException<object?>(null, valueExpression);
+        }
     }
 
     /// <summary>
@@ -49,7 +55,10 @@ public sealed partial class ThrowIf
     {
         ArgumentNullException.ThrowIfNull(exception);
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
-        SGuard.Guard(isNullOrEmpty, () => Throw.That(exception), callback);
+        if (SGuard.Fails(isNullOrEmpty, callback))
+        {
+            Throw.That(exception);
+        }
     }
 
     /// <summary>
@@ -65,7 +74,10 @@ public sealed partial class ThrowIf
     public static void NullOrEmpty<T, TException>(T value, object[]? constructorArgs, SGuardCallback? callback = null) where TException : Exception
     {
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
-        SGuard.Guard(isNullOrEmpty, () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
+        if (SGuard.Fails(isNullOrEmpty, callback))
+        {
+            Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
+        }
     }
 
     /// <summary>
@@ -84,7 +96,10 @@ public sealed partial class ThrowIf
 
         var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
 
-        SGuard.Guard(isNullOrEmpty, () => Throw.NullOrEmptyException<object?>(null, selectorExpression), callback);
+        if (SGuard.Fails(isNullOrEmpty, callback))
+        {
+            Throw.NullOrEmptyException<object?>(null, selectorExpression);
+        }
     }
 
     /// <summary>
@@ -106,7 +121,10 @@ public sealed partial class ThrowIf
 
         var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
 
-        SGuard.Guard(isNullOrEmpty, () => Throw.That(exception), callback);
+        if (SGuard.Fails(isNullOrEmpty, callback))
+        {
+            Throw.That(exception);
+        }
     }
 
     /// <summary>
@@ -125,7 +143,10 @@ public sealed partial class ThrowIf
     {
         ArgumentNullException.ThrowIfNull(selector);
         var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
-        SGuard.Guard(isNullOrEmpty, () => Throw.That(new TException()), callback);
+        if (SGuard.Fails(isNullOrEmpty, callback))
+        {
+            Throw.That(new TException());
+        }
     }
 
     /// <summary>
@@ -146,7 +167,10 @@ public sealed partial class ThrowIf
     {
         ArgumentNullException.ThrowIfNull(selector);
         var isNullOrEmpty = value is null || CheckNullOrEmpty(value, selector);
-        SGuard.Guard(isNullOrEmpty, () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
+        if (SGuard.Fails(isNullOrEmpty, callback))
+        {
+            Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
+        }
     }
 
     /// <summary>

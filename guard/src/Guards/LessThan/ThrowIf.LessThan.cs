@@ -29,7 +29,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
 
-        SGuard.Guard(Is.LessThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.LessThanException(lValue, rValue, lValueExpression, rValueExpression), callback);
+        if (SGuard.Fails(Is.LessThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
+        {
+            Throw.LessThanException(lValue, rValue, lValueExpression, rValueExpression);
+        }
     }
 
 
@@ -54,7 +57,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(rValue);
         ArgumentNullException.ThrowIfNull(exception);
         
-        SGuard.Guard(Is.LessThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(exception), callback);
+        if (SGuard.Fails(Is.LessThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
+        {
+            Throw.That(exception);
+        }
     }
 
 
@@ -84,7 +90,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.LessThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression), callback);
+        if (SGuard.Fails(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
+        {
+            Throw.LessThanOrEqualException(lValue, rValue, lValueExpression, rValueExpression);
+        }
     }
 
 
@@ -109,7 +118,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(rValue);
         ArgumentNullException.ThrowIfNull(exception);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(exception), callback);
+        if (SGuard.Fails(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
+        {
+            Throw.That(exception);
+        }
     }
 
     /// <summary>
@@ -136,7 +148,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+        if (SGuard.Fails(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
+        {
+            Throw.That(ExceptionActivator.Create<TException>(null));
+        }
     }
 
     /// <summary>
@@ -165,6 +180,9 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(lValue);
         ArgumentNullException.ThrowIfNull(rValue);
         
-        SGuard.Guard(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
+        if (SGuard.Fails(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
+        {
+            Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
+        }
     }
 }

@@ -41,7 +41,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
         
-        SGuard.Guard(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), () => Throw.BetweenException(value, min, max, valueExpression, minExpression, maxExpression), callback);
+        if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
+        {
+            Throw.BetweenException(value, min, max, valueExpression, minExpression, maxExpression);
+        }
     }
 
     /// <summary>
@@ -68,7 +71,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(exception);
         
-        SGuard.Guard(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), () => Throw.That(exception), callback);
+        if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
+        {
+            Throw.That(exception);
+        }
     }
 
     /// <summary>
@@ -92,7 +98,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
         
-        SGuard.Guard(Is.Between(value, min, max, comparison), () => Throw.BetweenException(value, min, max, valueExpression, minExpression, maxExpression), callback);
+        if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
+        {
+            Throw.BetweenException(value, min, max, valueExpression, minExpression, maxExpression);
+        }
     }
 
     /// <summary>
@@ -113,7 +122,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(exception);
         
-        SGuard.Guard(Is.Between(value, min, max, comparison), () => Throw.That(exception), callback);
+        if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
+        {
+            Throw.That(exception);
+        }
     }
 
     /// <summary>
@@ -138,7 +150,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
         
-        SGuard.Guard(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+        if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
+        {
+            Throw.That(ExceptionActivator.Create<TException>(null));
+        }
     }
 
     /// <summary>
@@ -164,7 +179,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
         
-        SGuard.Guard(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
+        if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
+        {
+            Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
+        }
     }
 
 
@@ -187,7 +205,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
         
-        SGuard.Guard(Is.Between(value, min, max, comparison), () => Throw.That(ExceptionActivator.Create<TException>(null)), callback);
+        if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
+        {
+            Throw.That(ExceptionActivator.Create<TException>(null));
+        }
     }
 
     /// <summary>
@@ -210,6 +231,9 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(max);
         ArgumentNullException.ThrowIfNull(value);
         
-        SGuard.Guard(Is.Between(value, min, max, comparison), () => Throw.That(ExceptionActivator.Create<TException>(constructorArgs)), callback);
+        if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
+        {
+            Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
+        }
     }
 }

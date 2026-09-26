@@ -217,8 +217,8 @@ Markdown) to `BenchmarkDotNet.Artifacts/results/` in the directory you run it fr
 
 The committed benchmarks don't measure allocations, so this section describes the behaviour of the code:
 - **`Is.*` comparisons and `Is.NullOrEmpty` without a selector** don't allocate.
-- **Most `ThrowIf.*` overloads allocate a small closure on every call**, even when the guard passes, because the
-  code that creates the exception captures the arguments.
+- **A passing `ThrowIf.*` guard doesn't allocate** (except as noted below for selectors and exception instances). The
+  test suite checks this for the comparison, `Between` and `NullOrEmpty` guards.
 - **Failing guards** allocate the exception (and throwing it is far more expensive than the allocation).
 - **Overloads that take an exception instance** allocate that instance at the call site on every call; the
   `TException` and `constructorArgs` overloads create it only on failure.

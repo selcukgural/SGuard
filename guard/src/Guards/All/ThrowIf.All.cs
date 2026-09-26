@@ -26,7 +26,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(predicate);
 
-        SGuard.Guard(Is.All(source, predicate), () => Throw.That(new AllException("All elements satisfied the given predicate.")), callback);
+        if (SGuard.Fails(Is.All(source, predicate), callback))
+        {
+            Throw.That(new AllException("All elements satisfied the given predicate."));
+        }
     }
 
     /// <summary>
@@ -50,7 +53,10 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(predicate);
         ArgumentNullException.ThrowIfNull(exception);
 
-        SGuard.Guard(Is.All(source, predicate), () => Throw.That(exception), callback);
+        if (SGuard.Fails(Is.All(source, predicate), callback))
+        {
+            Throw.That(exception);
+        }
     }
 
     /// <summary>
@@ -75,6 +81,9 @@ public sealed partial class ThrowIf
         ArgumentNullException.ThrowIfNull(predicate);
         ArgumentNullException.ThrowIfNull(exception);
 
-        SGuard.Guard(Is.All(source, predicate), () => Throw.That(exception), callback);
+        if (SGuard.Fails(Is.All(source, predicate), callback))
+        {
+            Throw.That(exception);
+        }
     }
 }
