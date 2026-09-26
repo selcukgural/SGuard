@@ -1,0 +1,152 @@
+name: Release
+
+# Publishes the NuGet package when a version tag (vX.Y.Z) is pushed. The tag must point to a commit on main and match
+# <PackageVersion> in guard/SGuard.csproj.
+#
+# NuGet authentication uses Trusted Publishing (OIDC): no long-lived API key is stored in the repository. Setup:
+#   1. nuget.org → Trusted Publishing: a policy for package "SGuard", this repository, workflow file "release.yml" and
+#      environment "nuget", with the "push only new package versions" scope.
+#   2. GitHub → Settings → Environments → "nuget": required reviewer, deployments limited to tags matching "v*", and an
+#      environment variable NUGET_USER holding the nuget.org profile name.
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+# The build job runs third-party code (restore, build, tests) with a read-only token. Only the publish job can request an
+# OIDC token, and only the github-release job can write to the repository; neither runs project code.
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and pack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check that the tag is on main
+        run: |
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::The tag must point to a commit on main."
+            exit 1
+          fi
+
+      - name: Setup .NET (8/9/10)
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Check that the tag matches the package version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=$(dotnet msbuild guard/SGuard.csproj -getProperty:PackageVersion)
+          if [ "v$version" != "$TAG" ]; then
+            echo "::error::Tag $TAG does not match PackageVersion $version."
+            exit 1
+          fi
+
+      # Directory.Build.props enables locked mode and fails on vulnerable packages in CI.
+      - name: Restore
+        run: dotnet restore SGuard.sln --locked-mode
+
+      - name: Build
+        run: dotnet build SGuard.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test SGuard.sln --configuration Release --no-build
+
+      - name: Pack
+        run: dotnet pack guard/SGuard.csproj --configuration Release --no-build --output dist
+
+      - name: Upload packages
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packages
+          path: |
+            dist/*.nupkg
+            dist/*.snupkg
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish to NuGet
+    needs: build
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      id-token: write
+    steps:
+      - name: Download packages
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: packages
+          path: dist
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Get a short-lived NuGet API key
+        id: login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      # The .snupkg next to the .nupkg is pushed to the symbol server automatically.
+      - name: Push
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push dist/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  github-release:
+    name: Create GitHub release
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download packages
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: packages
+          path: dist
+
+      - name: Create release from the changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          awk -v v="$version" '
+            index($0, "## [" v "]") == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' Changelog.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "::error::Changelog.md has no section for $version."
+            exit 1
+          fi
+          gh release create "$TAG" dist/*.nupkg dist/*.snupkg --verify-tag --title "$TAG" --notes-file release-notes.md
