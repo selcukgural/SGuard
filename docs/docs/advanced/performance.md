@@ -80,8 +80,10 @@ ThrowIf.NullOrEmpty(user, u => u.Email);
 
 ### 2. Prefer Is.* for Hot Paths
 
-In performance-critical code, `Is.*` avoids exception overhead. In the committed benchmarks, a passing `ThrowIf.*`
-guard takes about 10 ns, while a failing one (throw plus catch) takes about 8–9 µs:
+In performance-critical code, `Is.*` avoids exception overhead. A passing `ThrowIf.*` guard costs about as much as a
+hand-written `if` (under a nanosecond for a comparison), but a failing one throws, and a throw plus catch costs
+about 2 µs on .NET 10 and 12–15 µs on .NET 8 (BenchmarkDotNet, Apple M3 Max; the committed .NET 9 results show about
+8–9 µs):
 
 ```csharp
 // Faster: No exception throwing
@@ -102,6 +104,13 @@ catch (BetweenException)
 ```
 
 However, **exceptions should be exceptional**. If validation failures are rare, `ThrowIf.*` is perfectly fine.
+
+:::tip Input that fails often
+Where invalid input is common or can be sent on purpose, such as a public endpoint or a message consumer, every
+rejected request pays for a throw. A client sending invalid requests in a loop then costs you microseconds of CPU per
+request instead of nanoseconds. Validate such input with `Is.*` and return the error (a `400` response, a rejected
+message) without throwing; keep `ThrowIf.*` for arguments that only a bug would make invalid.
+:::
 
 ### 3. Use Ordinal String Comparisons
 

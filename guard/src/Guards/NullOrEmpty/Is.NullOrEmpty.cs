@@ -84,7 +84,8 @@ public sealed partial class Is
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool InternalIsNullOrEmpty<T>(T? value)
     {
-        return value is null || IsDefaultValue(value) || MatchesEmptyPatterns(value);
+        // For a reference type the default value is null, which is already checked.
+        return value is null || (typeof(T).IsValueType && IsDefaultValue(value)) || MatchesEmptyPatterns(value);
 
         // Checks if the given value matches specific patterns that define it as empty.
         // Returns: True if the value matches any of the predefined empty patterns; false otherwise.
@@ -103,6 +104,10 @@ public sealed partial class Is
             {
                 case string str:
                     return string.IsNullOrEmpty(str);
+                // Collections come before the value types below: for a reference type they are the likely match, and the
+                // value-type cases only apply to a boxed value.
+                case ICollection collection:
+                    return collection.Count == 0;
                 case decimal d:
                     return d == 0m;
                 case double d:
@@ -139,8 +144,6 @@ public sealed partial class Is
                     return timeOnly.Ticks == 0;
                 case DateTimeOffset dto:
                     return dto.Ticks == 0;
-                case ICollection collection:
-                    return collection.Count == 0;
                 case IEnumerable enumerable:
                 {
                     var enumerator = enumerable.GetEnumerator();

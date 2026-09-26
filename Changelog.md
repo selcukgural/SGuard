@@ -27,6 +27,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   value as `ThrowIf.NullOrEmpty`. A nullable value type holding its default
   value (`int? x = 0`) now counts as empty for both, as it does without a
   selector.
+- Passing guards no longer box `decimal` operands on
+  .NET 8. The argument null checks called `ArgumentNullException.ThrowIfNull`,
+  which takes an `object`, and the NaN check matched type patterns on the
+  operands; a passing `ThrowIf.Between` on `decimal` allocated 160 bytes.
+- `NullOrEmpty` checks a reference-typed value for collections before the
+  value-type patterns and skips the default-value comparison, which is
+  already covered by the null check: about 0.7 ns instead of 5–7 ns for a
+  list or array.
+- `Is.Any`, `Is.All`, `ThrowIf.Any` and `ThrowIf.All` read arrays and
+  `List<T>` as spans, so they no longer allocate an enumerator on .NET 8.
+- The `ThrowIf.*<TException>` overloads with a `new()` constraint create the
+  exception with `new TException()` instead of reflection.
 
 ### Fixed
 

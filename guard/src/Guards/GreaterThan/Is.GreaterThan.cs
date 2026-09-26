@@ -26,8 +26,8 @@ public sealed partial class Is
     public static bool GreaterThan<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
 
         var isGreater = !SGuard.AnyNaN(lValue, rValue) && lValue.CompareTo(rValue) > 0;
 
@@ -48,8 +48,8 @@ public sealed partial class Is
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GreaterThan(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
 
         var isGreater = string.Compare(lValue, rValue, comparison) > 0;
 
@@ -79,8 +79,8 @@ public sealed partial class Is
     public static bool GreaterThanOrEqual<TLeft, TRight>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight>
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
 
         var isGreaterOrEqual = !SGuard.AnyNaN(lValue, rValue) && lValue.CompareTo(rValue) >= 0;
 
@@ -101,8 +101,8 @@ public sealed partial class Is
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GreaterThanOrEqual(string lValue, string rValue, StringComparison comparison, SGuardCallback? callback = null)
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         var isGreaterOrEqual = string.Compare(lValue, rValue, comparison) >= 0;
         

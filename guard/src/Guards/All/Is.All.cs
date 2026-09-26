@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace SGuard;
 
@@ -24,7 +25,14 @@ public sealed partial class Is
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(predicate);
 
-        var result = source.All(predicate);
+        // Arrays and lists are read as spans: Enumerable.All does the same from .NET 9 on, and on .NET 8 it allocates an
+        // enumerator.
+        var result = source switch
+        {
+            T[] array => All(new ReadOnlySpan<T>(array), predicate),
+            List<T> list => All(CollectionsMarshal.AsSpan(list), predicate),
+            _ => source.All(predicate)
+        };
 
         SGuard.InvokeCallbackSafely(result, callback);
         

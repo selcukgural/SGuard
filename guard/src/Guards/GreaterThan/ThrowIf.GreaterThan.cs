@@ -25,8 +25,8 @@ public sealed partial class ThrowIf
         [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
         where TLeft : IComparable<TRight>
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         if (SGuard.Fails(Is.GreaterThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
         {
@@ -48,12 +48,12 @@ public sealed partial class ThrowIf
     public static void GreaterThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception, new()
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         if (SGuard.Fails(Is.GreaterThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
         {
-            Throw.That(ExceptionActivator.Create<TException>(null));
+            Throw.That(new TException());
         }
     }
 
@@ -73,8 +73,8 @@ public sealed partial class ThrowIf
                                                               SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         if (SGuard.Fails(Is.GreaterThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
         {
@@ -99,8 +99,8 @@ public sealed partial class ThrowIf
                                                               SGuardCallback? callback = null) where TLeft : IComparable<TRight>
                                                                                                where TException : Exception
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         ArgumentNullException.ThrowIfNull(exception);
         
         if (SGuard.Fails(Is.GreaterThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
@@ -127,8 +127,8 @@ public sealed partial class ThrowIf
         [CallerArgumentExpression(nameof(rValue))] string? rValueExpression = null)
         where TLeft : IComparable<TRight>
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         if (SGuard.Fails(Is.GreaterThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
         {
@@ -152,8 +152,8 @@ public sealed partial class ThrowIf
                                                                      SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         ArgumentNullException.ThrowIfNull(exception);
         
         if (SGuard.Fails(Is.GreaterThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
@@ -177,12 +177,12 @@ public sealed partial class ThrowIf
     public static void GreaterThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception, new()
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         if (SGuard.Fails(Is.GreaterThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
         {
-            Throw.That(ExceptionActivator.Create<TException>(null));
+            Throw.That(new TException());
         }
     }
 
@@ -203,8 +203,8 @@ public sealed partial class ThrowIf
                                                                      SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
     {
-        ArgumentNullException.ThrowIfNull(lValue);
-        ArgumentNullException.ThrowIfNull(rValue);
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
         
         if (SGuard.Fails(Is.GreaterThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
         {

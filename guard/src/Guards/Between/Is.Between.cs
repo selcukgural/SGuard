@@ -33,9 +33,9 @@ public sealed partial class Is
     public static bool Between<TValue, TMin, TMax>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax>
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
 
         SGuard.ThrowIfInvalidRange(min, max);
 
@@ -59,9 +59,9 @@ public sealed partial class Is
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Between(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null)
     {
-        ArgumentNullException.ThrowIfNull(min);
-        ArgumentNullException.ThrowIfNull(max);
-        ArgumentNullException.ThrowIfNull(value);
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
 
         SGuard.ThrowIfInvalidRange(min, max, comparison);
 
