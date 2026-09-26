@@ -3,10 +3,13 @@
 [![CI](https://github.com/selcukgural/SGuard/actions/workflows/ci.yml/badge.svg)](https://github.com/selcukgural/SGuard/actions)
 [![NuGet](https://img.shields.io/nuget/v/SGuard.svg)](https://www.nuget.org/packages/SGuard)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/SGuard.svg)](https://www.nuget.org/packages/SGuard)
+[![Docs](https://img.shields.io/badge/docs-selcukgural.github.io%2FSGuard-blue)](https://selcukgural.github.io/SGuard/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Matrix Chat](https://img.shields.io/badge/chat-on%20matrix-4fc08d)](https://matrix.to/#/#sguard:gitter.im)
 
 SGuard is a lightweight, extensible guard clause library for .NET, providing expressive and robust validation for method arguments, object state, and business rules. It offers both boolean checks (`Is.*`) and exception-throwing guards (`ThrowIf.*`), with a unified callback model and rich exception diagnostics.
+
+📖 **Documentation:** [selcukgural.github.io/SGuard](https://selcukgural.github.io/SGuard/): [Quick Start](https://selcukgural.github.io/SGuard/docs/getting-started/quick-start), [`Is.*` API](https://selcukgural.github.io/SGuard/docs/api/is), [`ThrowIf.*` API](https://selcukgural.github.io/SGuard/docs/api/throwif) and the [performance guide](https://selcukgural.github.io/SGuard/docs/advanced/performance).
 
 ## 🚀 Features
 
@@ -370,5 +373,6 @@ This project is licensed under the MIT License, a permissive open source license
 
 ## 🔗 Links
 
+- [Documentation](https://selcukgural.github.io/SGuard/)
 - [NuGet Package](https://www.nuget.org/packages/SGuard)
 - [Releases](https://github.com/selcukgural/sguard/releases)
