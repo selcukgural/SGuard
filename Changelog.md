@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-10
+
+A bug-fix release. It makes `NullOrEmpty` agree with its documented rules in
+more corners, fixes selectors that threw or enumerated a sequence twice, and
+keeps the performance of 0.3.0.
+
+**Highlights**
+
+- `NullOrEmpty` no longer throws for default structs that are boxed, held by a
+  nullable or behind an interface (`ImmutableArray<T>`, `ArraySegment<T>`,
+  plain structs and tuples), and treats them as empty.
+- A selector reads a lazy sequence once (an `IQueryable` sends one query) and
+  no longer keeps the first call's captured variables alive.
+- NaN upper bounds and `NFloat.NaN` fail comparison guards instead of
+  throwing or passing.
+
 **Upgrading from 0.3.0**
 
 Some values that used to pass a `NullOrEmpty` guard now count as empty: a
