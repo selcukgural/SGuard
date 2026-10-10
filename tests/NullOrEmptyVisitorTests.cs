@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Immutable;
+using SGuard.Exceptions;
 #pragma warning disable CS8603 // Possible null reference return.
 
 namespace SGuard.Tests;
@@ -331,5 +333,130 @@ public sealed class NullOrEmptyVisitorOptimizedTests
 
         Assert.True(empty.DisposeCount >= 1);
         Assert.True(nonEmpty.DisposeCount >= 1);
+    }
+
+    private struct PlainStruct
+    {
+        public int X;
+    }
+
+    private sealed class WithStructs
+    {
+        public PlainStruct Plain { get; init; }
+        public PlainStruct? NullablePlain { get; init; }
+        public (int, string?) Tuple { get; init; }
+        public KeyValuePair<string, int> Pair { get; init; }
+        public char Char { get; init; }
+        public nint NativeInt { get; init; }
+        public DayOfWeek Day { get; init; }
+        public DayOfWeek? NullableDay { get; init; }
+    }
+
+    [Fact]
+    public void Structs_WithoutEqualityOperator_AreEmpty_WhenDefault()
+    {
+        var empty = new WithStructs { NullablePlain = default(PlainStruct) };
+        var filled = new WithStructs
+        {
+            Plain = new PlainStruct { X = 1 },
+            NullablePlain = new PlainStruct { X = 1 },
+            Tuple = (1, "a"),
+            Pair = new KeyValuePair<string, int>("k", 1)
+        };
+
+        Assert.True(Is.NullOrEmpty(empty, x => x.Plain));
+        Assert.True(Is.NullOrEmpty(empty, x => x.NullablePlain!));
+        Assert.True(Is.NullOrEmpty(new WithStructs(), x => x.NullablePlain!));
+        Assert.True(Is.NullOrEmpty(empty, x => x.Tuple));
+        Assert.True(Is.NullOrEmpty(empty, x => x.Pair));
+
+        Assert.False(Is.NullOrEmpty(filled, x => x.Plain));
+        Assert.False(Is.NullOrEmpty(filled, x => x.NullablePlain!));
+        Assert.False(Is.NullOrEmpty(filled, x => x.Tuple));
+        Assert.False(Is.NullOrEmpty(filled, x => x.Pair));
+        Assert.Throws<NullOrEmptyException>(() => ThrowIf.NullOrEmpty(empty, x => x.Plain));
+    }
+
+    [Fact]
+    public void Enums_And_OtherPrimitives_AreEmpty_WhenDefault_LikeWithoutSelector()
+    {
+        var empty = new WithStructs { NullableDay = DayOfWeek.Sunday };
+        var filled = new WithStructs { Char = 'a', NativeInt = 1, Day = DayOfWeek.Monday, NullableDay = DayOfWeek.Monday };
+
+        Assert.True(Is.NullOrEmpty(empty, x => x.Char));
+        Assert.True(Is.NullOrEmpty(empty, x => x.NativeInt));
+        Assert.True(Is.NullOrEmpty(empty, x => x.Day));
+        Assert.True(Is.NullOrEmpty(empty, x => x.NullableDay!));
+        Assert.True(Is.NullOrEmpty(new WithStructs(), x => x.NullableDay!));
+
+        Assert.False(Is.NullOrEmpty(filled, x => x.Char));
+        Assert.False(Is.NullOrEmpty(filled, x => x.NativeInt));
+        Assert.False(Is.NullOrEmpty(filled, x => x.Day));
+        Assert.False(Is.NullOrEmpty(filled, x => x.NullableDay!));
+
+        Assert.Equal(Is.NullOrEmpty(empty.Char), Is.NullOrEmpty(empty, x => x.Char));
+        Assert.Equal(Is.NullOrEmpty(empty.NullableDay), Is.NullOrEmpty(empty, x => x.NullableDay!));
+    }
+
+    private sealed class WithImmutable
+    {
+        public ImmutableArray<int> Array { get; init; }
+        public ImmutableList<int>? List { get; init; }
+    }
+
+    [Fact]
+    public void ImmutableCollections_Default_Empty_And_NonEmpty()
+    {
+        Assert.True(Is.NullOrEmpty(new WithImmutable(), x => x.Array));
+        Assert.True(Is.NullOrEmpty(new WithImmutable { Array = ImmutableArray<int>.Empty }, x => x.Array));
+        Assert.False(Is.NullOrEmpty(new WithImmutable { Array = [1] }, x => x.Array));
+        Assert.Throws<NullOrEmptyException>(() => ThrowIf.NullOrEmpty(new WithImmutable(), x => x.Array));
+
+        Assert.True(Is.NullOrEmpty(new WithImmutable(), x => x.List!));
+        Assert.True(Is.NullOrEmpty(new WithImmutable { List = ImmutableList<int>.Empty }, x => x.List!));
+        Assert.False(Is.NullOrEmpty(new WithImmutable { List = [1] }, x => x.List!));
+    }
+
+    private sealed class WithFrameworkTypes
+    {
+        public Uri? Link { get; init; }
+        public Version? Version { get; init; }
+    }
+
+    private sealed class LinkHolder
+    {
+        public Uri? Link { get; init; }
+        public List<string> Tags { get; init; } = [];
+    }
+
+    private sealed class WithLinkHolder
+    {
+        public LinkHolder? Holder { get; init; }
+    }
+
+    [Fact]
+    public void FrameworkClasses_AreOnlyCheckedForNull()
+    {
+        var relative = new WithFrameworkTypes { Link = new Uri("/home", UriKind.Relative), Version = new Version() };
+
+        // Uri.AbsolutePath throws for a relative URI, and Version's properties are not data to validate.
+        Assert.False(Is.NullOrEmpty(relative, x => x.Link!));
+        Assert.False(Is.NullOrEmpty(relative, x => x.Version!));
+        ThrowIf.NullOrEmpty(relative, x => x.Link);
+
+        Assert.True(Is.NullOrEmpty(new WithFrameworkTypes(), x => x.Link!));
+        Assert.True(Is.NullOrEmpty(new WithFrameworkTypes(), x => x.Version!));
+    }
+
+    [Fact]
+    public void ComplexType_WithFrameworkClassAndCollectionProperties()
+    {
+        var empty = new WithLinkHolder { Holder = new LinkHolder() };
+        var withRelativeLink = new WithLinkHolder { Holder = new LinkHolder { Link = new Uri("/home", UriKind.Relative) } };
+        var withTag = new WithLinkHolder { Holder = new LinkHolder { Tags = ["a"] } };
+
+        Assert.True(Is.NullOrEmpty(empty, x => x.Holder!));
+        Assert.False(Is.NullOrEmpty(withRelativeLink, x => x.Holder!));
+        Assert.False(Is.NullOrEmpty(withTag, x => x.Holder!));
     }
 }

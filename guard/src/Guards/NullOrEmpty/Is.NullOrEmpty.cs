@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -6,6 +7,9 @@ namespace SGuard;
 
 public sealed partial class Is
 {
+    // The default value of each struct type seen boxed by NullOrEmpty, created once per type.
+    private static readonly ConcurrentDictionary<Type, object> BoxedDefaults = new();
+
     /// <summary>
     /// Evaluates whether the specified value is null or empty based on predefined patterns, and optionally invokes a callback with the result.
     /// </summary>
@@ -96,7 +100,7 @@ public sealed partial class Is
         // - GUIDs are empty if they are Guid.Empty.
         // - Arrays, collections, and enumerables are empty if they have no elements.
         // - DateTime, TimeSpan, DateOnly, TimeOnly, and DateTimeOffset are empty if their ticks are zero or at their minimum value.
-        // - Complex types are checked using the <see cref="IsEmptyComplexType{T}"/> method.
+        // - Other structs, enums and primitives are empty if they are their default value.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool MatchesEmptyPatterns(T? value)
         {
@@ -107,7 +111,9 @@ public sealed partial class Is
                 // Collections come before the value types below: for a reference type they are the likely match, and the
                 // value-type cases only apply to a boxed value.
                 case ICollection collection:
-                    return collection.Count == 0;
+                    // A boxed struct collection, or one held by a Nullable<T>, may be its default value, which IsDefaultValue
+                    // checks only when T is the struct itself; a default ImmutableArray<T> throws from Count.
+                    return (default(T) is null && collection is ValueType && IsBoxedDefault(collection)) || collection.Count == 0;
                 case decimal d:
                     return d == 0m;
                 case double d:
@@ -158,9 +164,15 @@ public sealed partial class Is
                     }
                 }
                 default:
-                    return false;
+                    // Another struct, enum or primitive (such as char) that is boxed, or held by a Nullable<T>: empty when it
+                    // is its default value, as it is when T is its own type. default(T) is null only for reference and
+                    // nullable types, so this is removed for other value types, which IsDefaultValue has already checked.
+                    return default(T) is null && value is ValueType && IsBoxedDefault(value);
             }
         }
+
+        // Determines whether a boxed value equals the default value of its runtime type.
+        static bool IsBoxedDefault(object value) => value.Equals(BoxedDefaults.GetOrAdd(value.GetType(), RuntimeHelpers.GetUninitializedObject));
 
         // Determines if the given value is the default value for its type.
         // True if the value is the default value for its type, false otherwise.

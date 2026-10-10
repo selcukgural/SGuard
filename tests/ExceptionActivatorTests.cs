@@ -119,6 +119,17 @@ public sealed class ExceptionActivatorTests
     }
 
     [Fact]
+    public void Create_WithArgsMatchingSeveralConstructors_ThrowsInvalidOperationException()
+    {
+        // NullOrEmptyException has (string, Exception) and (object?, string?) constructors; two nulls fit both.
+        object?[] args = [null, null];
+
+        var ex = Assert.Throws<InvalidOperationException>(() => ExceptionActivator.Create<global::SGuard.Exceptions.NullOrEmptyException>(args));
+
+        Assert.Contains("More than one constructor", ex.Message);
+    }
+
+    [Fact]
     public void Create_WithMismatchedArgs_ThrowsInvalidOperationException_WithClearMessage()
     {
         // arrange

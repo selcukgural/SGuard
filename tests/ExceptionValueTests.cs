@@ -130,6 +130,23 @@ public sealed class ExceptionValueTests
         });
     }
 
+    [Fact]
+    public void IncludeValuesInExceptions_SelectorAndSpanGuards_DontReportANullValue()
+    {
+        var request = new Request("", 1);
+
+        WithValuesIncluded(() =>
+        {
+            var selector = Assert.Throws<NullOrEmptyException>(() => ThrowIf.NullOrEmpty(request, r => r.Name));
+            var span = Assert.Throws<NullOrEmptyException>(() => ThrowIf.NullOrEmpty(ReadOnlySpan<int>.Empty));
+
+            Assert.Equal("Value 'r => r.Name' is null or empty.", selector.Message);
+            Assert.Equal("r => r.Name", selector.ParamName);
+            Assert.False(selector.Data.Contains("value"));
+            Assert.Equal("Value 'ReadOnlySpan<int>.Empty' is null or empty.", span.Message);
+        });
+    }
+
     private static void WithValuesIncluded(Action assertions)
     {
         SGuardOptions.IncludeValuesInExceptions = true;

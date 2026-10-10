@@ -42,8 +42,9 @@ bool Is.NullOrEmpty<T>(T? value, Expression<Func<T, object>> selector, SGuardCal
 
 Without a selector, a value is null or empty when it is:
 
-- `null`, or `default(T)`: so `0`, `false`, `Guid.Empty`, `default(DateTime)` and any default struct count as empty
-  (`int? x = 0` is empty too);
+- `null`, or `default(T)`: so `0`, `false`, `Guid.Empty`, `default(DateTime)`, the default enum value and any default
+  struct count as empty, also when they are boxed or held by a nullable (`int? x = 0` and `DayOfWeek? d = default` are
+  empty too);
 - an empty string (`""`); a whitespace-only string is **not** empty;
 - an empty array, collection or enumerable;
 - a `DateTime`, `TimeSpan`, `TimeOnly` or `DateTimeOffset` with zero ticks, or `DateOnly.MinValue`.
@@ -59,10 +60,12 @@ With a selector:
 - `null` anywhere on the path (including `value` itself) counts as empty. The path can go through members, indexers,
   array elements and instance methods (`o => o.Items[0].Name.Trim()`); other expressions, such as method arguments or
   the operands of `+`, are evaluated as written;
-- the selected member is checked with the rules above;
+- the selected member is checked with the rules above; a default `ImmutableArray<T>` counts as empty;
 - a member of a complex type counts as empty only if **all** of its readable properties are null or empty
   (recursively; a type already being inspected on the same path, or nested more than 8 levels deep, is only
-  null-checked; indexers are skipped).
+  null-checked; indexers are skipped);
+- a framework class that is not a collection (a type in a `System` namespace, such as `Uri` or `Version`) is only
+  checked for null; its properties are not read.
 
 Selectors are compiled once and cached by expression structure, including selectors that capture local variables or
 use operators such as `+` and `??`; see [Expression Caching](../core-concepts/expression-caching).
@@ -73,12 +76,13 @@ use operators such as `+` and `??`; see [Expression Caching](../core-concepts/ex
 bool isEmpty = Is.NullOrEmpty(username);
 bool hasNoItems = Is.NullOrEmpty(items);
 bool missing = Is.NullOrEmpty(order, o => o.Customer.Email);
-bool noTags = Is.NullOrEmpty(tags.AsSpan());
+bool noTags = Is.NullOrEmpty(new ReadOnlySpan<string>(tags));
 ```
 
 ## Comparison Guards
 
-All comparison guards compare with `CompareTo` and throw `ArgumentNullException` when an operand is `null`.
+All comparison guards compare with `CompareTo` (the `StringComparison` overloads with `string.Compare`) and throw
+`ArgumentNullException` when an operand is `null`.
 
 ### Overloads
 

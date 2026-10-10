@@ -58,6 +58,16 @@ public static class Throw
     }
 
     /// <summary>
+    /// Throws a <see cref="NullOrEmptyException"/> naming the expression, for a value that isn't available to include.
+    /// </summary>
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void NullOrEmptyExceptionWithoutValue(string? valueExpression)
+    {
+        throw Exceptions.NullOrEmptyException.ForExpression(valueExpression);
+    }
+
+    /// <summary>
     /// Throws a <see cref="GreaterThanException"/> with a message indicating that the left value is greater than the right value.
     /// </summary>
     /// <typeparam name="TLeft">The type of the left value being compared.</typeparam>

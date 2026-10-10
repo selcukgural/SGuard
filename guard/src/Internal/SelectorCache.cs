@@ -13,8 +13,9 @@ namespace SGuard;
 /// as a cache key. Selectors are keyed by their shape instead: parameters, member accesses, method calls, operators,
 /// conditionals, <c>new</c> expressions and constants. Captured variables reach the tree as constants holding the
 /// closure object; those are compiled as reads from an array argument and keyed by their type, so the delegate is shared
-/// and each call passes its own closure. Primitive constants (such as an index) stay in the compiled code and are keyed
-/// by value. A selector containing a nested lambda, a block, an invocation or a member or list initializer is not
+/// and each call passes its own closure. The stored key has these constants replaced by placeholders of the same type,
+/// so the cache doesn't keep the first caller's captured values alive. Primitive constants (such as an index) stay in
+/// the compiled code and are keyed by value. A selector containing a nested lambda, a block, an invocation or a member or list initializer is not
 /// cacheable and is compiled on every call.
 /// </remarks>
 internal static class SelectorCache
@@ -47,7 +48,7 @@ internal static class SelectorCache
 
             if (cache.Count < MaxEntriesPerType)
             {
-                cache.TryAdd(selector, evaluator);
+                cache.TryAdd(SelectorShapeComparer.WithoutConstants(selector), evaluator);
             }
         }
 
@@ -201,6 +202,14 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
         => constant.Value is not null && !IsPrimitiveConstant(constant.Type);
 
     /// <summary>
+    /// Returns a copy of a cacheable selector whose parameterized constants are replaced by placeholders: parameters of the
+    /// same type that are not parameters of the lambda. The comparer treats a placeholder like a parameterized constant, so
+    /// the copy can be stored as a cache key without keeping the constants, such as a closure, alive.
+    /// </summary>
+    public static LambdaExpression WithoutConstants(LambdaExpression lambda)
+        => (LambdaExpression)PlaceholderReplacer.Instance.Visit(lambda);
+
+    /// <summary>
     /// Collects the values of the parameterized constants of a cacheable selector, in the order the compiled selector
     /// reads them.
     /// </summary>
@@ -237,12 +246,33 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
     private static bool IsPrimitiveConstant(Type type)
         => type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(decimal);
 
+    /// <summary>
+    /// Determines whether the node is a value passed at run time: a parameterized constant, or the placeholder that
+    /// replaces one in a stored key. A cacheable selector has no other parameters than its own, so a parameter that is
+    /// not one of them is a placeholder.
+    /// </summary>
+    private static bool IsRunTimeValue(Expression node, IReadOnlyList<ParameterExpression> parameters)
+        => node switch
+        {
+            ConstantExpression constant => IsParameterized(constant),
+            ParameterExpression parameter => IndexOf(parameters, parameter) < 0,
+            _ => false
+        };
+
     private static bool AreEqual(Expression? x, Expression? y, IReadOnlyList<ParameterExpression> xParameters,
                                  IReadOnlyList<ParameterExpression> yParameters)
     {
         if (x is null || y is null)
         {
             return x is null && y is null;
+        }
+
+        // Values passed at run time are compared by type only.
+        var xIsRunTimeValue = IsRunTimeValue(x, xParameters);
+
+        if (xIsRunTimeValue || IsRunTimeValue(y, yParameters))
+        {
+            return xIsRunTimeValue && IsRunTimeValue(y, yParameters) && x.Type == y.Type;
         }
 
         if (x.NodeType != y.NodeType || x.Type != y.Type)
@@ -253,10 +283,7 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
         var sameNode = x switch
         {
             ParameterExpression xParameter => IndexOf(xParameters, xParameter) == IndexOf(yParameters, (ParameterExpression)y),
-            // Parameterized constants are passed at run time, so only their type (compared above) matters.
-            ConstantExpression xConstant => IsParameterized(xConstant)
-                ? IsParameterized((ConstantExpression)y)
-                : !IsParameterized((ConstantExpression)y) && Equals(xConstant.Value, ((ConstantExpression)y).Value),
+            ConstantExpression xConstant => Equals(xConstant.Value, ((ConstantExpression)y).Value),
             MemberExpression xMember => MembersEqual(xMember.Member, ((MemberExpression)y).Member),
             MethodCallExpression xCall => xCall.Method == ((MethodCallExpression)y).Method,
             UnaryExpression xUnary => xUnary.Method == ((UnaryExpression)y).Method,
@@ -293,6 +320,14 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
             return;
         }
 
+        if (IsRunTimeValue(node, parameters))
+        {
+            // Hashed alike whether it is a parameterized constant or a placeholder.
+            hash.Add(-1);
+            hash.Add(node.Type);
+            return;
+        }
+
         hash.Add(node.NodeType);
         hash.Add(node.Type);
 
@@ -302,7 +337,7 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
                 hash.Add(IndexOf(parameters, parameter));
                 break;
             case ConstantExpression constant:
-                hash.Add(IsParameterized(constant) ? null : constant.Value);
+                hash.Add(constant.Value);
                 break;
             case MemberExpression member:
                 hash.Add(member.Member.MetadataToken);
@@ -328,6 +363,17 @@ internal sealed class SelectorShapeComparer : IEqualityComparer<LambdaExpression
         {
             AddHash(ref hash, Child(node, i), parameters);
         }
+    }
+
+    /// <summary>
+    /// Replaces each parameterized constant with a placeholder parameter of the same type.
+    /// </summary>
+    private sealed class PlaceholderReplacer : ExpressionVisitor
+    {
+        public static readonly PlaceholderReplacer Instance = new();
+
+        protected override Expression VisitConstant(ConstantExpression node)
+            => IsParameterized(node) ? Expression.Parameter(node.Type, "constant") : node;
     }
 
     private static bool MembersEqual(MemberInfo x, MemberInfo y)

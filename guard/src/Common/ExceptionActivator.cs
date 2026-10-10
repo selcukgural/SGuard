@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace SGuard;
 
 /// <summary>
@@ -24,8 +26,8 @@ public static class ExceptionActivator
     /// Returns an instance of the specified exception type <typeparamref name="TException"/>.
     /// </returns>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the instance could not be created or if no matching constructor is found 
-    /// for the provided arguments.
+    /// Thrown if the instance could not be created, or if no constructor or more than one constructor matches the provided
+    /// arguments (for example <c>null</c> arguments that fit several constructors).
     /// </exception>
     public static TException Create<TException>(object?[]? args) where TException : Exception
     {
@@ -38,6 +40,11 @@ public static class ExceptionActivator
         {
             throw new InvalidOperationException(
                 $"No matching constructor found for '{typeof(TException).FullName}' with the provided argument list.");
+        }
+        catch (AmbiguousMatchException)
+        {
+            throw new InvalidOperationException(
+                $"More than one constructor of '{typeof(TException).FullName}' matches the provided argument list.");
         }
     }
 }

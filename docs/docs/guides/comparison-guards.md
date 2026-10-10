@@ -293,7 +293,8 @@ bool isValid = Is.Between(
 
 ## Best Practices
 
-1. **Use Between for range checks**: It's clearer than combining LessThan and GreaterThan
+1. **Use `!Is.Between` for range checks**: It's clearer than combining LessThan and GreaterThan; remember that
+   `ThrowIf.Between` throws when the value is *inside* the range
 2. **Specify StringComparison**: Always explicit with string comparisons, and never use string ordering for versions,
    prefixes or paths
 3. **Prefer `ThrowIf.*` or `!Is.Between` for floating-point input**: They reject NaN; `if (Is.GreaterThan(...))` doesn't

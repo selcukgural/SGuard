@@ -485,6 +485,31 @@ public class IsNullOrEmptyOptimizedTests
         var largeNonEmptyList = new List<int> { 1 }; // Add just one item
         Assert.False(Is.NullOrEmpty(largeNonEmptyList));
     }
+
+    [Fact]
+    public void NullOrEmpty_NullableEnumOrStruct_HoldingDefault_ReturnsTrue()
+    {
+        Assert.True(Is.NullOrEmpty((DayOfWeek?)DayOfWeek.Sunday));
+        Assert.True(Is.NullOrEmpty((TestStruct?)default(TestStruct)));
+        Assert.True(Is.NullOrEmpty((char?)'\0'));
+
+        Assert.False(Is.NullOrEmpty((DayOfWeek?)DayOfWeek.Monday));
+        Assert.False(Is.NullOrEmpty((TestStruct?)new TestStruct { Name = "test" }));
+    }
+
+    [Fact]
+    public void NullOrEmpty_BoxedStruct_IsEmpty_OnlyWhenDefault()
+    {
+        Assert.True(Is.NullOrEmpty((object)'\0'));
+        Assert.True(Is.NullOrEmpty((object)DayOfWeek.Sunday));
+        Assert.True(Is.NullOrEmpty((object)default(TestStruct)));
+        Assert.True(Is.NullOrEmpty((object)default(System.Collections.Immutable.ImmutableArray<int>)));
+        Assert.True(Is.NullOrEmpty((object)System.Collections.Immutable.ImmutableArray<int>.Empty));
+
+        Assert.False(Is.NullOrEmpty((object)'a'));
+        Assert.False(Is.NullOrEmpty((object)new TestStruct { Name = "test" }));
+        Assert.False(Is.NullOrEmpty((object)System.Collections.Immutable.ImmutableArray.Create(1)));
+    }
 }
 
 public struct TestStruct
