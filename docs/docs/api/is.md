@@ -46,7 +46,7 @@ Without a selector, a value is null or empty when it is:
   struct count as empty, also when they are boxed or held by a nullable (`int? x = 0` and `DayOfWeek? d = default` are
   empty too);
 - an empty string (`""`); a whitespace-only string is **not** empty;
-- an empty array, collection or enumerable;
+- an empty array, collection or enumerable, or an empty `Memory<T>` or `ReadOnlyMemory<T>`;
 - a `DateTime`, `TimeSpan`, `TimeOnly` or `DateTimeOffset` with zero ticks, or `DateOnly.MinValue`.
 
 A non-null class instance is not inspected property by property; use a selector for that.

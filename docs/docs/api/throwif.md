@@ -55,7 +55,7 @@ Only enable it when the guarded values can't be passwords, tokens or personal da
 
 Throws if the value is null or empty. "Empty" follows the same rules as
 [`Is.NullOrEmpty`](./is#what-counts-as-empty): `null`, `default(T)` (including `0`, `false`, `Guid.Empty`), `""`,
-empty collections, zero-tick dates and times; with a selector, `null` anywhere on the path counts as empty.
+empty collections and `Memory<T>`, zero-tick dates and times; with a selector, `null` anywhere on the path counts as empty.
 
 ### Overloads
 

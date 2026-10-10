@@ -510,6 +510,36 @@ public class IsNullOrEmptyOptimizedTests
         Assert.False(Is.NullOrEmpty((object)new TestStruct { Name = "test" }));
         Assert.False(Is.NullOrEmpty((object)System.Collections.Immutable.ImmutableArray.Create(1)));
     }
+
+    [Fact]
+    public void NullOrEmpty_BoxedOrNullableDefaultArraySegment_ReturnsTrue()
+    {
+        // A default ArraySegment<T> throws from GetEnumerator.
+        Assert.True(Is.NullOrEmpty((object)default(ArraySegment<int>)));
+        Assert.True(Is.NullOrEmpty((ArraySegment<int>?)default(ArraySegment<int>)));
+        Assert.Throws<SGuard.Exceptions.NullOrEmptyException>(() => ThrowIf.NullOrEmpty((object)default(ArraySegment<int>)));
+
+        Assert.True(Is.NullOrEmpty((object)new ArraySegment<int>([1, 2], 0, 0)));
+        Assert.False(Is.NullOrEmpty((object)new ArraySegment<int>([1, 2])));
+        Assert.False(Is.NullOrEmpty((ArraySegment<int>?)new ArraySegment<int>([1, 2])));
+    }
+
+    [Fact]
+    public void NullOrEmpty_Memory_IsEmpty_WhenItHasNoElements()
+    {
+        Assert.True(Is.NullOrEmpty("abc".AsMemory(0, 0)));
+        Assert.True(Is.NullOrEmpty(new int[0].AsMemory()));
+        Assert.True(Is.NullOrEmpty(default(Memory<byte>)));
+        Assert.True(Is.NullOrEmpty((object)ReadOnlyMemory<char>.Empty));
+        Assert.True(Is.NullOrEmpty((Memory<int>?)new int[0].AsMemory()));
+        Assert.Throws<SGuard.Exceptions.NullOrEmptyException>(() => ThrowIf.NullOrEmpty("abc".AsMemory(1, 0)));
+
+        Assert.False(Is.NullOrEmpty("abc".AsMemory()));
+        Assert.False(Is.NullOrEmpty(new[] { 1 }.AsMemory()));
+        Assert.False(Is.NullOrEmpty((object)"abc".AsMemory(1)));
+        Assert.False(Is.NullOrEmpty((Memory<int>?)new[] { 1 }.AsMemory()));
+        ThrowIf.NullOrEmpty("abc".AsMemory());
+    }
 }
 
 public struct TestStruct

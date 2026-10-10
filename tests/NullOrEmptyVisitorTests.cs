@@ -417,6 +417,118 @@ public sealed class NullOrEmptyVisitorOptimizedTests
         Assert.False(Is.NullOrEmpty(new WithImmutable { List = [1] }, x => x.List!));
     }
 
+    private sealed class WithInterfaceTypedImmutable
+    {
+        public IReadOnlyList<int> List { get; init; } = default(ImmutableArray<int>);
+        public IEnumerable<int> Sequence { get; init; } = default(ImmutableArray<int>);
+        public object Boxed { get; init; } = default(ArraySegment<int>);
+    }
+
+    private sealed class InterfaceTypedCollections
+    {
+        public IReadOnlyList<int> List { get; init; } = default(ImmutableArray<int>);
+        public IEnumerable<int> Sequence { get; init; } = default(ImmutableArray<int>);
+    }
+
+    private sealed class WithNestedInterfaceTypedImmutable
+    {
+        // Inside a complex type, collection interfaces are checked by their run-time type too.
+        public InterfaceTypedCollections Inner { get; init; } = new();
+    }
+
+    [Fact]
+    public void InterfaceTypedMembers_HoldingDefaultStructCollections_AreEmpty()
+    {
+        var holder = new WithInterfaceTypedImmutable();
+
+        Assert.True(Is.NullOrEmpty(holder, x => x.List));
+        Assert.True(Is.NullOrEmpty(holder, x => x.Sequence));
+        Assert.True(Is.NullOrEmpty(holder, x => x.Boxed));
+        Assert.True(Is.NullOrEmpty(new WithNestedInterfaceTypedImmutable(), x => x.Inner));
+        Assert.Throws<NullOrEmptyException>(() => ThrowIf.NullOrEmpty(holder, x => x.List));
+
+        var filled = new WithInterfaceTypedImmutable { List = ImmutableArray.Create(1), Sequence = ImmutableArray.Create(1) };
+        Assert.False(Is.NullOrEmpty(filled, x => x.List));
+        Assert.False(Is.NullOrEmpty(filled, x => x.Sequence));
+    }
+
+    private sealed class CountingSequence : IEnumerable<int>
+    {
+        public int Enumerations { get; private set; }
+
+        public IEnumerator<int> GetEnumerator()
+        {
+            Enumerations++;
+            yield return 1;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    private sealed class WithSequences
+    {
+        public CountingSequence Concrete { get; } = new();
+        public CountingSequence InterfaceSource { get; } = new();
+        public IEnumerable<int> AsInterface => InterfaceSource;
+        public object AsObject => InterfaceSource;
+    }
+
+    [Fact]
+    public void LazySequence_IsEnumeratedOnce()
+    {
+        var value = new WithSequences();
+
+        Assert.False(Is.NullOrEmpty(value, x => x.Concrete));
+        Assert.Equal(1, value.Concrete.Enumerations);
+
+        Assert.False(Is.NullOrEmpty(value, x => x.AsInterface));
+        Assert.Equal(1, value.InterfaceSource.Enumerations);
+
+        Assert.False(Is.NullOrEmpty(value, x => x.AsObject));
+        Assert.Equal(2, value.InterfaceSource.Enumerations);
+    }
+
+    private sealed class WithMemory
+    {
+        public ReadOnlyMemory<char> Text { get; init; }
+        public Memory<int>? Numbers { get; init; }
+    }
+
+    [Fact]
+    public void Memory_IsEmpty_WhenItHasNoElements()
+    {
+        Assert.True(Is.NullOrEmpty(new WithMemory { Text = "abc".AsMemory(0, 0) }, x => x.Text));
+        Assert.True(Is.NullOrEmpty(new WithMemory { Numbers = new int[0] }, x => x.Numbers!));
+        Assert.True(Is.NullOrEmpty(new WithMemory(), x => x.Numbers!));
+
+        Assert.False(Is.NullOrEmpty(new WithMemory { Text = "abc".AsMemory() }, x => x.Text));
+        Assert.False(Is.NullOrEmpty(new WithMemory { Numbers = new[] { 1 } }, x => x.Numbers!));
+    }
+
+    private class Base
+    {
+        public string? Name { get; init; }
+    }
+
+    private sealed class DerivedCollection : Base, IEnumerable<int>
+    {
+        public IEnumerator<int> GetEnumerator() { yield break; }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    private sealed class WithBase
+    {
+        public Base? Value { get; init; }
+    }
+
+    [Fact]
+    public void UnsealedClass_IsCheckedByItsRunTimeType()
+    {
+        Assert.True(Is.NullOrEmpty(new WithBase { Value = new DerivedCollection { Name = "x" } }, x => x.Value!));
+        Assert.False(Is.NullOrEmpty(new WithBase { Value = new Base { Name = "x" } }, x => x.Value!));
+        Assert.True(Is.NullOrEmpty(new WithBase { Value = new Base() }, x => x.Value!));
+    }
+
     private sealed class WithFrameworkTypes
     {
         public Uri? Link { get; init; }

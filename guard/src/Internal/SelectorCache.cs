@@ -37,7 +37,7 @@ internal static class SelectorCache
     {
         if (!SelectorShapeComparer.IsCacheable(selector))
         {
-            return Is.InternalIsNullOrEmpty(Compile<T>(selector, parameterizeConstants: false)(value, []));
+            return Compile<T>(selector, parameterizeConstants: false)(value, []);
         }
 
         var cache = Cache<T>.Entries;
@@ -52,7 +52,7 @@ internal static class SelectorCache
             }
         }
 
-        return Is.InternalIsNullOrEmpty(evaluator(value, SelectorShapeComparer.CollectConstants(selector)));
+        return evaluator(value, SelectorShapeComparer.CollectConstants(selector));
     }
 
     /// <summary>
@@ -69,9 +69,9 @@ internal static class SelectorCache
     }
 
     /// <summary>
-    /// A compiled selector: yields <c>null</c> when the selected value is null or empty; otherwise, the value.
+    /// A compiled selector: returns <c>true</c> when the selected value is null or empty.
     /// </summary>
-    private delegate object? Evaluator<in T>(T value, object?[] constants);
+    private delegate bool Evaluator<in T>(T value, object?[] constants);
 
     private static class Cache<T>
     {

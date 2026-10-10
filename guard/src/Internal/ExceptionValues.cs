@@ -39,7 +39,14 @@ internal static class ExceptionValues
             return string.Empty;
         }
 
-        return text.Length <= SGuardOptions.MaxValueLength ? text : string.Concat(text.AsSpan(0, SGuardOptions.MaxValueLength), "…");
+        if (text.Length <= SGuardOptions.MaxValueLength)
+        {
+            return text;
+        }
+
+        // Don't cut a surrogate pair (an emoji, for example) in half.
+        var length = char.IsHighSurrogate(text[SGuardOptions.MaxValueLength - 1]) ? SGuardOptions.MaxValueLength - 1 : SGuardOptions.MaxValueLength;
+        return string.Concat(text.AsSpan(0, length), "…");
     }
 
     /// <summary>

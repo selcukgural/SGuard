@@ -30,24 +30,34 @@ public static class SGuardCallbacks
     /// <summary>
     /// Invokes the action only when an outcome is Success.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
     public static SGuardCallback OnSuccess(Action action)
-        => outcome =>
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return outcome =>
         {
             if (outcome == GuardOutcome.Success)
             {
                 action();
             }
         };
+    }
 
     /// <summary>
     /// Invokes the action only when an outcome is Failure.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
     public static SGuardCallback OnFailure(Action action)
-        => outcome =>
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return outcome =>
         {
             if (outcome == GuardOutcome.Failure)
             {
                 action();
             }
         };
+    }
 }
