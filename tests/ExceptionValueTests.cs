@@ -120,6 +120,20 @@ public sealed class ExceptionValueTests
     }
 
     [Fact]
+    public void IncludeValuesInExceptions_DoesNotSplitSurrogatePairs()
+    {
+        // The emoji takes two chars, and the limit falls between them.
+        var value = new string('a', SGuardOptions.MaxValueLength - 1) + "😀tail";
+
+        WithValuesIncluded(() =>
+        {
+            var ex = Assert.Throws<BetweenException>(() => ThrowIf.Between(value, "a", "z", StringComparison.Ordinal));
+
+            Assert.Equal(new string('a', SGuardOptions.MaxValueLength - 1) + "…", ex.Data["value"]);
+        });
+    }
+
+    [Fact]
     public void IncludeValuesInExceptions_KeepsGuardException_WhenToStringThrows()
     {
         WithValuesIncluded(() =>

@@ -75,8 +75,8 @@ input that is often invalid.
 | `Any` / `All` | some / every element matches | the same | `ThrowIf.Any(lines, l => l.Quantity <= 0);` |
 | `Email` (`Is` only) | the string looks like an email address | — | `Is.Email(request.Email)` |
 
-What counts as empty: `null`; `""` (a whitespace-only string is **not** empty); an empty array, collection, span or
-enumerable; and the default value of a value type: `0`, `false`, `Guid.Empty`, `default(DateTime)`, the default enum
+What counts as empty: `null`; `""` (a whitespace-only string is **not** empty); an empty array, collection, span,
+`Memory<T>` or enumerable; and the default value of a value type: `0`, `false`, `Guid.Empty`, `default(DateTime)`, the default enum
 value or any default struct (also inside a nullable, so `int? x = 0` is empty).
 
 Comparisons work with any `IComparable<T>`: numbers, `decimal`, `DateTime`, `DateOnly`, `TimeSpan`, `Version`, your own

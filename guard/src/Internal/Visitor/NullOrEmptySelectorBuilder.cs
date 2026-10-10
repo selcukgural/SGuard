@@ -9,14 +9,14 @@ using System.Reflection;
 namespace SGuard;
 
 /// <summary>
-/// Builds the body of a compiled <c>NullOrEmpty</c> selector: an expression that yields <c>null</c> when the selected value is
-/// null or empty, and the value (as <see cref="object"/>) otherwise.
+/// Builds the body of a compiled <c>NullOrEmpty</c> selector: a <see cref="bool"/> expression that is <c>true</c> when the
+/// selected value is null or empty.
 /// </summary>
 /// <remarks>
 /// A <c>null</c> on the path to the selected value, that is on the instance of a member access, an instance method call
-/// (including indexers) or an array access, makes the result <c>null</c>, as C#'s <c>?.</c> would. Each value on the path
-/// is evaluated once. Other expressions, such as method arguments or the operands of <c>+</c>, are evaluated as written
-/// and keep their types.
+/// (including indexers) or an array access, counts as empty, as C#'s <c>?.</c> would yield null. Each value on the path is
+/// evaluated once. Other expressions, such as method arguments or the operands of <c>+</c>, are evaluated as written and
+/// keep their types.
 /// </remarks>
 internal static class NullOrEmptySelectorBuilder
 {
@@ -24,7 +24,10 @@ internal static class NullOrEmptySelectorBuilder
     private static readonly ConcurrentDictionary<Type, PropertyInfo> CountPropertyCache = new();
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> TypePropertyCache = new();
 
-    private static readonly Expression NullObject = Expression.Constant(null, typeof(object));
+    private static readonly Expression True = Expression.Constant(true);
+
+    private static readonly MethodInfo IsNullOrEmptyAtRunTime =
+        typeof(Is).GetMethod(nameof(Is.InternalIsNullOrEmpty), BindingFlags.NonPublic | BindingFlags.Static)!.MakeGenericMethod(typeof(object));
 
     /// <summary>
     /// The maximum number of nested complex types whose properties are inspected. Deeper complex members are only checked
@@ -36,7 +39,7 @@ internal static class NullOrEmptySelectorBuilder
     /// Builds the null-or-empty evaluation of a selector body.
     /// </summary>
     /// <param name="body">The selector body, usually a member path converted to <see cref="object"/>.</param>
-    /// <returns>An expression of type <see cref="object"/> that is <c>null</c> when the selected value is null or empty.</returns>
+    /// <returns>An expression of type <see cref="bool"/> that is <c>true</c> when the selected value is null or empty.</returns>
     public static Expression Build(Expression body)
     {
         // The compiler boxes value-typed selections with a Convert to object; check the value itself.
@@ -45,14 +48,13 @@ internal static class NullOrEmptySelectorBuilder
             body = convert.Operand;
         }
 
-        return Path(body, value => Evaluated(value, selected => Expression.Condition(IsNullOrEmpty(selected, [], 0), NullObject,
-                                                                                      Expression.Convert(selected, typeof(object)))));
+        return Path(body, value => Evaluated(value, selected => IsNullOrEmpty(selected, [], 0)));
     }
 
     /// <summary>
     /// Rebuilds a step of the path to the selected value, with a null check on its instance, and passes the rebuilt value to
-    /// <paramref name="next"/>. <paramref name="next"/> returns the expression of type <see cref="object"/> to evaluate
-    /// when nothing on the path is null.
+    /// <paramref name="next"/>. <paramref name="next"/> returns the <see cref="bool"/> expression to evaluate when nothing
+    /// on the path is null.
     /// </summary>
     private static Expression Path(Expression node, Func<Expression, Expression> next)
     {
@@ -81,7 +83,7 @@ internal static class NullOrEmptySelectorBuilder
     }
 
     /// <summary>
-    /// Evaluates <paramref name="value"/> once and yields <c>null</c> if it is null; otherwise, the result of
+    /// Evaluates <paramref name="value"/> once and yields <c>true</c> if it is null; otherwise, the result of
     /// <paramref name="next"/> for the evaluated value.
     /// </summary>
     private static Expression NotNull(Expression value, Func<Expression, Expression> next)
@@ -91,7 +93,7 @@ internal static class NullOrEmptySelectorBuilder
             return next(value);
         }
 
-        return Evaluated(value, v => Expression.Condition(IsNull(v), NullObject, next(v)));
+        return Evaluated(value, v => Expression.Condition(IsNull(v), True, next(v)));
     }
 
     /// <summary>
@@ -167,6 +169,14 @@ internal static class NullOrEmptySelectorBuilder
                              v => IsEmpty(v, complexTypePath, complexTypeDepth) ?? Expression.Constant(false));
         }
 
+        if (type == typeof(object) || type.IsInterface)
+        {
+            // Only the run-time type tells whether such a value is a string, a collection or a boxed struct (a default
+            // ImmutableArray<T> behind IReadOnlyList<T> throws from Count), so the rules for that type are applied. Inside a
+            // complex type, other than collection interfaces these members are only checked for null.
+            return complexTypeDepth == 0 || typeof(IEnumerable).IsAssignableFrom(type) ? AtRunTime(value) : null;
+        }
+
         if (type is { IsValueType: true, IsGenericType: true } && type.GetGenericTypeDefinition() == typeof(ImmutableArray<>))
         {
             // A default ImmutableArray<T> throws from Count, so it is checked with IsDefaultOrEmpty instead.
@@ -213,6 +223,11 @@ internal static class NullOrEmptySelectorBuilder
             return Expression.Equal(Expression.Property(value, nameof(DateTime.Ticks)), Expression.Constant(0L));
         }
 
+        if (EmptyMemory.IsMemoryType(type))
+        {
+            return Expression.Property(value, nameof(Memory<int>.IsEmpty));
+        }
+
         if (type.IsValueType)
         {
             // Any other struct, enum or primitive (char, nint, ...) is empty when it is its default value. Compared with
@@ -223,12 +238,11 @@ internal static class NullOrEmptySelectorBuilder
                                    comparer.GetMethod(nameof(EqualityComparer<int>.Equals), [type, type])!, value, Expression.Default(type));
         }
 
-        if (!type.IsClass || IsFrameworkType(type))
+        if (IsFrameworkType(type))
         {
-            // Interfaces, and framework classes that are not collections (Uri, Version, Type, ...), are only checked for
-            // null: their properties are not data to validate, and some of them throw, such as Uri.AbsolutePath on a
-            // relative URI.
-            return null;
+            // Framework classes that are not collections (Uri, Version, Type, ...) are only checked for null: their
+            // properties are not data to validate, and some of them throw, such as Uri.AbsolutePath on a relative URI.
+            return AtRunTimeIfDerivable(value, null, complexTypeDepth);
         }
 
         // A type already being inspected on this path (a cycle) or nested too deeply is only checked for null.
@@ -250,9 +264,24 @@ internal static class NullOrEmptySelectorBuilder
 
         complexTypePath.Remove(type);
 
-        return allNullOrEmpty;
+        return AtRunTimeIfDerivable(value, allNullOrEmpty, complexTypeDepth);
 
         static Expression IsZero(Expression count) => Expression.Equal(count, Expression.Constant(0));
+
+        // The rules for the run-time type of the value, which applies them without inspecting properties.
+        static Expression AtRunTime(Expression value) => Expression.Call(IsNullOrEmptyAtRunTime, Expression.Convert(value, typeof(object)));
+
+        // The selected value of a class that isn't sealed may be of a derived type that is a collection, so the rules for
+        // its run-time type are applied as well.
+        static Expression? AtRunTimeIfDerivable(Expression value, Expression? isEmpty, int complexTypeDepth)
+        {
+            if (complexTypeDepth > 0 || value.Type.IsSealed)
+            {
+                return isEmpty;
+            }
+
+            return isEmpty is null ? AtRunTime(value) : Expression.OrElse(isEmpty, AtRunTime(value));
+        }
 
         static PropertyInfo[] GetInspectableProperties(Type type)
             => type.GetProperties(BindingFlags.Public | BindingFlags.Instance)

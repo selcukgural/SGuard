@@ -15,6 +15,7 @@ The `NullOrEmpty` guard works with any value. What counts as "empty" depends on 
 | Reference types | `null` |
 | `string` | `null` or `""` (whitespace-only strings are **not** empty) |
 | Arrays, collections, other `IEnumerable` | `null` or no elements |
+| `Memory<T>`, `ReadOnlyMemory<T>`, spans | no elements |
 | Value types | `default(T)`: `0`, `0m`, `false`, `Guid.Empty`, `default(DateTime)`, the default enum value, any default struct |
 | Nullable value types | no value, **or** a value equal to the default (`int? x = 0` and `DayOfWeek? d = default` are empty) |
 | Date/time types | zero ticks (`DateTime`, `TimeSpan`, `TimeOnly`, `DateTimeOffset`), `DateOnly.MinValue` |

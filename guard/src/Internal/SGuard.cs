@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace SGuard;
 
@@ -112,6 +113,11 @@ internal static class SGuard
             return Half.IsNaN(Unsafe.As<T, Half>(ref value));
         }
 
+        if (typeof(T) == typeof(NFloat))
+        {
+            return NFloat.IsNaN(Unsafe.As<T, NFloat>(ref value));
+        }
+
         if (typeof(T) == typeof(double?))
         {
             return Unsafe.As<T, double?>(ref value) is { } d && double.IsNaN(d);
@@ -127,12 +133,18 @@ internal static class SGuard
             return Unsafe.As<T, Half?>(ref value) is { } h && Half.IsNaN(h);
         }
 
+        if (typeof(T) == typeof(NFloat?))
+        {
+            return Unsafe.As<T, NFloat?>(ref value) is { } n && NFloat.IsNaN(n);
+        }
+
         // A NaN boxed in a reference-typed or interface-typed operand.
         return !typeof(T).IsValueType && value switch
         {
             double d => double.IsNaN(d),
             float f => float.IsNaN(f),
             Half h => Half.IsNaN(h),
+            NFloat n => NFloat.IsNaN(n),
             _ => false
         };
     }

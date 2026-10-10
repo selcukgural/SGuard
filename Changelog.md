@@ -14,7 +14,8 @@ nullable enum or struct holding its default value
 (`DayOfWeek? d = DayOfWeek.Sunday`), a boxed default struct, enum or `char`,
 and through a selector a default `char`, `nint` or enum member. This matches
 the documented rule that default values are empty, and the result without a
-selector.
+selector. An empty `Memory<T>` or `ReadOnlyMemory<T>` now counts as empty
+too, as an empty span already did.
 
 ### Fixed
 
@@ -43,6 +44,23 @@ selector.
 - With `IncludeValuesInExceptions` on, selector and span `NullOrEmpty` guards
   reported `value=null` in the message even when the value was an empty
   string or collection. These messages now leave the value out.
+- A boxed or nullable default `ArraySegment<T>` (or any struct sequence that
+  throws from `GetEnumerator` when default) threw `InvalidOperationException`
+  from `NullOrEmpty`. It now counts as empty.
+- A selector enumerated a lazy sequence twice (an `IQueryable` sent two
+  queries). It is now enumerated once.
+- A selector threw when an `IReadOnlyList<T>`, `IEnumerable<T>` or `object`
+  member held a default `ImmutableArray<T>`, which counts as empty without a
+  selector. A selected value typed as `object` or an interface is now checked
+  by the type of the value it holds.
+- An empty `Memory<T>` or `ReadOnlyMemory<T>` didn't count as empty, unlike
+  its span.
+- With `IncludeValuesInExceptions` on, shortening a long value could cut an
+  emoji or other surrogate pair in half.
+- `NFloat.NaN` passed comparison guards, unlike the NaN of `double`, `float`
+  and `Half`.
+- `SGuardCallbacks.OnSuccess` and `OnFailure` accepted a `null` action, and the
+  callback then failed silently. They now throw `ArgumentNullException`.
 - `ExceptionActivator.Create` let `AmbiguousMatchException` escape when the
   arguments fit more than one constructor (for example two `null`s). It now
   throws `InvalidOperationException`, as for no matching constructor.

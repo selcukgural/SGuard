@@ -464,4 +464,11 @@ public sealed class CallbacksTests
     }
 
     #endregion
+
+    [Fact]
+    public void CallbackFactories_RejectNullAction()
+    {
+        Assert.Throws<ArgumentNullException>(() => SGuardCallbacks.OnSuccess(null!));
+        Assert.Throws<ArgumentNullException>(() => SGuardCallbacks.OnFailure(null!));
+    }
 }

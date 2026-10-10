@@ -100,6 +100,7 @@ public sealed partial class Is
         // - GUIDs are empty if they are Guid.Empty.
         // - Arrays, collections, and enumerables are empty if they have no elements.
         // - DateTime, TimeSpan, DateOnly, TimeOnly, and DateTimeOffset are empty if their ticks are zero or at their minimum value.
+        // - Memory<T> and ReadOnlyMemory<T> are empty if they have no elements.
         // - Other structs, enums and primitives are empty if they are their default value.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool MatchesEmptyPatterns(T? value)
@@ -151,25 +152,38 @@ public sealed partial class Is
                 case DateTimeOffset dto:
                     return dto.Ticks == 0;
                 case IEnumerable enumerable:
-                {
-                    var enumerator = enumerable.GetEnumerator();
-
-                    try
-                    {
-                        return !enumerator.MoveNext();
-                    }
-                    finally
-                    {
-                        (enumerator as IDisposable)?.Dispose();
-                    }
-                }
+                    // Like a collection, a boxed default struct may throw from GetEnumerator (ArraySegment<T> does).
+                    return (default(T) is null && enumerable is ValueType && IsBoxedDefault(enumerable)) || HasNoElements(enumerable);
                 default:
                     // Another struct, enum or primitive (such as char) that is boxed, or held by a Nullable<T>: empty when it
                     // is its default value, as it is when T is its own type. default(T) is null only for reference and
                     // nullable types, so this is removed for other value types, which IsDefaultValue has already checked.
-                    return default(T) is null && value is ValueType && IsBoxedDefault(value);
+                    // A Memory<T> or ReadOnlyMemory<T> is also empty when it has no elements, like a span.
+                    return (typeof(T).IsValueType && EmptyMemory.Is(value)) ||
+                           (default(T) is null && value is ValueType && IsEmptyBoxedStruct(value));
             }
         }
+
+        // Starts enumerating the sequence to see whether it has a first element. Kept out of line, like the other slow
+        // paths, so that the exception handler doesn't stop the check from being inlined.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static bool HasNoElements(IEnumerable enumerable)
+        {
+            var enumerator = enumerable.GetEnumerator();
+
+            try
+            {
+                return !enumerator.MoveNext();
+            }
+            finally
+            {
+                (enumerator as IDisposable)?.Dispose();
+            }
+        }
+
+        // Determines whether a boxed struct is its default value or an empty Memory<T> or ReadOnlyMemory<T>.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static bool IsEmptyBoxedStruct(object value) => IsBoxedDefault(value) || EmptyMemory.IsBoxed(value);
 
         // Determines whether a boxed value equals the default value of its runtime type.
         static bool IsBoxedDefault(object value) => value.Equals(BoxedDefaults.GetOrAdd(value.GetType(), RuntimeHelpers.GetUninitializedObject));

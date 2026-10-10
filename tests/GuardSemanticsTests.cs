@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using SGuard.Exceptions;
 
 namespace SGuard.Tests;
@@ -16,6 +17,8 @@ public sealed class GuardSemanticsTests
         Assert.False(Is.Between(50.0, double.NaN, 100.0));
         Assert.False(Is.GreaterThan(float.NaN, 1f));
         Assert.False(Is.LessThan(Half.NaN, (Half)1));
+        Assert.False(Is.LessThan(NFloat.NaN, (NFloat)1));
+        Assert.False(Is.GreaterThanOrEqual((NFloat)1, NFloat.NaN));
     }
 
     [Fact]
@@ -32,6 +35,7 @@ public sealed class GuardSemanticsTests
         Assert.Throws<BetweenException>(() => ThrowIf.Between(amount, 0.0, 100.0));
         Assert.Throws<InvalidOperationException>(() => ThrowIf.GreaterThan(float.NaN, 1f, new InvalidOperationException()));
         Assert.Throws<GreaterThanException>(() => ThrowIf.GreaterThan(Half.NaN, (Half)1));
+        Assert.Throws<LessThanException>(() => ThrowIf.LessThan(NFloat.NaN, (NFloat)1));
     }
 
     [Fact]
