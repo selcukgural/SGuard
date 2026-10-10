@@ -279,7 +279,16 @@ type overloads, which create it only when they throw.
 ## ⚠️ Things that surprise people
 
 - **`ThrowIf.Between` throws when the value is *inside* the range.** To reject values outside a range, use
-  `if (!Is.Between(...))` or a `ThrowIf.LessThan` plus `ThrowIf.GreaterThan` pair.
+  `if (!Is.Between(...))` or a `ThrowIf.LessThan` plus `ThrowIf.GreaterThan` pair:
+
+  ```csharp
+  ThrowIf.LessThan(value, min);    // throws if value < min
+  ThrowIf.GreaterThan(value, max); // throws if value > max
+  ```
+
+  `min` and `max` themselves pass, like the inclusive `Between`.
+- **`GreaterThan` and `LessThan` are strict** (`>`, `<`): `ThrowIf.GreaterThan(10, 10)` doesn't throw. Use
+  `GreaterThanOrEqual` / `LessThanOrEqual` for `>=` / `<=`.
 - **Both bounds of `Between` are inclusive**, and `min > max` throws `ArgumentException`.
 - **Whitespace is not empty**: `ThrowIf.NullOrEmpty("   ")` passes. Trim first, or use a selector: `u => u.Name.Trim()`.
 - **`NaN` never passes a comparison**: `Is.*` returns `false` and `ThrowIf.*` throws. So

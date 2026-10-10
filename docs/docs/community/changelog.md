@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-10-10
+
+A documentation release. The code is the same as 0.3.1.
+
+### Changed
+
+- README, "Things that surprise people": the `ThrowIf.LessThan` plus
+  `ThrowIf.GreaterThan` pair for rejecting values outside a range now has an
+  example showing that the bounds themselves pass, and a new item notes that
+  `GreaterThan` and `LessThan` are strict (`>`, `<`); use the `OrEqual`
+  variants for `>=` / `<=`.
+
 ## [0.3.1] - 2026-10-10
 
 A bug-fix release. It makes `NullOrEmpty` agree with its documented rules in
