@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using SGuard.Exceptions;
 
 namespace SGuard.Tests;
@@ -251,6 +252,39 @@ public sealed class SelectorCacheTests
 
         Assert.Equal([false, true, true, false], results);
         Assert.Equal(1, SelectorCache.Count<Branches>());
+    }
+
+    private sealed class CapturedPayload
+    {
+        public List<string?> Items { get; init; } = [];
+    }
+
+    [Fact]
+    public void CachedSelector_DoesNotKeepCapturedValuesAlive()
+    {
+        var payload = CallWithCapturedPayload();
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        Assert.False(payload.IsAlive);
+        Assert.Equal(1, SelectorCache.Count<CapturedPayload>());
+
+        // The stored key still matches the same selector capturing other values.
+        CallWithCapturedPayload();
+        Assert.Equal(1, SelectorCache.Count<CapturedPayload>());
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference CallWithCapturedPayload()
+    {
+        var payload = new byte[1024];
+        var index = 0;
+
+        Assert.False(Is.NullOrEmpty(new CapturedPayload { Items = ["a"] }, x => x.Items[index] + payload.Length));
+
+        return new WeakReference(payload);
     }
 
     [Fact]

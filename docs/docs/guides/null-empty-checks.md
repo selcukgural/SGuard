@@ -15,8 +15,8 @@ The `NullOrEmpty` guard works with any value. What counts as "empty" depends on 
 | Reference types | `null` |
 | `string` | `null` or `""` (whitespace-only strings are **not** empty) |
 | Arrays, collections, other `IEnumerable` | `null` or no elements |
-| Value types | `default(T)`: `0`, `0m`, `false`, `Guid.Empty`, `default(DateTime)`, any default struct |
-| Nullable value types | no value, **or** a value equal to the default (`int? x = 0` is empty) |
+| Value types | `default(T)`: `0`, `0m`, `false`, `Guid.Empty`, `default(DateTime)`, the default enum value, any default struct |
+| Nullable value types | no value, **or** a value equal to the default (`int? x = 0` and `DayOfWeek? d = default` are empty) |
 | Date/time types | zero ticks (`DateTime`, `TimeSpan`, `TimeOnly`, `DateTimeOffset`), `DateOnly.MinValue` |
 | Other class instances | `null` only; a non-null object is **not** inspected property by property |
 
@@ -220,6 +220,9 @@ When a selector points at a complex type, its readable properties are inspected 
 - A type that is already being inspected higher up the same path (for example `Node.Next` of type `Node`) is only checked
   for null, so self-referencing types don't recurse forever. A non-null reference counts as non-empty.
 - The same null-only check applies below 8 levels of nested complex types.
+- Framework classes that are not collections, that is types in a `System` namespace such as `Uri` or `Version`, are
+  only checked for null; their properties are not read. Framework collections are checked for elements as usual, and a
+  default `ImmutableArray<T>` counts as empty.
 
 :::warning
 Inspecting a complex type calls the getter of every readable public property on it, and on the types below it. Getters

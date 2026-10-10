@@ -35,6 +35,34 @@ public sealed class GuardSemanticsTests
     }
 
     [Fact]
+    public void Between_WithNaNUpperBound_FailsInsteadOfReportingReversedBounds()
+    {
+        GuardOutcome? outcome = null;
+
+        Assert.False(Is.Between(50.0, 0.0, double.NaN));
+        Assert.False(Is.Between(50f, float.NaN, float.NaN));
+        Assert.Throws<BetweenException>(() => ThrowIf.Between(200.0, 0.0, double.NaN, o => outcome = o));
+        Assert.Equal(GuardOutcome.Failure, outcome);
+    }
+
+    private sealed class Threshold(int value)
+    {
+        public int Value { get; } = value;
+    }
+
+    private readonly struct Score(int value) : IComparable<Threshold>
+    {
+        public int CompareTo(Threshold? other) => value.CompareTo(other!.Value);
+    }
+
+    [Fact]
+    public void Between_WithBoundsThatDontImplementIComparable_SkipsTheRangeCheck()
+    {
+        Assert.True(Is.Between(new Score(5), new Threshold(1), new Threshold(10)));
+        Assert.False(Is.Between(new Score(50), new Threshold(1), new Threshold(10)));
+    }
+
+    [Fact]
     public void ThrowIf_Comparisons_StillPass_ForOrdinaryFloatingPointValues()
     {
         ThrowIf.GreaterThan(99.5, 100.0);

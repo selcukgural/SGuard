@@ -201,8 +201,9 @@ SGuardCallback? debug = null;
 ThrowIf.NullOrEmpty(value, debug);
 ```
 
-Declare the variable as `SGuardCallback`: a lambda assigned to `var` gets the natural type `Action<GuardOutcome>`,
-which doesn't convert to `SGuardCallback`.
+Declare the variable as `SGuardCallback?` rather than `var`: the `#else` branch assigns `null`, which has no type of
+its own. (A lambda assigned to `var` would also get the natural type `Action<GuardOutcome>`, which doesn't convert to
+`SGuardCallback`.)
 
 ## Callback Order
 

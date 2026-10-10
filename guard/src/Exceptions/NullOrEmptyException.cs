@@ -43,6 +43,18 @@ public sealed class NullOrEmptyException : ArgumentException
         Data["valueExpr"] = valueExpr;
     }
 
+    private NullOrEmptyException(string? valueExpr, string message) : base(message)
+    {
+        _paramName = valueExpr;
+        Data["valueExpr"] = valueExpr;
+    }
+
+    /// <summary>
+    /// Creates the exception for a value that isn't available to describe, such as the member a selector reached or a
+    /// span: the message names the expression and never includes a value.
+    /// </summary>
+    internal static NullOrEmptyException ForExpression(string? valueExpr) => new(valueExpr, $"Value '{valueExpr}' is null or empty.");
+
     /// <summary>
     /// Builds a detailed error message describing a value that is null or empty and
     /// includes the expression name from the calling site.

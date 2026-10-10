@@ -74,9 +74,9 @@ Measured with BenchmarkDotNet (Apple M3 Max, .NET 10 / .NET 8) for a passing `Th
 
 Times are per call; sizes are memory allocated per call. Most of what remains is
 the expression tree the C# compiler builds at the call site on every call (last
-row), which no cache can avoid. These figures come from that measurement, not
-from the committed BenchmarkDotNet results in `SGuard.Benchmark/benchmarks/`,
-which were recorded before the cache existed.
+row), which no cache can avoid. The committed BenchmarkDotNet results in
+`SGuard.Benchmark/benchmarks/` include cached selectors too; see
+[Performance](../advanced/performance).
 
 ## Limitations
 
@@ -117,7 +117,9 @@ All caching operations are thread-safe. Multiple threads can safely:
 
 The cache stores, per selector input type:
 - **Compiled delegates** (one per unique selector shape)
-- **Cache keys** (the first expression tree seen for each shape, compared by structure)
+- **Cache keys** (the first expression tree seen for each shape, compared by structure). Captured values are replaced
+  in the stored key, so the cache doesn't keep the first caller's captured variables, or the objects they reference,
+  alive
 
 In typical applications, the cache remains small because:
 1. The number of unique validation patterns is limited

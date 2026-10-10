@@ -151,15 +151,30 @@ internal static class SGuard
 
     /// <summary>
     /// Throws an <see cref="ArgumentException"/> when <paramref name="min"/> is greater than <paramref name="max"/>. Bounds of
-    /// different types can't be compared and are not checked.
+    /// different types, or of a type that doesn't implement <see cref="IComparable{T}"/> or <see cref="IComparable"/>, can't
+    /// be compared and are not checked. Neither is a NaN bound: the guards treat it as failing, and
+    /// <see cref="Comparer{T}"/> would order it below every number.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void ThrowIfInvalidRange<TMin, TMax>(TMin min, TMax max)
     {
-        if (typeof(TMin) == typeof(TMax) && Comparer<TMin>.Default.Compare(min, Unsafe.As<TMax, TMin>(ref max)) > 0)
+        if (typeof(TMin) == typeof(TMax) && Comparable<TMin>.Value && !AnyNaN(min, max) &&
+            Comparer<TMin>.Default.Compare(min, Unsafe.As<TMax, TMin>(ref max)) > 0)
         {
             throw new ArgumentException(InvalidRangeMessage, nameof(min));
         }
+    }
+
+    /// <summary>
+    /// Whether <see cref="Comparer{T}.Default"/> can compare two values of <typeparamref name="T"/>. A static readonly field,
+    /// so the JIT treats it as a constant.
+    /// </summary>
+    private static class Comparable<T>
+    {
+        public static readonly bool Value = IsComparable(Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T));
+
+        private static bool IsComparable(Type type)
+            => typeof(IComparable<>).MakeGenericType(type).IsAssignableFrom(type) || typeof(IComparable).IsAssignableFrom(type);
     }
 
     /// <summary>

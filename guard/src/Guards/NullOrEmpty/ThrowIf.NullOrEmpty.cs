@@ -37,7 +37,7 @@ public sealed partial class ThrowIf
     {
         if (SGuard.Fails(value.IsEmpty, callback))
         {
-            Throw.NullOrEmptyException<object?>(null, valueExpression);
+            Throw.NullOrEmptyExceptionWithoutValue(valueExpression);
         }
     }
 
@@ -98,7 +98,7 @@ public sealed partial class ThrowIf
 
         if (SGuard.Fails(isNullOrEmpty, callback))
         {
-            Throw.NullOrEmptyException<object?>(null, selectorExpression);
+            Throw.NullOrEmptyExceptionWithoutValue(selectorExpression);
         }
     }
 

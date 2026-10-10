@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+**Upgrading from 0.3.0**
+
+Some values that used to pass a `NullOrEmpty` guard now count as empty: a
+nullable enum or struct holding its default value
+(`DayOfWeek? d = DayOfWeek.Sunday`), a boxed default struct, enum or `char`,
+and through a selector a default `char`, `nint` or enum member. This matches
+the documented rule that default values are empty, and the result without a
+selector.
+
+### Fixed
+
+- A `NullOrEmpty` selector that selected a struct without an `==` operator (a
+  plain struct, a tuple, `KeyValuePair<,>`, or a nullable of one) threw
+  `InvalidOperationException`. It now counts as empty when it holds its
+  default value, as it does without a selector.
+- A cached selector kept the first call's captured variables, and every object
+  they reference, alive for the life of the process. The cache key no longer
+  holds captured values.
+- A selector pointing at a framework class read all of its properties, so a
+  relative `Uri` threw from `Uri.AbsolutePath`. Framework classes that are not
+  collections (types in a `System` namespace, such as `Uri` or `Version`) are
+  now only checked for null.
+- A default `ImmutableArray<T>` threw from a selector, and from
+  `Is.NullOrEmpty` when boxed. It now counts as empty.
+- `Is.Between` and `ThrowIf.Between` with a NaN upper bound threw
+  `ArgumentException` ("The minimum must be less than or equal to the
+  maximum") instead of failing like any other NaN operand.
+- `Is.Between` with bounds of a type that implements neither `IComparable<T>`
+  nor `IComparable` threw from the bounds check; such bounds are no longer
+  checked against each other.
+- Nullable enums and structs holding their default value, and boxed default
+  structs, enums and `char`s, didn't count as empty, and selectors on `char`,
+  `nint` and enum members disagreed with the check without a selector.
+- With `IncludeValuesInExceptions` on, selector and span `NullOrEmpty` guards
+  reported `value=null` in the message even when the value was an empty
+  string or collection. These messages now leave the value out.
+- `ExceptionActivator.Create` let `AmbiguousMatchException` escape when the
+  arguments fit more than one constructor (for example two `null`s). It now
+  throws `InvalidOperationException`, as for no matching constructor.
+
+### Documentation
+
+- Corrected a span example that didn't compile on C# 12/13, a best practice
+  that recommended `Between` where `!Is.Between` is meant, a stale note about
+  the committed benchmarks, and the explanation of a callback example.
+
 ## [0.3.0] - 2026-09-26
 
 A performance release. Guards run on every call of the code they protect, so
