@@ -73,6 +73,10 @@ public sealed class ThrowIfAllocationTests
         { "Equal string", () => ThrowIf.Equal(Text, "other", StringComparison.OrdinalIgnoreCase) },
         { "NotDefined", () => ThrowIf.NotDefined(DayOfWeek.Monday) },
         { "LongerThan", () => ThrowIf.LongerThan(Text, 10) },
+        { "GreaterThan + factory", () => ThrowIf.GreaterThan(1, 2, () => new InvalidOperationException()) },
+        { "Between + factory", () => ThrowIf.Between(20, 1, 10, () => new InvalidOperationException()) },
+        { "NullOrEmpty + factory", () => ThrowIf.NullOrEmpty(Text, () => new InvalidOperationException()) },
+        { "Any + factory", () => ThrowIf.Any(Array, x => x > 10, () => new InvalidOperationException()) },
         { "ShorterThan", () => ThrowIf.ShorterThan(Text, 1) },
     };
 

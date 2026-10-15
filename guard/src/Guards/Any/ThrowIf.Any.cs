@@ -70,4 +70,54 @@ public sealed partial class ThrowIf
             Throw.That(exception);
         }
     }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if any element satisfies the predicate. The factory runs only
+    /// when the guard fails.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements.</typeparam>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="source">The sequence to check.</param>
+    /// <param name="predicate">The condition to test each element against.</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="predicate"/> or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Any<T, TException>(IEnumerable<T> source, Func<T, bool> predicate, Func<TException> exceptionFactory,
+        SGuardCallback? callback = null) where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(Is.Any(source, predicate), callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+    }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if any element of the span satisfies the predicate. The factory
+    /// runs only when the guard fails.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements.</typeparam>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="source">The span to check.</param>
+    /// <param name="predicate">The condition to test each element against.</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="predicate"/> or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    public static void Any<T, TException>(ReadOnlySpan<T> source, Func<T, bool> predicate, Func<TException> exceptionFactory,
+        SGuardCallback? callback = null) where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(Is.Any(source, predicate), callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+    }
 }

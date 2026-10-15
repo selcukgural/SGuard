@@ -173,6 +173,7 @@ public sealed partial class ThrowIf
     /// The exception instance is created using the specified constructor arguments.
     /// </exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     public static void LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, object[]? constructorArgs,
                                                                   SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
@@ -184,5 +185,71 @@ public sealed partial class ThrowIf
         {
             Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
         }
+    }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if the left value is less than the right value,
+    /// and returns the left value otherwise. The factory runs only when the guard fails, so a passing guard doesn't create
+    /// an exception.
+    /// </summary>
+    /// <remarks>A <c>NaN</c> operand fails.</remarks>
+    /// <typeparam name="TLeft">The type of the left value. Must implement <see cref="IComparable{TRight}"/>.</typeparam>
+    /// <typeparam name="TRight">The type of the right value.</typeparam>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="lValue">The left value to compare.</param>
+    /// <param name="rValue">The right value to compare against.</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <returns><paramref name="lValue"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="lValue"/>, <paramref name="rValue"/> or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TLeft LessThan<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue,
+        Func<TException> exceptionFactory, SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception
+    {
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(Is.LessThan(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+
+        return lValue;
+    }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if the left value is less than or equal to the right value,
+    /// and returns the left value otherwise. The factory runs only when the guard fails, so a passing guard doesn't create
+    /// an exception.
+    /// </summary>
+    /// <remarks>A <c>NaN</c> operand fails.</remarks>
+    /// <typeparam name="TLeft">The type of the left value. Must implement <see cref="IComparable{TRight}"/>.</typeparam>
+    /// <typeparam name="TRight">The type of the right value.</typeparam>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="lValue">The left value to compare.</param>
+    /// <param name="rValue">The right value to compare against.</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <returns><paramref name="lValue"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="lValue"/>, <paramref name="rValue"/> or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TLeft LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue,
+        Func<TException> exceptionFactory, SGuardCallback? callback = null)
+        where TLeft : IComparable<TRight> where TException : Exception
+    {
+        SGuard.ThrowIfNull(lValue);
+        SGuard.ThrowIfNull(rValue);
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(Is.LessThanOrEqual(lValue, rValue) || SGuard.AnyNaN(lValue, rValue), callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+
+        return lValue;
     }
 }

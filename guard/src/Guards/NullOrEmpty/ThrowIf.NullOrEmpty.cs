@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SGuard.Exceptions;
@@ -71,6 +73,7 @@ public sealed partial class ThrowIf
     /// <param name="constructorArgs">An array of arguments to pass to the exception constructor.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
+    [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     public static void NullOrEmpty<T, TException>(T value, object[]? constructorArgs, SGuardCallback? callback = null) where TException : Exception
     {
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
@@ -162,6 +165,7 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException">Thrown if the selector is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown if no constructor of <typeparamref name="TException"/> matches <paramref name="constructorArgs"/>.</exception>
     /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
+    [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     public static void NullOrEmpty<TValue, TException>(TValue value, Expression<Func<TValue, object?>> selector, object?[] constructorArgs,
                                                        SGuardCallback? callback = null) where TException : Exception
     {
@@ -171,5 +175,86 @@ public sealed partial class ThrowIf
         {
             Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
         }
+    }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if the value is null or empty, and returns the
+    /// value otherwise. The factory runs only when the guard fails.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="value">The value to check.</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    [return: NotNull]
+    public static T NullOrEmpty<T, TException>([NotNull] T value, Func<TException> exceptionFactory, SGuardCallback? callback = null)
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(value is null || Is.InternalIsNullOrEmpty(value), callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+
+        Debug.Assert(value is not null);
+        return value;
+    }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if the span is empty, and returns the span
+    /// otherwise. The factory runs only when the guard fails.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the span.</typeparam>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="value">The span to check.</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <returns><paramref name="value"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    public static ReadOnlySpan<T> NullOrEmpty<T, TException>(ReadOnlySpan<T> value, Func<TException> exceptionFactory,
+        SGuardCallback? callback = null) where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(value.IsEmpty, callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+
+        return value;
+    }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if the value, or the member the selector
+    /// reaches, is null or empty, and returns the value otherwise. The factory runs only when the guard fails.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="value">The value to check.</param>
+    /// <param name="selector">An expression that selects the member to check, such as <c>o => o.Customer.Email</c>.</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="selector"/> or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    [return: NotNull]
+    public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue value, Expression<Func<TValue, object?>> selector,
+        Func<TException> exceptionFactory, SGuardCallback? callback = null) where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(value is null || SelectorCache.IsNullOrEmpty(value, selector), callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+
+        Debug.Assert(value is not null);
+        return value;
     }
 }

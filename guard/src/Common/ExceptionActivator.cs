@@ -11,6 +11,7 @@ namespace SGuard;
 /// It ensures that the created exception is of the expected type and provides
 /// detailed error messages when the creation fails.
 /// </remarks>
+[Obsolete(Obsoletions.ExceptionActivatorMessage, DiagnosticId = Obsoletions.ExceptionActivatorDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
 public static class ExceptionActivator
 {
     /// <summary>

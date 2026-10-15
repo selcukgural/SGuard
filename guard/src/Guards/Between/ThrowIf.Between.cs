@@ -171,6 +171,7 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, or <paramref name="max"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="value"/> is between <paramref name="min"/> and <paramref name="max"/>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     public static void Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
                                                                object[]? constructorArgs, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception
@@ -224,6 +225,7 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, or <paramref name="max"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="value"/> is between <paramref name="min"/> and <paramref name="max"/>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     public static void Between<TException>(string value, string min, string max, StringComparison comparison, object[]? constructorArgs,
                                            SGuardCallback? callback = null) where TException : Exception
     {
@@ -235,5 +237,77 @@ public sealed partial class ThrowIf
         {
             Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
         }
+    }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if the value is between
+    /// <paramref name="min"/> and <paramref name="max"/>, inclusive, and returns the value otherwise. The factory runs
+    /// only when the guard fails.
+    /// </summary>
+    /// <remarks>
+    /// The guard throws when the value is <b>inside</b> the range. To reject values outside a range, use
+    /// <see cref="OutOfRange{TValue, TMin, TMax, TException}(TValue, TMin, TMax, Func{TException}, SGuardCallback?)"/>.
+    /// A <c>NaN</c> operand fails.
+    /// </remarks>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <typeparam name="TMin">The type of the minimum bound.</typeparam>
+    /// <typeparam name="TMax">The type of the maximum bound.</typeparam>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="value">The value to check.</param>
+    /// <param name="min">The minimum bound (inclusive).</param>
+    /// <param name="max">The maximum bound (inclusive).</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <returns><paramref name="value"/>.</returns>
+    /// <exception cref="ArgumentNullException">An operand or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TValue Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
+        Func<TException> exceptionFactory, SGuardCallback? callback = null)
+        where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception
+    {
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(Is.Between(value, min, max) || SGuard.AnyNaN(value, min, max), callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+
+        return value;
+    }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/> if the string is between the given bounds,
+    /// inclusive, under the given StringComparison, and returns the string otherwise. The factory runs only when the guard
+    /// fails.
+    /// </summary>
+    /// <typeparam name="TException">The type of the exception to throw.</typeparam>
+    /// <param name="value">The string to check.</param>
+    /// <param name="min">The minimum bound (inclusive).</param>
+    /// <param name="max">The maximum bound (inclusive).</param>
+    /// <param name="comparison">The string comparison rule to use.</param>
+    /// <param name="exceptionFactory">Creates the exception to throw.</param>
+    /// <param name="callback">An optional callback invoked with the outcome of the guard.</param>
+    /// <returns><paramref name="value"/>.</returns>
+    /// <exception cref="ArgumentNullException">An operand or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string Between<TException>(string value, string min, string max, StringComparison comparison,
+        Func<TException> exceptionFactory, SGuardCallback? callback = null) where TException : Exception
+    {
+        SGuard.ThrowIfNull(min);
+        SGuard.ThrowIfNull(max);
+        SGuard.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(exceptionFactory);
+
+        if (SGuard.Fails(Is.Between(value, min, max, comparison), callback))
+        {
+            Throw.From(exceptionFactory);
+        }
+
+        return value;
     }
 }
