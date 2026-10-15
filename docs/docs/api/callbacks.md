@@ -273,15 +273,15 @@ catch (ArgumentNullException)
 }
 ```
 
-One case differs: with the `constructorArgs` overloads, the exception is created only when the guard fails. If no
-constructor matches the arguments, the callback has already been invoked with `Failure`, and then an
-`InvalidOperationException` is thrown instead of your exception type:
+One case differs: a factory runs only when the guard fails, after the callback. If the factory returns `null`, the
+callback has already been invoked with `Failure`, and then an `InvalidOperationException` is thrown instead of your
+exception type:
 
 ```csharp
 try
 {
     ThrowIf.GreaterThan<int, int, ArgumentOutOfRangeException>(quantity, 100,
-        [42, 43, 44], // no matching constructor
+        () => null!, // a factory that returns null
         SGuardCallbacks.OnFailure(() => logger.LogError("Runs")));
 }
 catch (InvalidOperationException)

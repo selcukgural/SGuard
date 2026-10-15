@@ -21,6 +21,8 @@ Complete reference for boolean-returning guard methods.
 | `Is.Email` with a `null` email (or regex) | `ArgumentNullException` |
 | `Is.Email` with an empty email (or regex) | `ArgumentException` |
 | `Is.Email` custom pattern that runs past its match timeout | `RegexMatchTimeoutException` |
+| `null` string for `LongerThan` or `ShorterThan`, or a negative length | `ArgumentNullException`, `ArgumentOutOfRangeException` |
+| `Is.Match` with a `null` or invalid pattern, or a match that runs past its timeout | `ArgumentException`, `RegexMatchTimeoutException` |
 
 In these cases the callback is not invoked.
 
@@ -70,6 +72,12 @@ With a selector:
 Selectors are compiled once and cached by expression structure, including selectors that capture local variables or
 use operators such as `+` and `??`; see [Expression Caching](../core-concepts/expression-caching).
 
+:::warning Selectors and Native AOT
+Selectors don't work under Native AOT, and trimming can remove the properties they read. The selector overloads are
+marked `[RequiresUnreferencedCode]` and `[RequiresDynamicCode]`, so trimmed and AOT apps get a warning. Check the member
+directly instead: `Is.NullOrEmpty(order.Customer?.Email)`.
+:::
+
 ### Examples
 
 ```csharp
@@ -77,6 +85,24 @@ bool isEmpty = Is.NullOrEmpty(username);
 bool hasNoItems = Is.NullOrEmpty(items);
 bool missing = Is.NullOrEmpty(order, o => o.Customer.Email);
 bool noTags = Is.NullOrEmpty(new ReadOnlySpan<string>(tags));
+```
+
+## Null and NullOrWhiteSpace
+
+```csharp
+bool Is.Null<T>(T? value, SGuardCallback? callback = null);
+bool Is.NullOrWhiteSpace(string? value, SGuardCallback? callback = null);
+```
+
+`Is.Null` returns `true` only for `null`: unlike `NullOrEmpty`, `""`, empty collections and default values such as `0`
+are not null. `Is.NullOrWhiteSpace` returns `true` for `null`, `""` and strings of white space only. Both are annotated
+`[NotNullWhen(false)]`, so after `if (Is.NullOrWhiteSpace(name)) return;` the compiler knows `name` isn't null.
+
+```csharp
+if (Is.NullOrWhiteSpace(request.Name))
+{
+    errors["name"] = ["A name is required."];
+}
 ```
 
 ## Comparison Guards
@@ -124,9 +150,46 @@ bool Is.Between(string value, string min, string max, StringComparison compariso
 If `min` is greater than `max`, `Between` throws `ArgumentException` instead of returning `false`. This is checked when
 both bounds have the same type, and always for the string overload.
 
+### OutOfRange
+
+Returns `true` if `value < min` or `value > max`, the opposite of `Between`. Both bounds are inclusive, and a NaN
+operand is outside every range.
+
+```csharp
+bool Is.OutOfRange<TValue, TMin, TMax>(TValue value, TMin min, TMax max, SGuardCallback? callback = null)
+    where TValue : IComparable<TMin>, IComparable<TMax>;
+
+bool Is.OutOfRange(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null);
+```
+
+Like `Between`, it throws `ArgumentException` when `min` is greater than `max`.
+
+### Sign checks
+
+```csharp
+bool Is.Negative<T>(T value, SGuardCallback? callback = null) where T : INumber<T>;        // value < 0
+bool Is.NegativeOrZero<T>(T value, SGuardCallback? callback = null) where T : INumber<T>;  // value <= 0
+bool Is.Zero<T>(T value, SGuardCallback? callback = null) where T : INumberBase<T>;        // value == 0
+```
+
+They work with every number type. Negative zero (`-0.0`) is zero, not negative. Like the other comparisons, NaN returns
+`false`.
+
+### Equal and NotEqual
+
+```csharp
+bool Is.Equal<T>(T lValue, T rValue, SGuardCallback? callback = null);
+bool Is.Equal(string? lValue, string? rValue, StringComparison comparison, SGuardCallback? callback = null);
+bool Is.NotEqual<T>(T lValue, T rValue, SGuardCallback? callback = null);
+bool Is.NotEqual(string? lValue, string? rValue, StringComparison comparison, SGuardCallback? callback = null);
+```
+
+Values are compared with `EqualityComparer<T>.Default`. `null` operands are allowed, and two `null` values are equal.
+
 ### NaN
 
-If any operand is a floating-point NaN (`double`, `float` or `Half`), every comparison and `Between` returns `false`.
+If any operand is a floating-point NaN (`double`, `float`, `Half` or `NFloat`), every comparison, `Between` and the
+sign checks return `false`, and `OutOfRange` returns `true`.
 Keep this in mind when the check rejects on `true`:
 
 ```csharp
@@ -184,6 +247,18 @@ if (Is.Any(users, u => u.IsAdmin))
 }
 ```
 
+## Enums and lengths
+
+```csharp
+bool Is.NotDefined<TEnum>(TEnum value, SGuardCallback? callback = null) where TEnum : struct, Enum;
+bool Is.LongerThan(string value, int maxLength, SGuardCallback? callback = null);
+bool Is.ShorterThan(string value, int minLength, SGuardCallback? callback = null);
+```
+
+`NotDefined` returns `true` if the enum has no member with this value (`Enum.IsDefined`; a combination of `[Flags]`
+values counts as defined only if the enum declares it). `LongerThan` and `ShorterThan` compare `string.Length`, the
+number of UTF-16 code units.
+
 ## Email
 
 Returns `true` if the string looks like an email address.
@@ -212,6 +287,45 @@ bool ok = Is.Email("user@example.com");   // true
 bool bad = Is.Email("not-an-email");      // false
 
 bool corporate = Is.Email(input, @"^[^@\s]+@example\.com\z", RegexOptions.IgnoreCase);
+```
+
+## Url, CreditCard and Match
+
+These validators return `false` for `null` and `""` and are annotated `[NotNullWhen(true)]`, unlike `Is.Email`, which
+throws for them.
+
+```csharp
+bool Is.Url(string? value, SGuardCallback? callback = null);
+bool Is.CreditCard(string? value, SGuardCallback? callback = null);
+bool Is.Match(string? value, Regex regex, SGuardCallback? callback = null);
+bool Is.Match(string? value, string pattern, RegexOptions options = RegexOptions.None, SGuardCallback? callback = null);
+bool Is.Match(string? value, string pattern, RegexOptions options, TimeSpan matchTimeout, SGuardCallback? callback = null);
+
+static TimeSpan Is.DefaultRegexTimeout { get; } // 1 second
+```
+
+- **`Url`** returns `true` for an absolute `http` or `https` URL with a host. Every other scheme fails, including
+  `javascript:`, `data:` and `file:`, so a value that passes is safe to render as a link. Relative and
+  protocol-relative URLs (`//example.com`) fail, and so does a string with leading or trailing white space. It parses
+  the string with `Uri.TryCreate`, so unlike most guards it allocates.
+- **`CreditCard`** returns `true` for 12 to 19 digits that pass the Luhn checksum, with optional single spaces or
+  hyphens between digits. It checks the format only: it can't tell whether the card exists or can be charged. Don't
+  log card numbers.
+- **`Match`** returns `true` if the string matches the regular expression. The pattern is not anchored for you:
+  `[0-9]+` matches `"abc1"`, so write `^...\z` to match the whole string. A pattern string is matched with
+  `Is.DefaultRegexTimeout` or the `matchTimeout` you pass; a `Regex` instance uses its own timeout. Prefer a cached or
+  `[GeneratedRegex]` instance on hot paths, and don't build patterns from user input.
+
+```csharp
+if (!Is.Url(request.Website))
+{
+    errors["website"] = ["Enter an http or https address."];
+}
+
+[GeneratedRegex(@"^[A-Z]{3}\z")]
+private static partial Regex CurrencyCode();
+
+bool known = Is.Match(request.Currency, CurrencyCode());
 ```
 
 ## Outcome Mapping

@@ -8,30 +8,43 @@ Learn how to use your own exception types with SGuard guards.
 
 ## Overview
 
-While SGuard provides sensible default exceptions for each guard method, you often need to throw domain-specific exceptions. SGuard makes this easy with multiple approaches.
+While SGuard provides sensible default exceptions for each guard method, you often need to throw domain-specific
+exceptions. Every `ThrowIf.*` guard can throw yours instead.
 
-## Three Ways to Use Custom Exceptions
+## Ways to Use Custom Exceptions
 
-### 1. Pass a Custom Exception Instance
+### 1. Pass a Factory (recommended)
 
-The simplest approach—provide a pre-configured exception:
+Pass a lambda that creates the exception. It runs only when the guard fails, and the compiler checks the constructor
+call like any other code:
 
 ```csharp
-ThrowIf.LessThanOrEqual(
-    quantity, 
-    0, 
-    new DomainValidationException("Quantity must be greater than zero."));
+ThrowIf.NegativeOrZero(quantity, () => new DomainValidationException("Quantity must be greater than zero."));
+
+ThrowIf.GreaterThan(amount, balance, () => new InsufficientFundsException(accountId, amount));
 ```
 
-The exception object is created on every call, even when the guard passes. On hot paths, prefer the
-`TException` or `constructorArgs` overloads, which create it only on failure.
+A lambda that doesn't capture variables, like the first one, is cached by the compiler, so a passing guard allocates
+nothing. One that captures variables (`accountId`, `amount`) allocates a small closure per call, which is still far
+cheaper than creating an exception.
 
-**When to use:**
-- You need a specific error message
-- Your exception has special properties to set
-- You want full control over the exception
+Every guard has a factory overload. If the factory returns `null`, the guard throws `InvalidOperationException`.
 
-### 2. Use Generic TException
+**When to use:** whenever you throw your own exception. It is the only option that creates the exception lazily *and*
+lets it take arguments.
+
+### 2. Pass a Custom Exception Instance
+
+Provide a ready-made exception:
+
+```csharp
+ThrowIf.LessThanOrEqual(quantity, 0, new DomainValidationException("Quantity must be greater than zero."));
+```
+
+The exception is an argument, so it is created on every call, even when the guard passes. Prefer a factory: add `() =>`
+in front of `new`. The guards added in 1.0 take only factories.
+
+### 3. Use Generic TException
 
 Specify the exception type as a generic parameter and let SGuard create it with its parameterless constructor:
 
@@ -44,64 +57,49 @@ ThrowIf.GreaterThan<int, int, MyCustomException>(quantity, maxQuantity);
 These overloads require `where TException : Exception, new()`, so the exception type needs a public parameterless
 constructor. The exception is created only when the guard fails.
 
-**When to use:**
-- The exception type alone says what went wrong (no message needed)
-- You want to avoid creating an exception object on every call
+**When to use:** the exception type alone says what went wrong, and you don't need a message.
 
-### 3. Constructor Arguments
+### Constructor arguments (obsolete)
 
-For exceptions that need constructor arguments, pass them as an `object[]` and SGuard creates the exception when the
-guard fails:
+Before 1.0, exceptions that needed constructor arguments were created from an `object[]`:
 
 ```csharp
-// Calls ArgumentException(string message, string paramName)
-ThrowIf.NullOrEmpty<string, ArgumentException>(
-    value, 
-    new object[] { "Value is required", "customParamName" });
+// Obsolete (SGUARD001)
+ThrowIf.NullOrEmpty<string, ArgumentException>(value, ["Value is required", "customParamName"]);
 
-// Calls OrderValidationException(string message)
-ThrowIf.LessThanOrEqual<int, int, OrderValidationException>(
-    quantity, 
-    0, 
-    new object[] { "Quantity must be positive" });
+// Instead
+ThrowIf.NullOrEmpty(value, () => new ArgumentException("Value is required", "customParamName"));
 ```
 
-The arguments are matched against the exception's public constructors at run time (via `ExceptionActivator`), so any
-constructor works as long as the argument types fit. If none matches, the guard throws `InvalidOperationException`
-instead of your exception, and only when it fails, so cover these calls with a test.
-
-**When to use:**
-- Your exception needs constructor arguments
-- You want the exception created only when the guard fails
+These overloads match a constructor with reflection when the guard fails, so a wrong argument list surfaces only at run
+time, and trimming or Native AOT can remove the constructor. They still work and will be removed in 2.0; see
+[Obsolete APIs](../migration/upgrading-to-1.0#SGUARD001).
 
 ### Which Guards Support Which Variant
 
-| Guard | Exception instance | `TException : new()` | `constructorArgs` |
+| Guard | Factory | Exception instance | `TException : new()` |
 |---|---|---|---|
-| `Between` | Yes | Yes | Yes |
-| `GreaterThan`, `GreaterThanOrEqual` | Yes | Yes | Yes |
-| `LessThanOrEqual` | Yes | Yes | Yes |
-| `LessThan` | Yes | No | No |
-| `NullOrEmpty` (value) | Yes | No | Yes |
+| `NullOrEmpty` (value or span) | Yes | Yes (value) | No |
 | `NullOrEmpty` (with selector) | Yes | Yes | Yes |
-| `Any`, `All` | Yes | No | No |
+| `GreaterThan`, `GreaterThanOrEqual`, `LessThanOrEqual` | Yes | Yes | Yes |
+| `LessThan` | Yes | Yes | No |
+| `Between` | Yes | Yes | Yes |
+| `Any`, `All` | Yes | Yes | No |
+| `Null`, `NullOrWhiteSpace`, `OutOfRange`, `Negative`, `NegativeOrZero`, `Zero`, `Equal`, `NotEqual`, `NotDefined`, `LongerThan`, `ShorterThan` | Yes | No | No |
 
 ## Built-in Exception Types
 
-SGuard provides specialized exception types for each guard (namespace `SGuard.Exceptions`):
+SGuard provides an exception type for each guard (namespace `SGuard.Exceptions`), used when no custom exception is
+specified:
 
-- `NullOrEmptyException`
-- `BetweenException`
-- `LessThanException`
-- `LessThanOrEqualException`
-- `GreaterThanException`
-- `GreaterThanOrEqualException`
-- `AnyException`
-- `AllException`
+| Exception | Base type |
+|---|---|
+| `NullOrEmptyException`, `NullOrWhiteSpaceException`, `AnyException`, `AllException` | `ArgumentException` |
+| `NullException` | `ArgumentNullException` |
+| `LessThanException`, `LessThanOrEqualException`, `GreaterThanException`, `GreaterThanOrEqualException`, `BetweenException`, `OutOfRangeException`, `NegativeException`, `NegativeOrZeroException`, `ZeroException`, `EqualException`, `NotEqualException`, `NotDefinedException`, `LongerThanException`, `ShorterThanException` | `ArgumentOutOfRangeException` |
 
-These are used by default when no custom exception is specified. They all derive from `ArgumentException`, so
-`catch (ArgumentException)` handles them. `ParamName` holds the argument expression from the call site, and the
-message names it too:
+They are all `ArgumentException`s, so `catch (ArgumentException)` handles every guard failure. `ParamName` holds the
+argument expression from the call site, and the message names it too:
 
 ```csharp
 try
@@ -136,12 +134,10 @@ personal data. The option affects only the built-in exceptions, not exceptions y
 
 What your exception type needs depends on the overload you use:
 
-- **Exception instance**: nothing; you construct it yourself.
+- **Factory** or **exception instance**: nothing; you construct it yourself.
 - **`TException` with `new()`**: a public parameterless constructor (enforced at compile time).
-- **`constructorArgs`**: a public constructor whose parameters accept the arguments you pass (checked at run time;
-  `InvalidOperationException` if none matches).
 
-Following the standard .NET exception constructors keeps all three options open:
+Following the standard .NET exception constructors keeps every option open:
 
 ```csharp
 public class MyException : Exception
@@ -157,88 +153,55 @@ public class MyException : Exception
 ### Domain Validation Exception
 
 ```csharp
-public class OrderValidationException : Exception
-{
-    public OrderValidationException(string message) : base(message) { }
-}
+public class OrderValidationException(string message) : Exception(message);
 
-// Usage
-ThrowIf.LessThanOrEqual(
-    order.Quantity, 
-    0, 
-    new OrderValidationException("Order quantity must be positive"));
+ThrowIf.NegativeOrZero(order.Quantity, () => new OrderValidationException("Order quantity must be positive."));
 ```
 
 ### Business Rule Exception
 
 ```csharp
-public class InsufficientStockException : InvalidOperationException
+public class InsufficientStockException(string message, string sku) : InvalidOperationException(message)
 {
-    public string Sku { get; }
-    
-    public InsufficientStockException(string message, string sku) 
-        : base(message)
-    {
-        Sku = sku;
-    }
+    public string Sku { get; } = sku;
 }
 
-// Usage
-ThrowIf.GreaterThan(
-    item.Quantity, 
-    stock, 
-    new InsufficientStockException(
-        $"Insufficient stock for SKU '{item.Sku}'.", 
-        item.Sku));
+ThrowIf.GreaterThan(item.Quantity, stock,
+    () => new InsufficientStockException($"Insufficient stock for SKU '{item.Sku}'.", item.Sku));
 ```
 
 ### Validation Exception with Context
 
 ```csharp
-public class UserValidationException : ArgumentException
+public class UserValidationException(string message, string paramName, string tenantId)
+    : ArgumentException(message, paramName)
 {
-    public string TenantId { get; }
-    
-    public UserValidationException(
-        string message, 
-        string paramName, 
-        string tenantId) 
-        : base(message, paramName)
-    {
-        TenantId = tenantId;
-    }
+    public string TenantId { get; } = tenantId;
 }
 
-// Usage
-ThrowIf.NullOrEmpty(
-    username, 
-    new UserValidationException(
-        "Username is required", 
-        nameof(username), 
-        tenantId));
+var name = ThrowIf.NullOrWhiteSpace(username,
+    () => new UserValidationException("Username is required", nameof(username), tenantId));
 ```
 
 ## Combining with Callbacks
 
-Custom exceptions work seamlessly with callbacks:
+Custom exceptions work with callbacks. The callback receives `Failure` before the factory runs:
 
 ```csharp
-ThrowIf.LessThan(
-    value, 
-    threshold, 
-    new BusinessRuleException("Value below threshold"),
+ThrowIf.LessThan(value, threshold,
+    () => new BusinessRuleException("Value below threshold"),
     SGuardCallbacks.OnFailure(() => logger.LogError("Business rule violated")));
 ```
 
 ## Best Practices
 
-1. **Use meaningful exception types**: Create domain-specific exceptions that clearly communicate what went wrong
-2. **Include context**: Add properties to your exceptions that help with debugging and error handling
-3. **Follow .NET conventions**: Implement standard exception constructors for better interoperability
-4. **Don't over-engineer**: Sometimes `ArgumentException` or `InvalidOperationException` is enough
+1. **Pass a factory, not an instance**: the exception is created only when it is needed
+2. **Use meaningful exception types**: create domain-specific exceptions that clearly communicate what went wrong
+3. **Include context**: add properties to your exceptions that help with debugging and error handling
+4. **Don't over-engineer**: often the built-in exception, or `ArgumentException`, is enough
 
 ## Next Steps
 
 - [Real-World Examples](../guides/real-world-examples) - See custom exceptions in action
 - [API Reference](../api/throwif) - Complete ThrowIf API
-- [Best Practices](../advanced/best-practices) - Exception handling guidelines
+- [Upgrading to 1.0](../migration/upgrading-to-1.0) - Moving from constructor arguments to factories

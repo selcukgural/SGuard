@@ -10,8 +10,9 @@ Learn culture-aware string validation with SGuard's comparison guards.
 
 These guards have **string-specific overloads** that take a `StringComparison` for proper cultural and ordinal handling:
 
-- `Is.LessThan`, `Is.LessThanOrEqual`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, `Is.Between`
-- `ThrowIf.Between`
+- `Is.LessThan`, `Is.LessThanOrEqual`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, `Is.Between`, `Is.OutOfRange`
+- `ThrowIf.OutOfRange`, `ThrowIf.Between`
+- `Is.Equal`, `Is.NotEqual`, `ThrowIf.Equal`, `ThrowIf.NotEqual`
 
 `ThrowIf.LessThan`, `ThrowIf.LessThanOrEqual`, `ThrowIf.GreaterThan` and `ThrowIf.GreaterThanOrEqual` have **no**
 `StringComparison` overload. To throw on a string ordering, test with `Is.*` and throw yourself:
@@ -86,20 +87,45 @@ bool less = Is.LessThan("café", "cafe", StringComparison.CurrentCulture);
 bool before = Is.LessThan("straße", "strasse", StringComparison.InvariantCulture);
 ```
 
-## Between with Strings
+## Ranges with Strings
 
-String `Between` guards use inclusive comparisons:
+String `OutOfRange` and `Between` guards use inclusive comparisons:
 
 ```csharp
 // Is the (fixed-width) shelf code within the range A00..C99?
 bool inRange = Is.Between("B42", "A00", "C99", StringComparison.Ordinal); // true
 
+// ThrowIf.OutOfRange throws when the value is outside the range
+ThrowIf.OutOfRange(shelf, "A00", "C99", StringComparison.Ordinal);
+
 // ThrowIf.Between throws when the value IS inside the range
 ThrowIf.Between(code, "X00", "X99", StringComparison.Ordinal); // reject reserved codes X00..X99
 ```
 
-If `min` is greater than `max` under the given comparison, both `Is.Between` and `ThrowIf.Between` throw an
-`ArgumentException` ("The minimum must be less than or equal to the maximum.").
+If `min` is greater than `max` under the given comparison, `OutOfRange` and `Between` throw an `ArgumentException`
+("The minimum must be less than or equal to the maximum.").
+
+## Equality with Strings
+
+`Equal` and `NotEqual` take a `StringComparison` too. Without one, strings are compared ordinally and case-sensitively,
+like `string.Equals`:
+
+```csharp
+ThrowIf.NotEqual(request.Currency, account.Currency, StringComparison.OrdinalIgnoreCase);
+bool sameTenant = Is.Equal(left.TenantId, right.TenantId, StringComparison.Ordinal);
+```
+
+## Length and Patterns
+
+```csharp
+Name = ThrowIf.LongerThan(name, 200);   // throws LongerThanException for 201+ characters
+ThrowIf.ShorterThan(password, 12);      // throws ShorterThanException for 0-11 characters
+
+bool isCode = Is.Match(code, @"^[A-Z]{3}-\d{4}\z");
+```
+
+Lengths count UTF-16 code units (`string.Length`), so an emoji may count as two. `Is.Match` doesn't anchor the
+pattern: use `^...\z` to match the whole string.
 
 Ranges like this only make sense when the strings are compared the way they sort, as with fixed-width codes. Don't use
 them for version numbers (`"2.10"` sorts before `"2.9"`) or as a prefix check.
@@ -125,10 +151,10 @@ public class VersionValidator
         }
 
         ThrowIf.LessThan(version, MinVersion,
-            new InvalidOperationException($"Version must be {MinVersion} or higher"));
+            () => new InvalidOperationException($"Version must be {MinVersion} or higher"));
 
         ThrowIf.GreaterThan(version, MaxVersion,
-            new InvalidOperationException($"Version must be {MaxVersion} or lower"));
+            () => new InvalidOperationException($"Version must be {MaxVersion} or lower"));
     }
 }
 ```
@@ -231,10 +257,10 @@ public class ApiVersionValidator
         }
 
         ThrowIf.LessThan(version, MinSupported,
-            new NotSupportedException($"API version {version} is no longer supported"));
+            () => new NotSupportedException($"API version {version} is no longer supported"));
 
         ThrowIf.GreaterThan(version, MaxSupported,
-            new NotSupportedException($"API version {version} is not yet supported"));
+            () => new NotSupportedException($"API version {version} is not yet supported"));
     }
 }
 ```

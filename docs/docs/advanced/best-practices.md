@@ -107,15 +107,15 @@ else
 ```csharp
 // ArgumentException for invalid arguments
 ThrowIf.NullOrEmpty(username, 
-    new ArgumentException("Username is required", nameof(username)));
+    () => new ArgumentException("Username is required", nameof(username)));
 
 // InvalidOperationException for state violations
 ThrowIf.LessThan(user.Credits, cost,
-    new InvalidOperationException("Insufficient credits"));
+    () => new InvalidOperationException("Insufficient credits"));
 
 // Custom exceptions for domain rules
 ThrowIf.Any(order.Items, i => i.IsBackordered,
-    new OrderValidationException("Cannot checkout with backordered items"));
+    () => new OrderValidationException("Cannot checkout with backordered items"));
 ```
 
 ### Document Exceptions
@@ -357,13 +357,13 @@ public static class OrderValidators
     public static void ValidateQuantity(int quantity)
     {
         ThrowIf.LessThanOrEqual(quantity, 0,
-            new ArgumentException("Quantity must be positive"));
+            () => new ArgumentException("Quantity must be positive"));
     }
     
     public static void ValidatePrice(decimal price)
     {
         ThrowIf.LessThan(price, 0m,
-            new ArgumentException("Price cannot be negative"));
+            () => new ArgumentException("Price cannot be negative"));
     }
 }
 ```
