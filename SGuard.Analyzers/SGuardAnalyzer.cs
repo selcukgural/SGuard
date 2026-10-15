@@ -57,7 +57,7 @@ public sealed class SGuardAnalyzer : DiagnosticAnalyzer
                 CheckSelector(context, invocation);
                 break;
             case "NullOrEmpty":
-                CheckNullOrEmptyOnNumber(context, invocation, method, prefix);
+                CheckNullOrEmptyOnNumber(context, invocation, prefix);
                 break;
             case "Between" or "OutOfRange":
                 CheckBounds(context, invocation, prefix);
@@ -71,15 +71,18 @@ public sealed class SGuardAnalyzer : DiagnosticAnalyzer
     }
 
     // SGUARD101
-    private static void CheckNullOrEmptyOnNumber(OperationAnalysisContext context, IInvocationOperation invocation, IMethodSymbol method,
-        string prefix)
+    private static void CheckNullOrEmptyOnNumber(OperationAnalysisContext context, IInvocationOperation invocation, string prefix)
     {
-        if (method.TypeArguments.Length == 0 || invocation.Arguments.Length == 0)
+        var argument = ArgumentFor(invocation, "value");
+
+        // The type of the checked value as the method sees it: for the span overload that is ReadOnlySpan<T>, which is
+        // only rejected when it has no elements.
+        if (argument?.Parameter is null)
         {
             return;
         }
 
-        var type = method.TypeArguments[0];
+        var type = argument.Parameter.Type;
         var nullable = false;
 
         if (type is INamedTypeSymbol { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T } nullableType)
@@ -106,13 +109,6 @@ public sealed class SGuardAnalyzer : DiagnosticAnalyzer
                 : $"{prefix}.Negative, or {prefix}.Zero or {prefix}.NegativeOrZero to reject 0 on purpose";
         }
         else
-        {
-            return;
-        }
-
-        var argument = ArgumentFor(invocation, "value");
-
-        if (argument is null)
         {
             return;
         }

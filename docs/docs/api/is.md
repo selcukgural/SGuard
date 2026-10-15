@@ -306,7 +306,8 @@ static TimeSpan Is.DefaultRegexTimeout { get; } // 1 second
 
 - **`Url`** returns `true` for an absolute `http` or `https` URL with a host. Every other scheme fails, including
   `javascript:`, `data:` and `file:`, so a value that passes is safe to render as a link. Relative and
-  protocol-relative URLs (`//example.com`) fail, and so does a string with leading or trailing white space. It parses
+  protocol-relative URLs (`//example.com`) fail, and so does a string with white space, control characters or
+  invisible formatting characters anywhere in it. It parses
   the string with `Uri.TryCreate`, so unlike most guards it allocates.
 - **`CreditCard`** returns `true` for 12 to 19 digits that pass the Luhn checksum, with optional single spaces or
   hyphens between digits. It checks the format only: it can't tell whether the card exists or can be charged. Don't

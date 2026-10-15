@@ -38,6 +38,11 @@ public sealed partial class ValidatorTests
     [InlineData("https://example.com\n")]
     [InlineData("https://")]
     [InlineData("http:/example.com")]
+    [InlineData(@"http:\\example.com")]
+    [InlineData("http://exa mple.com")]
+    [InlineData("http://\u00A0example.com")]
+    [InlineData("https://example.com\u200B")]
+    [InlineData("https://example.com/\u202Egnp.exe")]
     public void Url_AnythingElse_IsInvalid(string? value)
     {
         Assert.False(Is.Url(value));

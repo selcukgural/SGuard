@@ -38,6 +38,18 @@ public sealed class NullOrEmptyOnNumberTests
         """);
 
     [Fact]
+    public Task Spans_AreNotReported() => AnalyzerTest.Verify("SGUARD101", """
+        class C
+        {
+            bool M(ReadOnlySpan<int> ids, ReadOnlySpan<byte> data)
+            {
+                ThrowIf.NullOrEmpty(ids);
+                return Is.NullOrEmpty(data);
+            }
+        }
+        """);
+
+    [Fact]
     public async Task Message_SuggestsTheRightGuard()
     {
         var diagnostics = await AnalyzerTest.Diagnose("""
@@ -109,6 +121,30 @@ public sealed class ExceptionInstanceTests
                 ThrowIf.GreaterThan(amount, balance, () => new InvalidOperationException($"Need {amount - balance} more."));
                 ThrowIf.NullOrEmpty(name,
                     () => new ArgumentException("Name is required.", nameof(name)));
+            }
+        }
+        """);
+}
+
+public sealed class ExceptionInstanceNamedArgumentTests
+{
+    [Fact]
+    public Task Fix_RenamesANamedArgument() => AnalyzerTest.VerifyFix("""
+        class C
+        {
+            void M(string name, int amount)
+            {
+                ThrowIf.NullOrEmpty(name, exception: new ArgumentException("x"));
+                ThrowIf.GreaterThan(amount, 5, callback: null, exception: new InvalidOperationException());
+            }
+        }
+        """, """
+        class C
+        {
+            void M(string name, int amount)
+            {
+                ThrowIf.NullOrEmpty(name, exceptionFactory: () => new ArgumentException("x"));
+                ThrowIf.GreaterThan(amount, 5, callback: null, exceptionFactory: () => new InvalidOperationException());
             }
         }
         """);

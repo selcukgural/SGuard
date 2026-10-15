@@ -13,7 +13,8 @@ namespace SGuard.Analyzers;
 
 /// <summary>
 /// Fixes SGUARD102 by turning the exception argument into a factory: <c>new X(...)</c> becomes <c>() =&gt; new X(...)</c>.
-/// The call then binds to the guard's factory overload.
+/// The call then binds to the guard's factory overload; a named argument (<c>exception:</c>) is renamed to the factory
+/// overload's parameter, <c>exceptionFactory:</c>.
 /// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ExceptionFactoryCodeFix)), Shared]
 public sealed class ExceptionFactoryCodeFix : CodeFixProvider
@@ -62,6 +63,14 @@ public sealed class ExceptionFactoryCodeFix : CodeFixProvider
                                   .WithExpressionBody(expression.WithoutLeadingTrivia())
                                   .WithLeadingTrivia(expression.GetLeadingTrivia());
 
-        return document.WithSyntaxRoot(root.ReplaceNode(expression, lambda));
+        var fixedArgument = argument.WithExpression(lambda);
+
+        if (argument.NameColon is { } nameColon)
+        {
+            fixedArgument = fixedArgument.WithNameColon(
+                nameColon.WithName(SyntaxFactory.IdentifierName("exceptionFactory").WithTriviaFrom(nameColon.Name)));
+        }
+
+        return document.WithSyntaxRoot(root.ReplaceNode(argument, fixedArgument));
     }
 }
