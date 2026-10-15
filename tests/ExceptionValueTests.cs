@@ -161,6 +161,63 @@ public sealed class ExceptionValueTests
         });
     }
 
+    [Fact]
+    public void NewGuards_LeaveValuesOut_ByDefault()
+    {
+        var balance = -4217;
+        var sameBalance = balance;
+        var day = (DayOfWeek)4217;
+        var password = "hunter2";
+
+        Assert.All(
+            new Exception[]
+            {
+                Assert.Throws<NegativeException>(() => ThrowIf.Negative(balance)),
+                Assert.Throws<NegativeOrZeroException>(() => ThrowIf.NegativeOrZero(balance)),
+                Assert.Throws<OutOfRangeException>(() => ThrowIf.OutOfRange(balance, 0, 10)),
+                Assert.Throws<EqualException>(() => ThrowIf.Equal(balance, sameBalance)),
+                Assert.Throws<NotEqualException>(() => ThrowIf.NotEqual(balance, 0)),
+                Assert.Throws<NotDefinedException>(() => ThrowIf.NotDefined(day)),
+                Assert.Throws<NullOrWhiteSpaceException>(() => ThrowIf.NullOrWhiteSpace(" ")),
+                Assert.Throws<ShorterThanException>(() => ThrowIf.ShorterThan(password, 8)),
+                Assert.Throws<LongerThanException>(() => ThrowIf.LongerThan(password, 3)),
+            },
+            ex =>
+            {
+                Assert.DoesNotContain("4217", ex.Message);
+                Assert.DoesNotContain("hunter2", ex.Message);
+                Assert.DoesNotContain("length=", ex.Message);
+                Assert.False(ex.Data.Contains("value"));
+                Assert.False(ex.Data.Contains("left"));
+                Assert.False(ex.Data.Contains("length"));
+            });
+    }
+
+    [Fact]
+    public void IncludeValuesInExceptions_NewGuards_WriteFormattedValues()
+    {
+        var balance = -5;
+        var name = "abcdef";
+
+        WithValuesIncluded(() =>
+        {
+            var negative = Assert.Throws<NegativeException>(() => ThrowIf.Negative(balance));
+            var outOfRange = Assert.Throws<OutOfRangeException>(() => ThrowIf.OutOfRange(balance, 0, 10));
+            var equal = Assert.Throws<EqualException>(() => ThrowIf.Equal(balance, -5));
+            var notDefined = Assert.Throws<NotDefinedException>(() => ThrowIf.NotDefined((DayOfWeek)9));
+            var longer = Assert.Throws<LongerThanException>(() => ThrowIf.LongerThan(name, 3));
+
+            Assert.Equal("Value 'balance' is negative. Actual: value=-5.", negative.Message);
+            Assert.Equal("-5", negative.Data["value"]);
+            Assert.Equal("Value '-5' is not between '0' and '10'. Actual: value=balance, min=0, max=10.", outOfRange.Message);
+            Assert.Equal("'-5' is equal to '-5'. Actual: left=balance, right=-5.", equal.Message);
+            Assert.Equal("Value '(DayOfWeek)9' is not a defined value of 'DayOfWeek'. Actual: value=9.", notDefined.Message);
+            Assert.Equal("Value 'name' is longer than '3' characters. Actual: length=6.", longer.Message);
+            Assert.DoesNotContain("abcdef", longer.Message);
+            Assert.Equal("6", longer.Data["length"]);
+        });
+    }
+
     private static void WithValuesIncluded(Action assertions)
     {
         SGuardOptions.IncludeValuesInExceptions = true;
