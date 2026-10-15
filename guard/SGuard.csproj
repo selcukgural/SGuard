@@ -47,6 +47,14 @@
             <PackagePath>\</PackagePath>
         </None>
     </ItemGroup>
+    <!-- The analyzers and code fixes ship inside this package, so they need no package of their own. They are built with
+         SGuard but not referenced by it. -->
+    <ItemGroup>
+        <ProjectReference Include="..\SGuard.Analyzers\SGuard.Analyzers.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+        <ProjectReference Include="..\SGuard.Analyzers.CodeFixes\SGuard.Analyzers.CodeFixes.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+        <None Include="..\SGuard.Analyzers\bin\$(Configuration)\netstandard2.0\SGuard.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <None Include="..\SGuard.Analyzers.CodeFixes\bin\$(Configuration)\netstandard2.0\SGuard.Analyzers.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    </ItemGroup>
     <ItemGroup>
         <None Include="../README.md" Pack="true" PackagePath="\" />
         <None Include="icon.png" Pack="true" PackagePath="\" />
