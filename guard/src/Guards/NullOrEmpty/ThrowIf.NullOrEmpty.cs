@@ -89,7 +89,7 @@ public sealed partial class ThrowIf
     /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     [return: NotNull]
-    public static T NullOrEmpty<T, TException>([NotNull] T value, object[]? constructorArgs, SGuardCallback? callback = null) where TException : Exception
+    public static T NullOrEmpty<T, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TException>([NotNull] T value, object[]? constructorArgs, SGuardCallback? callback = null) where TException : Exception
     {
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
         if (SGuard.Fails(isNullOrEmpty, callback))
@@ -111,6 +111,8 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <param name="selectorExpression">The expression passed as <paramref name="selector"/>, captured by the compiler.</param>
     /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [RequiresUnreferencedCode(AotMessages.Selector)]
+    [RequiresDynamicCode(AotMessages.Selector)]
     [return: NotNull]
     public static TValue NullOrEmpty<TValue>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(selector))] string? selectorExpression = null)
@@ -140,6 +142,8 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="ArgumentNullException">Thrown if the selector or exception is null.</exception>
     /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [RequiresUnreferencedCode(AotMessages.Selector)]
+    [RequiresDynamicCode(AotMessages.Selector)]
     [return: NotNull]
     public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, TException exception,
                                                        SGuardCallback? callback = null) where TException : Exception
@@ -170,6 +174,8 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException">Thrown if the selector is null.</exception>
     /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
     /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [RequiresUnreferencedCode(AotMessages.Selector)]
+    [RequiresDynamicCode(AotMessages.Selector)]
     [return: NotNull]
     public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null)
         where TException : Exception, new()
@@ -199,9 +205,11 @@ public sealed partial class ThrowIf
     /// <exception cref="InvalidOperationException">Thrown if no constructor of <typeparamref name="TException"/> matches <paramref name="constructorArgs"/>.</exception>
     /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
     /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [RequiresUnreferencedCode(AotMessages.Selector)]
+    [RequiresDynamicCode(AotMessages.Selector)]
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     [return: NotNull]
-    public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, object?[] constructorArgs,
+    public static TValue NullOrEmpty<TValue, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, object?[] constructorArgs,
                                                        SGuardCallback? callback = null) where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(selector);
@@ -280,6 +288,8 @@ public sealed partial class ThrowIf
     /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="selector"/> or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
+    [RequiresUnreferencedCode(AotMessages.Selector)]
+    [RequiresDynamicCode(AotMessages.Selector)]
     [return: NotNull]
     public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector,
         Func<TException> exceptionFactory, SGuardCallback? callback = null) where TException : Exception

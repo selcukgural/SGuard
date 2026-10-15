@@ -196,7 +196,7 @@ public sealed partial class ThrowIf
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     [return: NotNull]
-    public static TLeft LessThanOrEqual<TLeft, TRight, TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, object[]? constructorArgs,
+    public static TLeft LessThanOrEqual<TLeft, TRight, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TException>([NotNull] TLeft lValue, [NotNull] TRight rValue, object[]? constructorArgs,
                                                                   SGuardCallback? callback = null)
         where TLeft : IComparable<TRight> where TException : Exception
     {

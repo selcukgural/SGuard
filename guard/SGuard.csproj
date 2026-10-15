@@ -24,6 +24,17 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
+    <!-- Trimming and Native AOT. SGuard supports both; the APIs that can't (NullOrEmpty selectors) say so with
+         RequiresUnreferencedCode and RequiresDynamicCode, so an app sees a warning where it calls them. The analyzers ship
+         in a package whose version follows the installed SDK and so can't be pinned in packages.lock.json: the CI "aot"
+         job runs them with -p:SGuardAotAnalysis=true and publishes SGuard.AotSmoke with Native AOT. -->
+    <PropertyGroup Condition="'$(SGuardAotAnalysis)' == 'true'">
+        <IsAotCompatible>true</IsAotCompatible>
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- What IsAotCompatible sets, so that trimming apps also trim SGuard in normal builds. -->
+        <AssemblyMetadata Include="IsTrimmable" Value="True" />
+    </ItemGroup>
     <ItemGroup>
         <InternalsVisibleTo Include="SGuard.Tests" />
     </ItemGroup>

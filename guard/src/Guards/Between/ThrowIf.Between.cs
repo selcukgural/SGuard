@@ -192,7 +192,7 @@ public sealed partial class ThrowIf
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
     [return: NotNull]
-    public static TValue Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
+    public static TValue Between<TValue, TMin, TMax, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
                                                                object[]? constructorArgs, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception
     {
@@ -252,7 +252,7 @@ public sealed partial class ThrowIf
     /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
-    public static string Between<TException>(string value, string min, string max, StringComparison comparison, object[]? constructorArgs,
+    public static string Between<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TException>(string value, string min, string max, StringComparison comparison, object[]? constructorArgs,
                                            SGuardCallback? callback = null) where TException : Exception
     {
         SGuard.ThrowIfNull(min);
