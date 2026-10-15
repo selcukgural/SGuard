@@ -23,6 +23,10 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <!-- Compares the public API with the last release on every pack, so a breaking change can't ship by accident.
+             Intentional breaks are listed in CompatibilitySuppressions.xml; move the baseline forward after each release. -->
+        <EnablePackageValidation>true</EnablePackageValidation>
+        <PackageValidationBaselineVersion>0.3.2</PackageValidationBaselineVersion>
     </PropertyGroup>
     <!-- Trimming and Native AOT. SGuard supports both; the APIs that can't (NullOrEmpty selectors) say so with
          RequiresUnreferencedCode and RequiresDynamicCode, so an app sees a warning where it calls them. The analyzers ship
