@@ -16,7 +16,9 @@ public sealed partial class ThrowIf
     /// <param name="value">The value to check for null or emptiness.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
-    public static void NullOrEmpty<T>(T value, SGuardCallback? callback = null,
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [return: NotNull]
+    public static T NullOrEmpty<T>([NotNull] T value, SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(value))] string? valueExpression = null)
     {
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
@@ -24,6 +26,9 @@ public sealed partial class ThrowIf
         {
             Throw.NullOrEmptyException(value, valueExpression);
         }
+
+        Debug.Assert(value is not null);
+        return value;
     }
 
     /// <summary>
@@ -34,13 +39,16 @@ public sealed partial class ThrowIf
     /// <param name="value">The ReadOnlySpan to check for null or emptiness.</param>
     /// <param name="callback">An optional callback to execute when the value is null or empty.</param>
     /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
-    public static void NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null,
+    /// <returns><paramref name="value"/>.</returns>
+    public static ReadOnlySpan<T> NullOrEmpty<T>(ReadOnlySpan<T> value, SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(value))] string? valueExpression = null)
     {
         if (SGuard.Fails(value.IsEmpty, callback))
         {
             Throw.NullOrEmptyExceptionWithoutValue(valueExpression);
         }
+
+        return value;
     }
 
     /// <summary>
@@ -53,7 +61,9 @@ public sealed partial class ThrowIf
     /// <param name="exception">The exception to throw if the value is null or empty.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="ArgumentNullException">Thrown if the exception is null.</exception>
-    public static void NullOrEmpty<T, TException>(T value, TException exception, SGuardCallback? callback = null) where TException : Exception
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [return: NotNull]
+    public static T NullOrEmpty<T, TException>([NotNull] T value, TException exception, SGuardCallback? callback = null) where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(exception);
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
@@ -61,6 +71,9 @@ public sealed partial class ThrowIf
         {
             Throw.That(exception);
         }
+
+        Debug.Assert(value is not null);
+        return value;
     }
 
     /// <summary>
@@ -73,14 +86,19 @@ public sealed partial class ThrowIf
     /// <param name="constructorArgs">An array of arguments to pass to the exception constructor.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
-    public static void NullOrEmpty<T, TException>(T value, object[]? constructorArgs, SGuardCallback? callback = null) where TException : Exception
+    [return: NotNull]
+    public static T NullOrEmpty<T, TException>([NotNull] T value, object[]? constructorArgs, SGuardCallback? callback = null) where TException : Exception
     {
         var isNullOrEmpty = value is null || Is.InternalIsNullOrEmpty(value);
         if (SGuard.Fails(isNullOrEmpty, callback))
         {
             Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
         }
+
+        Debug.Assert(value is not null);
+        return value;
     }
 
     /// <summary>
@@ -92,7 +110,9 @@ public sealed partial class ThrowIf
     /// <param name="selector">An expression to select a property or field from the value.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <param name="selectorExpression">The expression passed as <paramref name="selector"/>, captured by the compiler.</param>
-    public static void NullOrEmpty<TValue>(TValue value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null,
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [return: NotNull]
+    public static TValue NullOrEmpty<TValue>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(selector))] string? selectorExpression = null)
     {
         ArgumentNullException.ThrowIfNull(selector);
@@ -103,6 +123,9 @@ public sealed partial class ThrowIf
         {
             Throw.NullOrEmptyExceptionWithoutValue(selectorExpression);
         }
+
+        Debug.Assert(value is not null);
+        return value;
     }
 
     /// <summary>
@@ -116,7 +139,9 @@ public sealed partial class ThrowIf
     /// <param name="exception">The exception to throw if the value is null or empty.</param>
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="ArgumentNullException">Thrown if the selector or exception is null.</exception>
-    public static void NullOrEmpty<TValue, TException>(TValue value, Expression<Func<TValue, object?>> selector, TException exception,
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [return: NotNull]
+    public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, TException exception,
                                                        SGuardCallback? callback = null) where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(selector);
@@ -128,6 +153,9 @@ public sealed partial class ThrowIf
         {
             Throw.That(exception);
         }
+
+        Debug.Assert(value is not null);
+        return value;
     }
 
     /// <summary>
@@ -141,7 +169,9 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback to execute if the value is null or empty.</param>
     /// <exception cref="ArgumentNullException">Thrown if the selector is null.</exception>
     /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
-    public static void NullOrEmpty<TValue, TException>(TValue value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null)
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
+    [return: NotNull]
+    public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, SGuardCallback? callback = null)
         where TException : Exception, new()
     {
         ArgumentNullException.ThrowIfNull(selector);
@@ -150,6 +180,9 @@ public sealed partial class ThrowIf
         {
             Throw.That(new TException());
         }
+
+        Debug.Assert(value is not null);
+        return value;
     }
 
     /// <summary>
@@ -165,8 +198,10 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException">Thrown if the selector is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown if no constructor of <typeparamref name="TException"/> matches <paramref name="constructorArgs"/>.</exception>
     /// <exception cref="Exception">Thrown if the value is null or empty.</exception>
+    /// <returns><paramref name="value"/>, which is not <c>null</c>.</returns>
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
-    public static void NullOrEmpty<TValue, TException>(TValue value, Expression<Func<TValue, object?>> selector, object?[] constructorArgs,
+    [return: NotNull]
+    public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector, object?[] constructorArgs,
                                                        SGuardCallback? callback = null) where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(selector);
@@ -175,6 +210,9 @@ public sealed partial class ThrowIf
         {
             Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
         }
+
+        Debug.Assert(value is not null);
+        return value;
     }
 
     /// <summary>
@@ -243,7 +281,7 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException"><paramref name="selector"/> or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
     [return: NotNull]
-    public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue value, Expression<Func<TValue, object?>> selector,
+    public static TValue NullOrEmpty<TValue, TException>([NotNull] TValue? value, Expression<Func<TValue, object?>> selector,
         Func<TException> exceptionFactory, SGuardCallback? callback = null) where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(selector);

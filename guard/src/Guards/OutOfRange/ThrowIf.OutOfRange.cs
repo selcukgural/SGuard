@@ -30,6 +30,7 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentException"><paramref name="min"/> is greater than <paramref name="max"/>.</exception>
     /// <exception cref="OutOfRangeException"><paramref name="value"/> is outside the range.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [return: NotNull]
     public static TValue OutOfRange<TValue, TMin, TMax>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
         SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(value))] string? valueExpression = null,
@@ -64,6 +65,7 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentException"><paramref name="min"/> is greater than <paramref name="max"/>.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [return: NotNull]
     public static TValue OutOfRange<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
         Func<TException> exceptionFactory, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception

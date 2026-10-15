@@ -10,6 +10,8 @@
         <TargetFramework>net10.0</TargetFramework>
         <!-- The tests cover the obsolete APIs on purpose. -->
         <NoWarn>$(NoWarn);SGUARD001;SGUARD002</NoWarn>
+        <!-- ReturnValueTests checks the guards' nullable annotations: a missing one must fail the build. -->
+        <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>

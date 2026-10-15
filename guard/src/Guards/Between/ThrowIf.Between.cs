@@ -30,8 +30,10 @@ public sealed partial class ThrowIf
     /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
     /// <param name="minExpression">The expression passed as <paramref name="min"/>, captured by the compiler.</param>
     /// <param name="maxExpression">The expression passed as <paramref name="max"/>, captured by the compiler.</param>
+    /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Between<TValue, TMin, TMax>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max, SGuardCallback? callback = null,
+    [return: NotNull]
+    public static TValue Between<TValue, TMin, TMax>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max, SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(value))] string? valueExpression = null,
         [CallerArgumentExpression(nameof(min))] string? minExpression = null,
         [CallerArgumentExpression(nameof(max))] string? maxExpression = null)
@@ -45,6 +47,8 @@ public sealed partial class ThrowIf
         {
             Throw.BetweenException(value, min, max, valueExpression, minExpression, maxExpression);
         }
+
+        return value;
     }
 
     /// <summary>
@@ -61,8 +65,10 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback invoked with the outcome of the evaluation.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, <paramref name="max"/>, or <paramref name="exception"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="value"/> is between <paramref name="min"/> and <paramref name="max"/>.</exception>
+    /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
+    [return: NotNull]
+    public static TValue Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
                                                                [NotNull] TException exception, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception
     {
@@ -75,6 +81,8 @@ public sealed partial class ThrowIf
         {
             Throw.That(exception);
         }
+
+        return value;
     }
 
     /// <summary>
@@ -88,8 +96,9 @@ public sealed partial class ThrowIf
     /// <param name="valueExpression">The expression passed as <paramref name="value"/>, captured by the compiler.</param>
     /// <param name="minExpression">The expression passed as <paramref name="min"/>, captured by the compiler.</param>
     /// <param name="maxExpression">The expression passed as <paramref name="max"/>, captured by the compiler.</param>
+    /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Between(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null,
+    public static string Between(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null,
         [CallerArgumentExpression(nameof(value))] string? valueExpression = null,
         [CallerArgumentExpression(nameof(min))] string? minExpression = null,
         [CallerArgumentExpression(nameof(max))] string? maxExpression = null)
@@ -102,6 +111,8 @@ public sealed partial class ThrowIf
         {
             Throw.BetweenException(value, min, max, valueExpression, minExpression, maxExpression);
         }
+
+        return value;
     }
 
     /// <summary>
@@ -113,8 +124,9 @@ public sealed partial class ThrowIf
     /// <param name="comparison">The string comparison rule to use.</param>
     /// <param name="exception">The exception to throw when the condition is met.</param>
     /// <param name="callback">Optional guard outcome callback.</param>
+    /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Between<TException>(string value, string min, string max, StringComparison comparison, [NotNull] TException exception,
+    public static string Between<TException>(string value, string min, string max, StringComparison comparison, [NotNull] TException exception,
                                            SGuardCallback? callback = null) where TException : Exception
     {
         SGuard.ThrowIfNull(min);
@@ -126,6 +138,8 @@ public sealed partial class ThrowIf
         {
             Throw.That(exception);
         }
+
+        return value;
     }
 
     /// <summary>
@@ -141,8 +155,10 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback that will be invoked with the guard evaluation outcome.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, or <paramref name="max"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="value"/> is between <paramref name="min"/> and <paramref name="max"/>.</exception>
+    /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
+    [return: NotNull]
+    public static TValue Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
                                                                SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception, new()
     {
@@ -154,6 +170,8 @@ public sealed partial class ThrowIf
         {
             Throw.That(new TException());
         }
+
+        return value;
     }
 
     /// <summary>
@@ -170,9 +188,11 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback invoked with the guard evaluation result.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, or <paramref name="max"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="value"/> is between <paramref name="min"/> and <paramref name="max"/>.</exception>
+    /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
-    public static void Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
+    [return: NotNull]
+    public static TValue Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
                                                                object[]? constructorArgs, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception
     {
@@ -184,6 +204,8 @@ public sealed partial class ThrowIf
         {
             Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
         }
+
+        return value;
     }
 
 
@@ -198,8 +220,9 @@ public sealed partial class ThrowIf
     /// <param name="callback">An optional callback that will be invoked with the guard evaluation outcome.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, or <paramref name="max"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="value"/> is between <paramref name="min"/> and <paramref name="max"/>.</exception>
+    /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Between<TException>(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null)
+    public static string Between<TException>(string value, string min, string max, StringComparison comparison, SGuardCallback? callback = null)
         where TException : Exception, new()
     {
         SGuard.ThrowIfNull(min);
@@ -210,6 +233,8 @@ public sealed partial class ThrowIf
         {
             Throw.That(new TException());
         }
+
+        return value;
     }
 
     /// <summary>
@@ -224,9 +249,10 @@ public sealed partial class ThrowIf
     /// <param name="callback">Optional callback invoked with the outcome of the evaluation.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/>, <paramref name="min"/>, or <paramref name="max"/> is null.</exception>
     /// <exception cref="Exception">Thrown if <paramref name="value"/> is between <paramref name="min"/> and <paramref name="max"/>.</exception>
+    /// <returns><paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete(Obsoletions.ConstructorArgsMessage, DiagnosticId = Obsoletions.ConstructorArgsDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
-    public static void Between<TException>(string value, string min, string max, StringComparison comparison, object[]? constructorArgs,
+    public static string Between<TException>(string value, string min, string max, StringComparison comparison, object[]? constructorArgs,
                                            SGuardCallback? callback = null) where TException : Exception
     {
         SGuard.ThrowIfNull(min);
@@ -237,6 +263,8 @@ public sealed partial class ThrowIf
         {
             Throw.That(ExceptionActivator.Create<TException>(constructorArgs));
         }
+
+        return value;
     }
 
     /// <summary>
@@ -262,6 +290,7 @@ public sealed partial class ThrowIf
     /// <exception cref="ArgumentNullException">An operand or <paramref name="exceptionFactory"/> is <c>null</c>.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="exceptionFactory"/> returned <c>null</c>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [return: NotNull]
     public static TValue Between<TValue, TMin, TMax, TException>([NotNull] TValue value, [NotNull] TMin min, [NotNull] TMax max,
         Func<TException> exceptionFactory, SGuardCallback? callback = null)
         where TValue : IComparable<TMin>, IComparable<TMax> where TException : Exception
