@@ -22,7 +22,7 @@ A clear and concise description of what you expected to happen.
 **Environment:**
 - OS: [e.g. Windows 10]
 - .NET Version: [e.g. .NET 8.0]
-- SGuard Version: [e.g. 2.1.0]
+- SGuard Version: [e.g. 3.0.0]
 
 **Additional context**
 Add any other context about the problem here.
