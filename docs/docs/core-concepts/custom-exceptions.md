@@ -42,7 +42,7 @@ ThrowIf.LessThanOrEqual(quantity, 0, new DomainValidationException("Quantity mus
 ```
 
 The exception is an argument, so it is created on every call, even when the guard passes. Prefer a factory: add `() =>`
-in front of `new`. The guards added in 1.0 take only factories.
+in front of `new`. The guards added in 3.0 take only factories.
 
 ### 3. Use Generic TException
 
@@ -61,7 +61,7 @@ constructor. The exception is created only when the guard fails.
 
 ### Constructor arguments (obsolete)
 
-Before 1.0, exceptions that needed constructor arguments were created from an `object[]`:
+Before 3.0, exceptions that needed constructor arguments were created from an `object[]`:
 
 ```csharp
 // Obsolete (SGUARD001)
@@ -72,8 +72,8 @@ ThrowIf.NullOrEmpty(value, () => new ArgumentException("Value is required", "cus
 ```
 
 These overloads match a constructor with reflection when the guard fails, so a wrong argument list surfaces only at run
-time, and trimming or Native AOT can remove the constructor. They still work and will be removed in 2.0; see
-[Obsolete APIs](../migration/upgrading-to-1.0#SGUARD001).
+time, and trimming or Native AOT can remove the constructor. They still work and will be removed in 4.0; see
+[Obsolete APIs](../migration/upgrading-to-3.0#SGUARD001).
 
 ### Which Guards Support Which Variant
 
@@ -204,4 +204,4 @@ ThrowIf.LessThan(value, threshold,
 
 - [Real-World Examples](../guides/real-world-examples) - See custom exceptions in action
 - [API Reference](../api/throwif) - Complete ThrowIf API
-- [Upgrading to 1.0](../migration/upgrading-to-1.0) - Moving from constructor arguments to factories
+- [Upgrading to 3.0](../migration/upgrading-to-3.0) - Moving from constructor arguments to factories

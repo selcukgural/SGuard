@@ -1,7 +1,7 @@
 namespace SGuard.Tests;
 
 /// <summary>
-/// The <c>Func&lt;TException&gt;</c> overloads of the guards that existed before 1.0.
+/// The <c>Func&lt;TException&gt;</c> overloads of the guards that existed before 3.0.
 /// </summary>
 public sealed class FactoryOverloadTests
 {
@@ -147,7 +147,7 @@ public sealed class FactoryOverloadTests
         {
             Assert.NotNull(m.Attribute);
             Assert.Equal("SGUARD001", m.Attribute!.DiagnosticId);
-            Assert.Equal("https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-1.0#{0}", m.Attribute.UrlFormat);
+            Assert.Equal("https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0#{0}", m.Attribute.UrlFormat);
         });
 
         var activator = typeof(ExceptionActivator).GetCustomAttributes(typeof(ObsoleteAttribute), false).Cast<ObsoleteAttribute>().Single();

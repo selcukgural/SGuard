@@ -19,7 +19,7 @@ ThrowIf.NullOrEmpty(command, c => c.Customer.Email);
 
 📖 **Documentation:** [selcukgural.github.io/SGuard](https://selcukgural.github.io/SGuard/): [Quick Start](https://selcukgural.github.io/SGuard/docs/getting-started/quick-start), [`Is.*` API](https://selcukgural.github.io/SGuard/docs/api/is), [`ThrowIf.*` API](https://selcukgural.github.io/SGuard/docs/api/throwif), [performance guide](https://selcukgural.github.io/SGuard/docs/advanced/performance)
 
-⬆️ **Upgrading from 0.x?** Most code needs no changes; read [Upgrading to 1.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-1.0) for the few things that do.
+⬆️ **Upgrading from 0.x?** Most code needs no changes; read [Upgrading to 3.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0) for the few things that do.
 
 ## 📦 Installation
 
@@ -276,9 +276,9 @@ ThrowIf.GreaterThan<int, int, RateLimitExceededException>(requestsThisMinute, li
 ThrowIf.GreaterThan(amount, balance, new InsufficientFundsException(accountId));             // an instance
 ```
 
-The guards that existed before 1.0 also take an exception instance, which is created on every call, also when the
+The guards that existed before 3.0 also take an exception instance, which is created on every call, also when the
 guard passes: prefer a factory. The overloads that took constructor arguments as an `object[]` are obsolete
-(`SGUARD001`); see [Upgrading to 1.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-1.0#SGUARD001).
+(`SGUARD001`); see [Upgrading to 3.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0#SGUARD001).
 
 ## ⚠️ Things that surprise people
 
@@ -394,4 +394,4 @@ MIT. See the [LICENSE](LICENSE) file for details.
 - [NuGet Package](https://www.nuget.org/packages/SGuard)
 - [Releases](https://github.com/selcukgural/sguard/releases)
 - [Changelog](Changelog.md)
-- [Upgrading to 1.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-1.0)
+- [Upgrading to 3.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0)

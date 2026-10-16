@@ -4,9 +4,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <PackageVersion>0.3.2</PackageVersion>
-        <AssemblyVersion>1.0.0</AssemblyVersion>
-        <FileVersion>1.0.0</FileVersion>
+        <PackageVersion>3.0.0</PackageVersion>
+        <AssemblyVersion>3.0.0</AssemblyVersion>
+        <FileVersion>3.0.0</FileVersion>
         <PackageProjectUrl>https://selcukgural.github.io/SGuard/</PackageProjectUrl>
         <RepositoryUrl>https://github.com/selcukgural/sguard</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>

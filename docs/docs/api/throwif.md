@@ -24,8 +24,8 @@ public sealed class Product(string sku, decimal price, int stock)
 }
 ```
 
-`ThrowIf.Any`, `ThrowIf.All` and the `Throw.*` helpers return `void`. Returning values is new in 1.0; see
-[Upgrading to 1.0](../migration/upgrading-to-1.0#return-values).
+`ThrowIf.Any`, `ThrowIf.All` and the `Throw.*` helpers return `void`. Returning values is new in 3.0; see
+[Upgrading to 3.0](../migration/upgrading-to-3.0#return-values).
 
 Each guard comes in several variants:
 
@@ -33,11 +33,11 @@ Each guard comes in several variants:
   argument expressions with `[CallerArgumentExpression]` parameters, which you don't pass yourself.
 - **Factory** (recommended for custom exceptions): `Func<TException> exceptionFactory` runs only when the guard fails.
   Every guard has one.
-- **Exception instance**: `TException exception` is thrown as-is. The guards that existed before 1.0 have it.
+- **Exception instance**: `TException exception` is thrown as-is. The guards that existed before 3.0 have it.
 - **`new()`**: `TException` is created with its parameterless constructor. Available on `NullOrEmpty` with a selector,
   `GreaterThan`, `GreaterThanOrEqual`, `LessThanOrEqual` and `Between`.
 - **Constructor arguments** (obsolete, `SGUARD001`): `TException` is created from `object[]? constructorArgs` with
-  reflection. Use a factory instead; see [Obsolete APIs](../migration/upgrading-to-1.0#obsolete-apis).
+  reflection. Use a factory instead; see [Obsolete APIs](../migration/upgrading-to-3.0#obsolete-apis).
 
 Every overload takes an optional `SGuardCallback? callback = null`; see [Callbacks API](./callbacks).
 
@@ -463,8 +463,8 @@ passes; prefer a factory. Create a new instance per call: a shared instance gets
 
 ### constructorArgs (obsolete)
 
-Arguments for a `TException` constructor, matched with reflection when the guard throws. Obsolete since 1.0
-(`SGUARD001`); use a factory. See [Obsolete APIs](../migration/upgrading-to-1.0#SGUARD001).
+Arguments for a `TException` constructor, matched with reflection when the guard throws. Obsolete since 3.0
+(`SGUARD001`); use a factory. See [Obsolete APIs](../migration/upgrading-to-3.0#SGUARD001).
 
 ### callback
 
@@ -497,7 +497,7 @@ When no custom exception is specified:
 
 All of them live in `SGuard.Exceptions` and are `sealed`, and all derive from `ArgumentException`, so a
 `catch (ArgumentException)` catches every guard failure. The comparison and range exceptions derived directly from
-`ArgumentException` before 1.0; see [Upgrading to 1.0](../migration/upgrading-to-1.0#exception-base-types).
+`ArgumentException` before 3.0; see [Upgrading to 3.0](../migration/upgrading-to-3.0#exception-base-types).
 
 For all but `AnyException` and `AllException`, `ParamName` is the caller's argument expression (the left operand for
 comparisons, the value for ranges, the selector text for a selector) and the message has no `(Parameter '...')`
@@ -529,12 +529,12 @@ See [Exception messages and checked values](#exception-messages-and-checked-valu
 public static TException ExceptionActivator.Create<TException>(object?[]? args) where TException : Exception;
 ```
 
-Creates `TException` with reflection, using the constructor that matches `args`. Obsolete since 1.0; create the
+Creates `TException` with reflection, using the constructor that matches `args`. Obsolete since 3.0; create the
 exception directly, or pass a factory to a guard.
 
 ### Throw
 
-`Throw` holds the `[DoesNotReturn]` helpers for the exceptions of the guards that existed before 1.0, public so you can
+`Throw` holds the `[DoesNotReturn]` helpers for the exceptions of the guards that existed before 3.0, public so you can
 raise the same exceptions yourself:
 
 ```csharp
@@ -550,12 +550,12 @@ Throw.BetweenException<TValue, TMin, TMax>(TValue value, TMin min, TMax max,
 Throw.That<TException>(TException exception) where TException : Exception;
 ```
 
-The exceptions of the guards added in 1.0, except `NullException`, have public constructors that take the checked values
+The exceptions of the guards added in 3.0, except `NullException`, have public constructors that take the checked values
 and capture their expressions in the same way.
 
 ## Next Steps
 
 - [Is API](./is) - Boolean-returning guards
 - [Callbacks API](./callbacks) - Callback reference
-- [Upgrading to 1.0](../migration/upgrading-to-1.0) - What changed since 0.x
+- [Upgrading to 3.0](../migration/upgrading-to-3.0) - What changed since 0.x
 - [Real-World Examples](../guides/real-world-examples) - See the API in action

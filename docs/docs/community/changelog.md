@@ -9,18 +9,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] - 2026-10-16
 
-The 1.0 release. It adds the guards people reach for first, a factory for custom exceptions, return values and Native
-AOT support, and from here on SGuard keeps a stable API under Semantic Versioning. Most code upgrades without changes;
-the [upgrade guide](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-1.0) covers the rest.
+The 3.0 release, following 0.3.2. (Versions 1.0.0 to 2.1.0 of the package ID belong to an earlier, GPL-licensed line of
+the library and can't be reused.) It adds the guards people reach for first, a factory for custom exceptions, return
+values and Native AOT support, and from here on SGuard keeps a stable API under Semantic Versioning. Most code upgrades
+without changes; the [upgrade guide](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0) covers the
+rest.
 
 ### Breaking changes
 
 - **`ThrowIf.*` guards return the checked value** instead of `void`: `NullOrEmpty`, `GreaterThan`,
   `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` and `Between`. Calls compile unchanged, but this is a binary
   breaking change: an assembly compiled against 0.x that calls them must be recompiled. It is the only binary breaking
-  change in 1.0 (30 methods, checked with ApiCompat).
+  change in 3.0 (30 methods, checked with ApiCompat).
 - **`GreaterThanException`, `GreaterThanOrEqualException`, `LessThanException`, `LessThanOrEqualException` and
   `BetweenException` derive from `ArgumentOutOfRangeException`** instead of directly from `ArgumentException`.
   `catch (ArgumentException)` still catches them, but `catch (ArgumentOutOfRangeException)` now does too, and a
@@ -63,7 +65,7 @@ the [upgrade guide](https://selcukgural.github.io/SGuard/docs/migration/upgradin
 
 - The `ThrowIf.*` overloads that take `object[] constructorArgs` (`SGUARD001`) and `ExceptionActivator` (`SGUARD002`).
   They create the exception with reflection, which the compiler can't check and which breaks under trimming and Native
-  AOT. Pass a factory instead: `() => new MyException(...)`. They will be removed in 2.0.
+  AOT. Pass a factory instead: `() => new MyException(...)`. They will be removed in 4.0.
 
 ### Changed
 

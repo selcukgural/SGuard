@@ -6,7 +6,7 @@ description: The diagnostics SGuard reports while you write code, and how to con
 
 # Analyzers
 
-From 1.0, the SGuard package includes Roslyn analyzers. They run in the IDE and during `dotnet build`, without any
+From 3.0, the SGuard package includes Roslyn analyzers. They run in the IDE and during `dotnet build`, without any
 setup, and point out guard calls that don't do what they look like they do.
 
 | ID | Severity | What it finds |
@@ -17,7 +17,7 @@ setup, and point out guard calls that don't do what they look like they do.
 | [SGUARD104](#SGUARD104) | Info | A `NullOrEmpty` selector that selects a whole object |
 
 `SGUARD001` and `SGUARD002` are not analyzers but obsoletion warnings; see
-[Obsolete APIs](../migration/upgrading-to-1.0#obsolete-apis).
+[Obsolete APIs](../migration/upgrading-to-3.0#obsolete-apis).
 
 ## Configuring the rules
 
@@ -30,7 +30,7 @@ dotnet_diagnostic.SGUARD104.severity = none      # turn it off
 ```
 
 To turn off all of SGuard's analyzers, exclude them from the package reference:
-`<PackageReference Include="SGuard" Version="1.0.0" ExcludeAssets="analyzers" />`.
+`<PackageReference Include="SGuard" Version="3.0.0" ExcludeAssets="analyzers" />`.
 
 ## SGUARD101: NullOrEmpty rejects zero and false {/* #SGUARD101 */}
 

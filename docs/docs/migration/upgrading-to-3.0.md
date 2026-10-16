@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
-title: Upgrading to 1.0
-description: What changes when you move from SGuard 0.x to 1.0, and what to do about it.
+title: Upgrading to 3.0
+description: What changes when you move from SGuard 0.x to 3.0, and what to do about it.
 ---
 
-# Upgrading to SGuard 1.0
+# Upgrading to SGuard 3.0
 
-SGuard 1.0 adds guards, a factory for custom exceptions, return values and Native AOT support, and promises a stable
+SGuard 3.0 adds guards, a factory for custom exceptions, return values and Native AOT support, and promises a stable
 API from here on. Almost all of it is additive: **for most applications, upgrading means updating the package and
 rebuilding, with no code changes.**
 
@@ -18,7 +18,7 @@ This guide lists every change that can affect existing code, how to tell whether
 |---|---|---|
 | [`ThrowIf.*` guards return the checked value](#return-values) | Binary breaking, source compatible | Rebuild. Libraries compiled against 0.x need a new build |
 | [Comparison and range exceptions derive from `ArgumentOutOfRangeException`](#exception-base-types) | Behavior change | Check `catch (ArgumentOutOfRangeException)` blocks |
-| [Constructor-argument overloads and `ExceptionActivator` are obsolete](#obsolete-apis) | Warning `SGUARD001`, `SGUARD002` | Pass a factory instead; they keep working until 2.0 |
+| [Constructor-argument overloads and `ExceptionActivator` are obsolete](#obsolete-apis) | Warning `SGUARD001`, `SGUARD002` | Pass a factory instead; they keep working until 4.0 |
 | [`NullOrEmpty` selectors are marked as not trimming- or AOT-safe](#trimming-and-native-aot) | Warning `IL2026`, `IL3050` in trimmed and AOT apps only | Check the member directly |
 | [Analyzers](../advanced/analyzers) SGUARD101–SGUARD104 | New suggestions (one warning) in the IDE and build | Review them; configure in `.editorconfig` |
 | [New guards, factory overloads, nullable annotations](#adopting-the-new-apis) | Added | Optional |
@@ -31,7 +31,7 @@ Nothing else changed: the `Is.*` signatures, what counts as null or empty, excep
 1. **Update the package.**
 
    ```bash
-   dotnet add package SGuard --version 1.0.0
+   dotnet add package SGuard --version 3.0.0
    ```
 
 2. **Rebuild everything that uses SGuard**, including your own libraries that reference it. If a library you don't
@@ -57,7 +57,7 @@ Then, when you touch the code anyway, [adopt the new APIs](#adopting-the-new-api
 
 ### `ThrowIf.*` guards return the checked value {/* #return-values */}
 
-In 0.x every `ThrowIf.*` method returned `void`. In 1.0, `ThrowIf.NullOrEmpty`, `GreaterThan`, `GreaterThanOrEqual`,
+In 0.x every `ThrowIf.*` method returned `void`. In 3.0, `ThrowIf.NullOrEmpty`, `GreaterThan`, `GreaterThanOrEqual`,
 `LessThan`, `LessThanOrEqual` and `Between` return the value they checked, as all the new guards do, so a guard can
 initialize a field or property:
 
@@ -74,7 +74,7 @@ object, not the selected member. `ThrowIf.Any`, `ThrowIf.All` and `Throw.*` stil
 
 **Source compatibility.** Code that calls a guard as a statement compiles unchanged: C# discards the result.
 `ThrowIf.NullOrEmpty(x);`, `() => ThrowIf.LessThan(a, b)` passed as an `Action`, and expression-bodied `void` members
-all keep compiling. The full SGuard test suite of 0.3 compiles and passes against 1.0 without edits.
+all keep compiling. The full SGuard test suite of 0.3 compiles and passes against 3.0 without edits.
 
 Two rare cases behave differently at compile time:
 
@@ -83,23 +83,23 @@ Two rare cases behave differently at compile time:
 - Reflection that expects these methods to return `void` (`method.ReturnType == typeof(void)`) no longer matches.
 
 **Binary compatibility.** The return type is part of a method's signature in compiled code. An assembly compiled
-against SGuard 0.x that calls one of these methods fails with `MissingMethodException` when it runs against 1.0. If you
-rebuild your application, there is nothing to do. This is the only binary breaking change in 1.0: comparing the 0.3.2
-and 1.0 assemblies with [ApiCompat](https://learn.microsoft.com/dotnet/fundamentals/apicompat/overview) reports these
+against SGuard 0.x that calls one of these methods fails with `MissingMethodException` when it runs against 3.0. If you
+rebuild your application, there is nothing to do. This is the only binary breaking change in 3.0: comparing the 0.3.2
+and 3.0 assemblies with [ApiCompat](https://learn.microsoft.com/dotnet/fundamentals/apicompat/overview) reports these
 30 methods and nothing else.
 
 #### Libraries compiled against 0.x
 
-This matters when a package you depend on was itself built against SGuard 0.x and your application upgrades to 1.0:
-NuGet then loads 1.0 for both, and the library's guard calls fail at run time.
+This matters when a package you depend on was itself built against SGuard 0.x and your application upgrades to 3.0:
+NuGet then loads 3.0 for both, and the library's guard calls fail at run time.
 
-- **If you maintain the library:** rebuild it against 1.0 and publish a new version with `SGuard >= 1.0.0` as the
+- **If you maintain the library:** rebuild it against 3.0 and publish a new version with `SGuard >= 3.0.0` as the
   dependency. The source doesn't need to change.
 - **If you don't:** stay on SGuard 0.3.2 until the library is updated, or ask its maintainers to rebuild it.
 
 :::note Why not keep `void` and add new methods?
 C# can't overload methods by return type, so returning values meant either new names for every guard or this change.
-New names would have doubled the API, and the change keeps every existing call compiling, so 1.0, as a major version,
+New names would have doubled the API, and the change keeps every existing call compiling, so 3.0, as a major version,
 takes the binary break instead.
 :::
 
@@ -107,7 +107,7 @@ takes the binary break instead.
 
 These exceptions used to derive directly from `ArgumentException`:
 
-| Exception | 0.x base type | 1.0 base type |
+| Exception | 0.x base type | 3.0 base type |
 |---|---|---|
 | `GreaterThanException` | `ArgumentException` | `ArgumentOutOfRangeException` |
 | `GreaterThanOrEqualException` | `ArgumentException` | `ArgumentOutOfRangeException` |
@@ -140,7 +140,7 @@ from `ArgumentException`, and all the range, sign, equality, length and enum exc
 
 ## Obsolete APIs
 
-These APIs still work in 1.0 and produce a warning. They will be removed in SGuard 2.0.
+These APIs still work in 3.0 and produce a warning. They will be removed in SGuard 4.0.
 
 ### Constructor-argument overloads (`SGUARD001`) {/* #SGUARD001 */}
 
@@ -184,7 +184,7 @@ or around a single call with `#pragma warning disable SGUARD001` and `#pragma wa
 
 ## Trimming and Native AOT
 
-SGuard 1.0 supports trimming and Native AOT, and CI checks this by publishing a test application with Native AOT and
+SGuard 3.0 supports trimming and Native AOT, and CI checks this by publishing a test application with Native AOT and
 running every guard in it. One feature can't be supported: **`NullOrEmpty` selectors** (`ThrowIf.NullOrEmpty(order,
 o => o.Customer.Email)`) compile an expression tree at run time and read the properties of the objects they reach with
 reflection. Under Native AOT they throw `InvalidOperationException`, and trimming can remove the properties they read.
@@ -209,7 +209,7 @@ ThrowIf.NullOrEmpty(order.Customer?.Email);
 
 None of this is required, but each replaces a pattern that 0.x users write by hand.
 
-| In 0.x | In 1.0 |
+| In 0.x | In 3.0 |
 |---|---|
 | `ThrowIf.LessThan(port, 1); ThrowIf.GreaterThan(port, 65535);` | `ThrowIf.OutOfRange(port, 1, 65535)` |
 | `if (!Is.Between(port, 1, 65535)) throw ...` | `ThrowIf.OutOfRange(port, 1, 65535)` |
@@ -226,7 +226,7 @@ None of this is required, but each replaces a pattern that 0.x users write by ha
 
 The new `Is.*` validators cover input checks that used to need a regex or a helper:
 
-| Check | 1.0 |
+| Check | 3.0 |
 |---|---|
 | Absolute `http`/`https` URL, safe to render as a link | `Is.Url(value)` |
 | Payment card number format (Luhn) | `Is.CreditCard(value)` |
@@ -255,6 +255,11 @@ a warning, you can remove it. A selector's parameter is no longer nullable when 
 
 ## Questions
 
+**Why 3.0 and not 1.0?**
+The SGuard package ID was used before for an earlier, GPL-licensed line of the library, whose versions 1.0.0 to 2.1.0
+are still on nuget.org (unlisted). NuGet never lets a version number be reused, so the release after 0.3.2 is 3.0.0.
+Don't install a 1.x or 2.x version: they are a different code base and license.
+
 **Why isn't `ThrowIf.Between` obsolete, given that it throws when the value is inside the range?**
 Because that reading is consistent ("throw if the value is between"), and code that uses it on purpose is correct.
 `ThrowIf.OutOfRange` is the guard most code wants; prefer it for range checks.
@@ -269,7 +274,7 @@ No. To stay compatible, `Is.Email` still throws `ArgumentNullException` for `nul
 new `Is.Url`, `Is.CreditCard` and `Is.Match` return `false` for `null`, because a missing value is invalid input, not a
 bug.
 
-**What does "stable API" mean from 1.0?**
-SGuard follows [Semantic Versioning](https://semver.org/): 1.x releases add APIs and fix bugs but don't remove or
+**What does "stable API" mean from 3.0?**
+SGuard follows [Semantic Versioning](https://semver.org/): 3.x releases add APIs and fix bugs but don't remove or
 change existing public APIs. Anything that is going to be removed is marked `[Obsolete]` with a diagnostic ID and a
 link to this site at least one minor release before the next major version.

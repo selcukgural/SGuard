@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-SGuard is pre-1.0. Security fixes are released as a new version of the package; older versions don't receive backports.
+Security fixes are released as a new version of the package; older versions don't receive backports.
 Please upgrade to the [latest release on NuGet](https://www.nuget.org/packages/SGuard).
 
 | Version        | Supported          |

@@ -3,7 +3,7 @@ using SGuard.Exceptions;
 namespace SGuard.Tests;
 
 /// <summary>
-/// From 1.0, each built-in exception derives from the BCL exception that describes it best, so existing
+/// From 3.0, each built-in exception derives from the BCL exception that describes it best, so existing
 /// <c>catch</c> blocks and exception middleware keep working. All of them are still <see cref="ArgumentException"/>s.
 /// </summary>
 // Asserts exact messages, so it can't run while another test turns IncludeValuesInExceptions on.
@@ -72,7 +72,7 @@ public sealed class ExceptionHierarchyTests
         var ex = Assert.Throws<LessThanException>(() => ThrowIf.LessThan(quantity, 1));
 
         // ArgumentException appends " (Parameter '...')" and ArgumentOutOfRangeException "Actual value was ..." when
-        // their own fields are set; the guards keep the message they had before 1.0.
+        // their own fields are set; the guards keep the message they had before 3.0.
         Assert.Equal("Left value is less than right value. Actual: left=quantity, right=1.", ex.Message);
     }
 
@@ -80,7 +80,7 @@ public sealed class ExceptionHierarchyTests
     public void MessageConstructors_TakeAMessage_NotAParameterName()
     {
         // ArgumentOutOfRangeException(string) and ArgumentNullException(string) take a parameter name; the SGuard
-        // exceptions' (string) constructors take a message, as they did before 1.0.
+        // exceptions' (string) constructors take a message, as they did before 3.0.
         Assert.Equal("custom", new GreaterThanException("custom").Message);
         Assert.Null(new GreaterThanException("custom").ParamName);
         Assert.Equal("custom", new BetweenException("custom").Message);

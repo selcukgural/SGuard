@@ -51,7 +51,7 @@ public User CreateUser(CreateUserRequest req)
 }
 ```
 
-Upgrading from 0.x? See [Upgrading to 1.0](./migration/upgrading-to-1.0).
+Upgrading from 0.x? See [Upgrading to 3.0](./migration/upgrading-to-3.0).
 
 ## 🗺️ Documentation Structure
 
@@ -59,7 +59,7 @@ Upgrading from 0.x? See [Upgrading to 1.0](./migration/upgrading-to-1.0).
 - **[Core Concepts](./core-concepts/guard-methods)**: Understanding guard methods, callbacks, custom exceptions
 - **[Guides](./guides/null-empty-checks)**: Practical guides for common scenarios
 - **[Advanced](./advanced/performance)**: Performance tuning and best practices
-- **[Migration](./migration/upgrading-to-1.0)**: Upgrading from 0.x to 1.0
+- **[Migration](./migration/upgrading-to-3.0)**: Upgrading from 0.x to 3.0
 - **[API Reference](./api/throwif)**: Complete API documentation
 - **[Community](./community/contributing)**: Contributing, code of conduct, changelog
 

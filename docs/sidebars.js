@@ -60,7 +60,7 @@ const sidebars = {
       type: 'category',
       label: 'Migration',
       items: [
-        'migration/upgrading-to-1.0',
+        'migration/upgrading-to-3.0',
       ],
     },
     {

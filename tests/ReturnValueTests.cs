@@ -1,7 +1,7 @@
 namespace SGuard.Tests;
 
 /// <summary>
-/// From 1.0, a passing <c>ThrowIf.*</c> guard returns the checked value, so it can initialize a field or property.
+/// From 3.0, a passing <c>ThrowIf.*</c> guard returns the checked value, so it can initialize a field or property.
 /// </summary>
 public sealed class ReturnValueTests
 {

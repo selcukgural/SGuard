@@ -181,7 +181,7 @@ public static class Throw
         throw exceptionFactory() ?? throw new InvalidOperationException("The exception factory returned null.");
     }
 
-    // The helpers below create the built-in exceptions of the guards added in 1.0. They are kept out of line, like the
+    // The helpers below create the built-in exceptions of the guards added in 3.0. They are kept out of line, like the
     // factory above, so that the exception's construction doesn't stop a guard from being inlined.
 
     [DoesNotReturn]
