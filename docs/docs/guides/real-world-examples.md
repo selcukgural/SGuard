@@ -199,6 +199,14 @@ public class ProductController : ControllerBase
 }
 ```
 
+:::tip
+`ex.Message` names source expressions such as `request.Name`, and includes the checked values when
+`SGuardOptions.IncludeValuesInExceptions` is on, so don't return it from a public API without that in mind. For a
+whole API, [SGuard.AspNetCore](https://github.com/selcukgural/SGuard.AspNetCore) turns guard failures into `400`
+validation problem details keyed by the failing member, with fixed messages that never include source expressions or
+checked values, so you don't need a `try`/`catch` in each action.
+:::
+
 ## Domain Models: Constructor Validation
 
 ```csharp

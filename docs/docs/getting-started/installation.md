@@ -42,6 +42,22 @@ using SGuard;
 
 You should now have access to `ThrowIf` and `Is` guard methods.
 
+## Companion packages
+
+- [SGuard.AspNetCore](https://github.com/selcukgural/SGuard.AspNetCore) returns guard failures from ASP.NET Core as
+  `400 Bad Request` validation problem details, without your source expressions or checked values:
+
+  ```bash
+  dotnet add package SGuard.AspNetCore
+  ```
+
+- [SGuard.DataAnnotations](https://github.com/selcukgural/SGuard.DataAnnotations) adds validation attributes for
+  collections, conditional and comparison rules, and `ThrowIf`/`Is` checks for whole objects:
+
+  ```bash
+  dotnet add package SGuard.DataAnnotations
+  ```
+
 ## Next Steps
 
 - [Quick Start](./quick-start) - Learn the basics with simple examples
