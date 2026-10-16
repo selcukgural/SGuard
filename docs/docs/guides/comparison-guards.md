@@ -8,20 +8,24 @@ Learn to use SGuard's comparison guards for range and relational validation.
 
 ## Overview
 
-SGuard provides five comparison guards that work with any `IComparable<T>` type:
+SGuard provides comparison guards that work with any `IComparable<T>` type:
 
 - **`LessThan`**: `value < other`
 - **`LessThanOrEqual`**: `value <= other`
 - **`GreaterThan`**: `value > other`
 - **`GreaterThanOrEqual`**: `value >= other`
-- **`Between`**: Inclusive range (`min <= value <= max`)
+- **`OutOfRange`**: outside an inclusive range (`value < min || value > max`)
+- **`Between`**: inside an inclusive range (`min <= value <= max`)
 
-For strings, `Is.LessThan`, `Is.LessThanOrEqual`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, `Is.Between` and
-`ThrowIf.Between` have overloads that take a `StringComparison`. The other `ThrowIf` comparison guards don't; see
-[String Comparisons](#string-comparisons).
+For numbers there are also sign guards, **`Negative`** (`< 0`), **`NegativeOrZero`** (`<= 0`) and **`Zero`**, and for any
+type **`Equal`** and **`NotEqual`**.
 
-`ThrowIf.*` throws when its condition is **true**: `ThrowIf.LessThan(x, 0)` throws if `x < 0`. The built-in exceptions
-(`LessThanException`, `GreaterThanException`, `BetweenException`, ...) derive from `ArgumentException`.
+For strings, the `Is.*` comparisons, `OutOfRange`, `Between`, `Equal` and `NotEqual` have overloads that take a
+`StringComparison`. The four `ThrowIf` relational guards don't; see [String Comparisons](#string-comparisons).
+
+`ThrowIf.*` throws when its condition is **true**: `ThrowIf.LessThan(x, 0)` throws if `x < 0`, and returns `x`
+otherwise. The built-in exceptions (`LessThanException`, `OutOfRangeException`, `NegativeException`, ...) derive from
+`ArgumentOutOfRangeException`, and so from `ArgumentException`.
 
 ## Numeric Comparisons
 
@@ -30,7 +34,7 @@ For strings, `Is.LessThan`, `Is.LessThanOrEqual`, `Is.GreaterThan`, `Is.GreaterT
 ```csharp
 ThrowIf.LessThan(age, 0);
 ThrowIf.GreaterThan(quantity, maxQuantity);
-ThrowIf.LessThanOrEqual(balance, 0m); // balance is a decimal
+var pageSize = ThrowIf.OutOfRange(request.PageSize, 1, 100);
 
 bool isValid = Is.Between(score, 0, 100);
 bool isPositive = Is.GreaterThan(value, 0);
@@ -38,14 +42,31 @@ bool isPositive = Is.GreaterThan(value, 0);
 
 The generic guards require `TLeft : IComparable<TRight>`. `decimal` doesn't implement `IComparable<int>`, so
 `ThrowIf.LessThan(price, 0)` with a `decimal` price doesn't compile (CS0315). Use a literal of the same type: `0m`,
-`0.0` for `double`, `0f` for `float`.
+`0.0` for `double`, `0f` for `float`. For comparisons with zero, the [sign guards](#sign-guards) avoid the question.
 
-### Range Validation with Between
-
-The `Between` guard performs **inclusive** range checks:
+### Sign Guards
 
 ```csharp
-// Checks if value is in [min, max] (inclusive)
+ThrowIf.Negative(balance);            // throws if balance < 0
+ThrowIf.NegativeOrZero(quantity);     // throws if quantity <= 0
+ThrowIf.Zero(divisor);                // throws if divisor == 0
+
+bool overdrawn = Is.Negative(balance);
+```
+
+They work with every number type (`int`, `decimal`, `double`, `BigInteger`, ...). Negative zero (`-0.0`) is zero:
+`Negative` lets it pass, `NegativeOrZero` and `Zero` reject it. Like the other comparisons, NaN fails `Negative` and
+`NegativeOrZero`.
+
+### Range Validation with OutOfRange and Between
+
+Both range guards are **inclusive**:
+
+```csharp
+// Throws if value is outside [min, max]: the range check you usually want
+ThrowIf.OutOfRange(value, min, max);
+
+// Checks if value is in [min, max]
 bool inRange = Is.Between(value, min, max);
 
 // Throws if value IS within range
@@ -54,14 +75,13 @@ ThrowIf.Between(value, min, max);
 
 :::warning
 `ThrowIf.Between` throws when the value is **inside** the range. It does not enforce a range: `ThrowIf.Between(age, 18,
-120)` rejects every valid age and lets `5` through. To require `min <= value <= max`, reject each side instead:
+120)` rejects every valid age and lets `5` through. To require `min <= value <= max`, use `OutOfRange`:
 
 ```csharp
-ThrowIf.LessThan(age, 18);
-ThrowIf.GreaterThan(age, 120);
+ThrowIf.OutOfRange(age, 18, 120);
 
 // or, with your own exception
-if (!Is.Between(age, 18, 120)) throw new ArgumentOutOfRangeException(nameof(age));
+ThrowIf.OutOfRange(age, 18, 120, () => new DomainException("Members must be between 18 and 120."));
 ```
 :::
 
@@ -73,20 +93,21 @@ Is.Between(10, 1, 10);  // true (max is allowed)
 Is.Between(0, 1, 10);   // false (0 is outside range)
 ```
 
-If `min` is greater than `max`, both `Is.Between` and `ThrowIf.Between` throw an `ArgumentException` ("The minimum must be
+If `min` is greater than `max`, `Between` and `OutOfRange` throw an `ArgumentException` ("The minimum must be
 less than or equal to the maximum.") instead of silently treating every value as out of range. This check runs when
 `min` and `max` have the same type, and for the string overloads.
 
 ### NaN Values
 
-If any operand is a floating-point NaN (`double`, `float` or `Half`), every `Is.*` comparison returns `false` and every
-`ThrowIf.*` comparison throws:
+If any operand is a floating-point NaN (`double`, `float`, `Half` or `NFloat`), every `Is.*` comparison returns `false`
+(`Is.OutOfRange` returns `true`) and every `ThrowIf.*` comparison throws:
 
 ```csharp
-Is.GreaterThan(double.NaN, 100.0);         // false
-Is.Between(double.NaN, 0.0, 100.0);        // false
-ThrowIf.GreaterThan(double.NaN, 100.0);    // throws GreaterThanException
-ThrowIf.Between(double.NaN, 0.0, 100.0);   // throws BetweenException
+Is.GreaterThan(double.NaN, 100.0);          // false
+Is.Between(double.NaN, 0.0, 100.0);         // false
+ThrowIf.GreaterThan(double.NaN, 100.0);     // throws GreaterThanException
+ThrowIf.OutOfRange(double.NaN, 0.0, 100.0); // throws OutOfRangeException
+ThrowIf.Negative(double.NaN);               // throws NegativeException
 ```
 
 :::warning
@@ -96,8 +117,8 @@ A check written as "reject if too large" with `Is.*` lets NaN through, because t
 if (Is.GreaterThan(amount, max)) { /* reject */ } // NaN is NOT rejected
 ```
 
-Use `ThrowIf.GreaterThan(amount, max)`, or test that the value is inside the allowed range with
-`if (!Is.Between(amount, min, max)) { /* reject */ }`, which also rejects NaN.
+Use `ThrowIf.GreaterThan(amount, max)` or `ThrowIf.OutOfRange(amount, min, max)`, or test that the value is inside
+the allowed range with `if (Is.OutOfRange(amount, min, max)) { /* reject */ }`, which also rejects NaN.
 :::
 
 ## String Comparisons
@@ -119,7 +140,8 @@ bool cultureLess = Is.LessThan("straße", "strasse", StringComparison.InvariantC
 
 ### Throw on Invalid Ordering
 
-`ThrowIf.Between` is the only `ThrowIf` guard with a `StringComparison` overload. For the others, test with `Is.*`:
+`ThrowIf.OutOfRange`, `ThrowIf.Between`, `ThrowIf.Equal` and `ThrowIf.NotEqual` take a `StringComparison`. For the
+relational guards, test with `Is.*`:
 
 ```csharp
 // Throws because "zebra" > "apple"
@@ -128,8 +150,14 @@ if (Is.GreaterThan("zebra", "apple", StringComparison.Ordinal))
     throw new InvalidOperationException("Out of order");
 }
 
+// Throws if the code is outside "A00".."W99"
+ThrowIf.OutOfRange(code, "A00", "W99", StringComparison.Ordinal);
+
 // Throws if the code IS inside the reserved range
 ThrowIf.Between(code, "X00", "X99", StringComparison.Ordinal);
+
+// Throws unless the currencies match, ignoring case
+ThrowIf.NotEqual(payment.Currency, order.Currency, StringComparison.OrdinalIgnoreCase);
 ```
 
 String comparisons are lexicographic. Don't use them for version numbers (`"10.0.0"` is less than `"2.0.0"`), prefixes
@@ -141,11 +169,21 @@ or paths; see [String Comparisons](./string-comparisons).
 DateTime now = DateTime.UtcNow;
 DateTime deadline = GetDeadline();
 
-ThrowIf.GreaterThan(now, deadline, 
-    new InvalidOperationException("Deadline has passed"));
+ThrowIf.GreaterThan(now, deadline, () => new InvalidOperationException("Deadline has passed"));
 
 bool isExpired = Is.LessThan(expiryDate, DateTime.UtcNow); // expiry date is in the past
 ```
+
+## Equality
+
+`Equal` and `NotEqual` compare with `EqualityComparer<T>.Default`, so records and other types with value equality work:
+
+```csharp
+ThrowIf.Equal(transfer.TargetAccount, transfer.SourceAccount); // a transfer to the same account
+ThrowIf.NotEqual(invoice.Total, payment.Amount, () => new PaymentMismatchException(invoice.Id));
+```
+
+`null` operands are allowed, and two `null` values are equal.
 
 ## Custom IComparable Types
 
@@ -196,13 +234,8 @@ public class User
 
     public User(string username, int age)
     {
-        ThrowIf.NullOrEmpty(username);
-        ThrowIf.LessThan(age, 0);
-        ThrowIf.GreaterThan(age, 130, 
-            new ArgumentOutOfRangeException(nameof(age), "Age seems unrealistic"));
-        
-        Username = username;
-        Age = age;
+        Username = ThrowIf.NullOrWhiteSpace(username);
+        Age = ThrowIf.OutOfRange(age, 0, 130);
     }
 }
 ```
@@ -212,11 +245,9 @@ public class User
 ```csharp
 public void AddToCart(Product product, int quantity)
 {
-    ThrowIf.NullOrEmpty(product);
-    ThrowIf.LessThanOrEqual(quantity, 0, 
-        new ArgumentException("Quantity must be positive", nameof(quantity)));
-    ThrowIf.GreaterThan(quantity, product.StockQuantity, 
-        new InvalidOperationException("Insufficient stock"));
+    ThrowIf.Null(product);
+    ThrowIf.NegativeOrZero(quantity, () => new ArgumentException("Quantity must be positive", nameof(quantity)));
+    ThrowIf.GreaterThan(quantity, product.StockQuantity, () => new InvalidOperationException("Insufficient stock"));
     
     // Add to cart...
 }
@@ -230,18 +261,7 @@ public void SetPrice(decimal price)
     const decimal MinPrice = 0.01m;
     const decimal MaxPrice = 10000m;
     
-    ThrowIf.LessThan(price, MinPrice);
-    ThrowIf.GreaterThan(price, MaxPrice);
-    
-    // Or use Between (note: throws if IN range)
-    // ThrowIf.Between throws when value IS in range
-    // So use Is.Between for validation:
-    if (!Is.Between(price, MinPrice, MaxPrice))
-    {
-        throw new ArgumentOutOfRangeException(nameof(price));
-    }
-    
-    Price = price;
+    Price = ThrowIf.OutOfRange(price, MinPrice, MaxPrice);
 }
 ```
 
@@ -252,10 +272,8 @@ public void ScheduleMeeting(DateTime start, DateTime end)
 {
     DateTime now = DateTime.UtcNow;
     
-    ThrowIf.LessThan(start, now, 
-        new ArgumentException("Start time must be in the future"));
-    ThrowIf.LessThanOrEqual(end, start, 
-        new ArgumentException("End time must be after start time"));
+    ThrowIf.LessThan(start, now, () => new ArgumentException("Start time must be in the future"));
+    ThrowIf.LessThanOrEqual(end, start, () => new ArgumentException("End time must be after start time"));
     
     // Schedule meeting...
 }
@@ -268,9 +286,9 @@ public class DiscountCalculator
 {
     public decimal ApplyDiscount(decimal amount, decimal discountPercent)
     {
-        ThrowIf.LessThan(discountPercent, 0m);
-        ThrowIf.GreaterThan(discountPercent, 100m);
-        
+        ThrowIf.OutOfRange(discountPercent, 0m, 100m);
+
+
         return amount * (1 - discountPercent / 100);
     }
 }
@@ -293,13 +311,13 @@ bool isValid = Is.Between(
 
 ## Best Practices
 
-1. **Use `!Is.Between` for range checks**: It's clearer than combining LessThan and GreaterThan; remember that
+1. **Use `ThrowIf.OutOfRange` for range checks**: It's clearer than combining LessThan and GreaterThan; remember that
    `ThrowIf.Between` throws when the value is *inside* the range
 2. **Specify StringComparison**: Always explicit with string comparisons, and never use string ordering for versions,
    prefixes or paths
-3. **Prefer `ThrowIf.*` or `!Is.Between` for floating-point input**: They reject NaN; `if (Is.GreaterThan(...))` doesn't
+3. **Prefer `ThrowIf.*` or `Is.OutOfRange` for floating-point input**: They reject NaN; `if (Is.GreaterThan(...))` doesn't
 4. **Consider inclusive semantics**: Remember Between is inclusive on both ends
-5. **Combine with custom exceptions**: Provide meaningful error messages for domain rules
+5. **Combine with custom exceptions**: Pass a factory (`() => new DomainException(...)`) for domain rules
 
 ## Common Patterns
 
@@ -319,7 +337,7 @@ if (Is.GreaterThan(value, min) && Is.LessThan(value, max))
 
 ```csharp
 // Ensure value stays within bounds
-if (!Is.Between(value, min, max))
+if (Is.OutOfRange(value, min, max))
 {
     value = Is.LessThan(value, min) ? min : max;
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
@@ -60,6 +61,8 @@ public sealed partial class Is
     /// <returns>
     /// <c>true</c> if the value or the selected property is null, empty, or matches predefined empty patterns; otherwise, <c>false</c>.
     /// </returns>
+    [RequiresUnreferencedCode(AotMessages.Selector)]
+    [RequiresDynamicCode(AotMessages.Selector)]
     public static bool NullOrEmpty<T>(T? value, Expression<Func<T, object>> selector, SGuardCallback? callback = null)
     {
         ArgumentNullException.ThrowIfNull(selector);
@@ -186,7 +189,7 @@ public sealed partial class Is
         static bool IsEmptyBoxedStruct(object value) => IsBoxedDefault(value) || EmptyMemory.IsBoxed(value);
 
         // Determines whether a boxed value equals the default value of its runtime type.
-        static bool IsBoxedDefault(object value) => value.Equals(BoxedDefaults.GetOrAdd(value.GetType(), RuntimeHelpers.GetUninitializedObject));
+        static bool IsBoxedDefault(object value) => value.Equals(BoxedDefaults.GetOrAdd(value.GetType(), CreateDefault));
 
         // Determines if the given value is the default value for its type.
         // True if the value is the default value for its type, false otherwise.
@@ -196,4 +199,9 @@ public sealed partial class Is
             return EqualityComparer<T>.Default.Equals(value, default);
         }
     }
+
+    // Creates the default value of a struct type. Only called with the runtime type of a boxed struct: the type exists, and a
+    // struct needs no constructor to be created, so trimming can't remove anything this needs.
+    [UnconditionalSuppressMessage("Trimming", "IL2067", Justification = "Only called for the type of an existing boxed struct.")]
+    private static object CreateDefault(Type structType) => RuntimeHelpers.GetUninitializedObject(structType);
 }

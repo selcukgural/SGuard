@@ -20,14 +20,24 @@ SGuard provides two complementary APIs for validation:
 ```csharp
 public record CreateUserRequest(string Username, int Age, string Email);
 
-public User CreateUser(CreateUserRequest req) 
-{ 
-    ThrowIf.NullOrEmpty(req);
+public User CreateUser(CreateUserRequest req)
+{
+    ThrowIf.Null(req);
     ThrowIf.NullOrEmpty(req.Email);
-    ThrowIf.NullOrEmpty(req.Username);
-    ThrowIf.LessThan(req.Age, 13, new ArgumentException("User must be 13+.", nameof(req.Age)));
-    
+    ThrowIf.NullOrWhiteSpace(req.Username);
+    ThrowIf.LessThan(req.Age, 13, () => new ArgumentException("User must be 13+.", nameof(req.Age)));
+
     return new User(req.Username, req.Age, req.Email);
+}
+```
+
+A passing guard returns the checked value, so it can also initialize a property:
+
+```csharp
+public sealed class Product(string sku, decimal price)
+{
+    public string Sku { get; } = ThrowIf.NullOrEmpty(sku);
+    public decimal Price { get; } = ThrowIf.NegativeOrZero(price);
 }
 ```
 
@@ -39,10 +49,8 @@ if (Is.Between(value, min, max))
     // value is in range
 }
 
-if (!Is.Between(req.Age, 13, 130))
-{
-    throw new ArgumentOutOfRangeException(nameof(req.Age), "Age seems invalid.");
-}
+// Throw if the age is outside 13..130
+ThrowIf.OutOfRange(req.Age, 13, 130);
 
 // Numeric comparisons
 bool inRange = Is.Between(value, min, max);
@@ -50,6 +58,9 @@ bool isLess = Is.LessThan(a, b);
 
 // Email format (built-in ASCII pattern; not a full RFC 5322 parser)
 bool validEmail = Is.Email("jane.doe@example.com"); // true
+
+// An absolute http or https URL, safe to render as a link
+bool validUrl = Is.Url("https://example.com"); // true
 ```
 
 ### 3. Collection Validation
@@ -62,8 +73,7 @@ bool hasPositive = Is.Any(numbers, n => n > 0);
 bool allNonNull = Is.All(items, it => it is not null);
 
 // Throw if any element matches
-ThrowIf.Any(items, i => i is null, 
-    new InvalidOperationException("Collection contains null items"));
+ThrowIf.Any(items, i => i is null, () => new InvalidOperationException("Collection contains null items"));
 ```
 
 ### 4. String Comparisons (Culture-Aware)
@@ -76,16 +86,17 @@ bool before = Is.LessThan("apple", "banana", StringComparison.Ordinal); // true
 ThrowIf.Between("kiwi", "a", "m", StringComparison.OrdinalIgnoreCase); // throws BetweenException
 ```
 
-String overloads exist for the `Is.*` comparisons and `ThrowIf.Between` only; `ThrowIf.LessThan`/`GreaterThan` and their `OrEqual` variants have none.
+String overloads exist for the `Is.*` comparisons, `OutOfRange`, `Between`, `Equal` and `NotEqual`; `ThrowIf.LessThan`/`GreaterThan` and their `OrEqual` variants have none.
 
 ## Key Points
 
-- **ThrowIf throws when the condition is true**: `ThrowIf.LessThan(x, 0)` throws if `x < 0`; `ThrowIf.Between(v, a, b)` throws if `v` is inside the range
+- **ThrowIf throws when the condition is true**: `ThrowIf.LessThan(x, 0)` throws if `x < 0`; `ThrowIf.Between(v, a, b)` throws if `v` is inside the range, and `ThrowIf.OutOfRange(v, a, b)` if it is outside
+- **ThrowIf returns the value when it passes**: `var name = ThrowIf.NullOrWhiteSpace(input);`
 - **Between is inclusive**: Both min and max values are allowed; `min > max` throws `ArgumentException`
 - **CallerArgumentExpression**: Automatic, precise error messages such as `Value 'req.Email' is null or empty.` (checked values are left out unless `SGuardOptions.IncludeValuesInExceptions` is enabled)
-- **Built-in exceptions derive from `ArgumentException`**: `ParamName` holds the argument expression
+- **Built-in exceptions derive from `ArgumentException`** (range checks from `ArgumentOutOfRangeException`): `ParamName` holds the argument expression
 - **NaN fails comparisons**: `Is.*` returns `false` and `ThrowIf.*` throws
-- **Custom exceptions**: Pass your own exception types when needed
+- **Custom exceptions**: Pass a factory, `() => new MyException(...)`, which runs only when the guard fails
 - **Callbacks**: Add side effects on success/failure (logging, metrics, etc.)
 
 ## Next Steps

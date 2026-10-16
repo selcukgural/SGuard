@@ -22,21 +22,21 @@ public class CheckoutService
         
         // Every item must have positive quantity
         ThrowIf.Any(cart.Items, i => i.Quantity <= 0,
-            new ArgumentException("All items must have a positive quantity"));
+            () => new ArgumentException("All items must have a positive quantity"));
         
         // Check stock levels
         foreach (var item in cart.Items)
         {
             var stock = _stockBySku.TryGetValue(item.Sku, out var s) ? s : 0;
             ThrowIf.GreaterThan(item.Quantity, stock,
-                new InvalidOperationException($"Insufficient stock for SKU '{item.Sku}'"),
+                () => new InvalidOperationException($"Insufficient stock for SKU '{item.Sku}'"),
                 SGuardCallbacks.OnFailure(() => 
                     _logger.LogWarning("Stock check failed for {Sku}", item.Sku)));
         }
         
         // Validate totals
         ThrowIf.LessThanOrEqual(cart.TotalAmount, 0m,
-            new ArgumentOutOfRangeException(nameof(cart.TotalAmount), 
+            () => new ArgumentOutOfRangeException(nameof(cart.TotalAmount), 
                 "Total must be greater than zero"));
     }
 }
@@ -61,9 +61,9 @@ public class UserService
         
         // Age validation
         ThrowIf.LessThan(req.Age, 13,
-            new ArgumentException("User must be 13 or older", nameof(req.Age)));
+            () => new ArgumentException("User must be 13 or older", nameof(req.Age)));
         ThrowIf.GreaterThan(req.Age, 130,
-            new ArgumentException("Age seems unrealistic", nameof(req.Age)));
+            () => new ArgumentException("Age seems unrealistic", nameof(req.Age)));
         
         // Reject the username if a user with it already exists
         var existing = await _repository.FindByUsernameAsync(req.Username);
@@ -113,9 +113,9 @@ public class OrderProcessor
         
         // Validate items
         ThrowIf.Any(order.Items, i => i is null,
-            new ArgumentException("Order contains null items"));
+            () => new ArgumentException("Order contains null items"));
         ThrowIf.Any(order.Items, i => i.Quantity <= 0,
-            new ArgumentException("Order contains items with invalid quantities"));
+            () => new ArgumentException("Order contains items with invalid quantities"));
     }
     
     private async Task ValidateBusinessRulesAsync(Order order)
@@ -125,14 +125,14 @@ public class OrderProcessor
         {
             var available = await _inventory.GetAvailableStockAsync(item.ProductId);
             ThrowIf.GreaterThan(item.Quantity, available,
-                new InvalidOperationException($"Insufficient stock for product {item.ProductId}"),
+                () => new InvalidOperationException($"Insufficient stock for product {item.ProductId}"),
                 SGuardCallbacks.OnFailure(() => 
                     _logger.LogWarning("Stock unavailable for product {ProductId}", item.ProductId)));
         }
         
         // Validate payment amount
         ThrowIf.LessThanOrEqual(order.TotalAmount, 0m,
-            new ArgumentException("Order total must be positive"));
+            () => new ArgumentException("Order total must be positive"));
     }
     
     private async Task<OrderResult> ExecuteOrderAsync(Order order)
@@ -187,7 +187,7 @@ public class ProductController : ControllerBase
         
         // Price validation
         ThrowIf.LessThanOrEqual(request.Price, 0m,
-            new ArgumentException("Price must be positive", nameof(request.Price)));
+            () => new ArgumentException("Price must be positive", nameof(request.Price)));
         
         // SKU format validation (must start with "PRD-").
         // Use StartsWith, not an ordering check: Is.Between(sku, "PRD-", "PRD-~") rejects valid SKUs such as "PRD-Ä1".
@@ -210,13 +210,13 @@ public class Money
     public Money(decimal amount, string currency)
     {
         ThrowIf.LessThan(amount, 0m, // 0m: decimal doesn't implement IComparable<int>, so a plain 0 doesn't compile
-            new ArgumentException("Amount cannot be negative", nameof(amount)));
+            () => new ArgumentException("Amount cannot be negative", nameof(amount)));
         
         ThrowIf.NullOrEmpty(currency);
         ThrowIf.LessThan(currency.Length, 3,
-            new ArgumentException("Currency must be 3 characters", nameof(currency)));
+            () => new ArgumentException("Currency must be 3 characters", nameof(currency)));
         ThrowIf.GreaterThan(currency.Length, 3,
-            new ArgumentException("Currency must be 3 characters", nameof(currency)));
+            () => new ArgumentException("Currency must be 3 characters", nameof(currency)));
         
         Amount = amount;
         Currency = currency.ToUpperInvariant();
@@ -240,14 +240,14 @@ public class ProductRepository
         if (criteria.MinPrice.HasValue && criteria.MaxPrice.HasValue)
         {
             ThrowIf.GreaterThan(criteria.MinPrice.Value, criteria.MaxPrice.Value,
-                new ArgumentException("MinPrice cannot exceed MaxPrice"));
+                () => new ArgumentException("MinPrice cannot exceed MaxPrice"));
         }
         
         // Validate pagination
         ThrowIf.LessThanOrEqual(criteria.PageSize, 0,
-            new ArgumentException("PageSize must be positive", nameof(criteria.PageSize)));
+            () => new ArgumentException("PageSize must be positive", nameof(criteria.PageSize)));
         ThrowIf.GreaterThan(criteria.PageSize, 100,
-            new ArgumentException("PageSize cannot exceed 100", nameof(criteria.PageSize)));
+            () => new ArgumentException("PageSize cannot exceed 100", nameof(criteria.PageSize)));
         
         return await ExecuteSearchAsync(criteria);
     }
@@ -285,15 +285,15 @@ public class EmailNotificationJob
         
         // Validate all recipients
         ThrowIf.Any(batch.Recipients, r => r is null,
-            new ArgumentException("Batch contains null recipients"));
+            () => new ArgumentException("Batch contains null recipients"));
         ThrowIf.Any(batch.Recipients, r => string.IsNullOrEmpty(r.Email),
-            new ArgumentException("Batch contains recipients with empty emails"),
+            () => new ArgumentException("Batch contains recipients with empty emails"),
             SGuardCallbacks.OnFailure(() => 
                 _logger.LogError("Email batch validation failed")));
         
         // Batch size limits
         ThrowIf.GreaterThan(batch.Recipients.Count, 1000,
-            new ArgumentException("Batch size exceeds limit of 1000"));
+            () => new ArgumentException("Batch size exceeds limit of 1000"));
         
         await SendEmailsAsync(batch);
     }
@@ -328,7 +328,7 @@ public class TestDataBuilder
     public Order BuildTestOrder(int itemCount = 1)
     {
         ThrowIf.LessThanOrEqual(itemCount, 0,
-            new ArgumentException("Order must have at least one item"));
+            () => new ArgumentException("Order must have at least one item"));
         
         var order = new Order
         {

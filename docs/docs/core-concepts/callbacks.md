@@ -173,17 +173,15 @@ catch (ArgumentNullException)
 }
 ```
 
-One exception to this rule: with the `constructorArgs` overloads, the exception is created only when the guard
-fails. If no constructor of `TException` matches the arguments, the callback has already been invoked with
-`Failure` and the guard then throws `InvalidOperationException` instead of your exception:
+One exception to this rule: a factory runs only when the guard fails, after the callback. If the factory itself
+throws, or returns `null` (the guard then throws `InvalidOperationException`), the callback has already been invoked
+with `Failure`:
 
 ```csharp
-// ArgumentOutOfRangeException has no (int) constructor
-ThrowIf.GreaterThan<int, int, ArgumentOutOfRangeException>(
-    5, 1, 
-    new object[] { 42 }, 
+ThrowIf.GreaterThan(5, 1,
+    () => CreateException(), // throws, or returns null
     SGuardCallbacks.OnFailure(() => logger.LogError("runs")));
-// OnFailure runs, then InvalidOperationException ("No matching constructor found ...") is thrown
+// OnFailure runs, then the factory's exception (or InvalidOperationException) propagates
 ```
 
 ## Real-World Examples

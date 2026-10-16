@@ -21,8 +21,15 @@ The `NullOrEmpty` guard works with any value. What counts as "empty" depends on 
 | Date/time types | zero ticks (`DateTime`, `TimeSpan`, `TimeOnly`, `DateTimeOffset`), `DateOnly.MinValue` |
 | Other class instances | `null` only; a non-null object is **not** inspected property by property |
 
-`ThrowIf.NullOrEmpty` throws a `NullOrEmptyException` (an `ArgumentException`) when the value is null or empty;
-`Is.NullOrEmpty` returns `true` in that case.
+`ThrowIf.NullOrEmpty` throws a `NullOrEmptyException` (an `ArgumentException`) when the value is null or empty, and
+returns the value otherwise; `Is.NullOrEmpty` returns `true` in that case.
+
+Two narrower guards cover the cases where those rules are too broad:
+
+| Guard | Fails for | Use it when |
+|---|---|---|
+| `Null` | `null` only | `""`, empty collections, `0` or `false` are valid |
+| `NullOrWhiteSpace` | `null`, `""` and white space only | blank text input must be rejected |
 
 ## String Validation
 
@@ -37,13 +44,15 @@ bool isEmpty = Is.NullOrEmpty(name);
 - `null` reference
 - Empty string (`""`)
 
-Whitespace is not treated as empty: `Is.NullOrEmpty("   ")` returns `false`. If blank input must be rejected, check it
-yourself:
+Whitespace is not treated as empty: `Is.NullOrEmpty("   ")` returns `false`. If blank input must be rejected, use
+`NullOrWhiteSpace`:
 
 ```csharp
-if (string.IsNullOrWhiteSpace(username))
+var username = ThrowIf.NullOrWhiteSpace(request.Username); // throws NullOrWhiteSpaceException for "   "
+
+if (Is.NullOrWhiteSpace(request.DisplayName))
 {
-    throw new ArgumentException("Username is required.", nameof(username));
+    errors["displayName"] = ["A display name is required."];
 }
 ```
 
@@ -87,31 +96,28 @@ bool noId    = Is.NullOrEmpty(Guid.Empty); // true
 :::warning
 `NullOrEmpty` rejects legitimate zeros and `false`. Don't use it for values where `0` or `false` is valid input, such as
 a quantity that may be zero, a discount of `0m` or an `IsActive = false` flag. Check `HasValue` (or `is null`) for
-"was it provided?" and use the [comparison guards](./comparison-guards) for ranges:
+"was it provided?" and use the [sign and comparison guards](./comparison-guards) for ranges:
 
 ```csharp
-int? discount = request.Discount;
-
-if (discount is null)
-{
-    throw new ArgumentException("Discount is required.", nameof(request.Discount));
-}
-
-ThrowIf.LessThan(discount.Value, 0); // 0 is allowed, negative values are not
+int discount = ThrowIf.Null(request.Discount); // int? -> int; throws NullException only when it is missing
+ThrowIf.Negative(discount);                    // 0 is allowed, negative values are not
 ```
 :::
 
 ## Reference Types
 
 ```csharp
-ThrowIf.NullOrEmpty(user);
-ThrowIf.NullOrEmpty(order);
+ThrowIf.Null(user);
+_orders = ThrowIf.Null(orders);
 
-bool exists = !Is.NullOrEmpty(entity);
+bool exists = !Is.Null(entity);
 ```
 
 **What's checked:**
 - `null` reference
+
+For a reference type that isn't a string or a collection, `NullOrEmpty` and `Null` check the same thing; `Null` says
+so more plainly.
 
 Nothing else: a `User` whose `Username` and `Email` are empty strings still passes `ThrowIf.NullOrEmpty(user)`. See
 [Complex Type Validation](#complex-type-validation).
@@ -141,6 +147,12 @@ ThrowIf.NullOrEmpty(order, o => o.Items[0].Sku);       // null Items or a null f
 ThrowIf.NullOrEmpty(user, u => u.Name.Trim());         // a null Name counts as empty; "   " is empty after Trim
 ThrowIf.NullOrEmpty(user, u => u.First + u.Last);      // evaluated as written, then checked
 ```
+
+:::warning Selectors and Native AOT
+Selectors don't work under Native AOT, and trimmed or AOT apps get a warning where they call one. There, check the
+member directly: `ThrowIf.NullOrEmpty(order.Customer?.Address?.City)` gives the same result, and the message names the
+whole expression.
+:::
 
 **Benefits:**
 - **Expression caching**: Selectors are compiled once and cached by expression structure, including selectors that
@@ -241,31 +253,22 @@ public record CreateUserRequest(string Username, string Email, int Age);
 
 public User CreateUser(CreateUserRequest req)
 {
-    ThrowIf.NullOrEmpty(req);
-    ThrowIf.NullOrEmpty(req.Username);
-    ThrowIf.NullOrEmpty(req.Email);
-    
-    // Continue with user creation...
-    return new User(req.Username, req.Email, req.Age);
+    ThrowIf.Null(req);
+
+    return new User(
+        ThrowIf.NullOrWhiteSpace(req.Username),
+        ThrowIf.NullOrEmpty(req.Email),
+        ThrowIf.OutOfRange(req.Age, 13, 130));
 }
 ```
 
 ### Constructor Validation
 
 ```csharp
-public class User
+public class User(string username, string email)
 {
-    public string Username { get; }
-    public string Email { get; }
-    
-    public User(string username, string email)
-    {
-        ThrowIf.NullOrEmpty(username);
-        ThrowIf.NullOrEmpty(email);
-        
-        Username = username;
-        Email = email;
-    }
+    public string Username { get; } = ThrowIf.NullOrWhiteSpace(username);
+    public string Email { get; } = ThrowIf.NullOrEmpty(email);
 }
 ```
 
@@ -290,9 +293,10 @@ public class OrderService
 
 1. **Validate early**: Check at method boundaries and constructors
 2. **Guard each required property**: `NullOrEmpty` on an object doesn't check its members one by one
-3. **Don't use `NullOrEmpty` where `0` or `false` is valid**: use `is null` / `HasValue` and comparison guards instead
-4. **Use selectors for nested properties**: A null parent is reported as empty instead of throwing `NullReferenceException`
-5. **Fail fast**: Place `NullOrEmpty` checks before other validations
+3. **Don't use `NullOrEmpty` where `0` or `false` is valid**: use `ThrowIf.Null` and the sign or comparison guards instead
+4. **Reject blank text with `NullOrWhiteSpace`**: `NullOrEmpty` lets `"   "` through
+5. **Use selectors for nested properties**: A null parent is reported as empty instead of throwing `NullReferenceException`
+6. **Fail fast**: Place `NullOrEmpty` checks before other validations
 
 ## Performance Tips
 

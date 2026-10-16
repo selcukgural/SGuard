@@ -53,6 +53,14 @@ const sidebars = {
       items: [
         'advanced/performance',
         'advanced/best-practices',
+        'advanced/analyzers',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Migration',
+      items: [
+        'migration/upgrading-to-3.0',
       ],
     },
     {

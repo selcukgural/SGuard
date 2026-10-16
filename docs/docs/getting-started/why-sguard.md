@@ -45,7 +45,7 @@ Throw built-in exceptions for common guards or supply your own:
 
 ```csharp
 ThrowIf.LessThanOrEqual(quantity, 0, 
-    new DomainValidationException("Quantity must be greater than zero."));
+    () => new DomainValidationException("Quantity must be greater than zero."));
 ```
 
 ## Expressive, Dual API
@@ -75,7 +75,8 @@ ThrowIf.Between("kiwi", "a", "m", StringComparison.OrdinalIgnoreCase); // throws
 - **Expression caching**: selector expressions are compiled once and cached by expression structure in a thread-safe cache (including selectors that capture local variables or use operators such as `+` and `??`)
 - **No work when you don't need it**: plain comparisons and null/empty checks without a selector don't compile expressions
 - **Allocation-free guards**: a passing guard costs about as much as a hand-written `if` and allocates nothing
-- **Custom exception types** are created only when the guard fails: with `new TException()` for the `new()` overloads, and through reflection for `constructorArgs`
+- **Custom exceptions** are created only when the guard fails: by the factory you pass (`() => new MyException(...)`), or with `new TException()` for the `new()` overloads
+- **Native AOT**: every guard except `NullOrEmpty` selectors works in trimmed and Native AOT apps
 
 See [Performance](../advanced/performance) for benchmarks and details.
 

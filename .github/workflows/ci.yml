@@ -12,6 +12,10 @@ on:
       - 'guard/**'
       - 'global.json'
       - 'tests/**'
+      - 'SGuard.AotSmoke/**'
+      - 'SGuard.Analyzers/**'
+      - 'SGuard.Analyzers.CodeFixes/**'
+      - 'SGuard.Analyzers.Tests/**'
       - '.github/workflows/**'
       - 'SGuard.sln'
       - '**/*.csproj'
@@ -24,6 +28,10 @@ on:
       - 'guard/**'
       - 'global.json'
       - 'tests/**'
+      - 'SGuard.AotSmoke/**'
+      - 'SGuard.Analyzers/**'
+      - 'SGuard.Analyzers.CodeFixes/**'
+      - 'SGuard.Analyzers.Tests/**'
       - '.github/workflows/**'
       - 'SGuard.sln'
       - '**/*.csproj'
@@ -115,6 +123,37 @@ jobs:
             **/TestResults/**/*.trx
             **/TestResults/**/coverage*.xml
             **/TestResults/**/*.xml
+
+  # Runs the trimming and Native AOT analyzers on SGuard, then publishes SGuard.AotSmoke with Native AOT and runs it.
+  # Their packages follow the installed SDK and can't be pinned in the lock files, so this job restores without locked
+  # mode; it only builds and runs, and publishes nothing.
+  aot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install the Native AOT toolchain
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang zlib1g-dev
+
+      - name: Trimming and AOT analyzers
+        run: dotnet build guard/SGuard.csproj --configuration Release -p:SGuardAotAnalysis=true -p:TreatWarningsAsErrors=true -p:RestoreLockedMode=false
+
+      - name: Publish the smoke test with Native AOT
+        run: dotnet publish SGuard.AotSmoke --configuration Release --runtime linux-x64 -p:RestoreLockedMode=false --output aot
+
+      - name: Run the smoke test
+        run: ./aot/SGuard.AotSmoke
 
   report:
     needs: build-and-test

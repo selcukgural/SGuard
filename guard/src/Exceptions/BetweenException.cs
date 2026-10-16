@@ -6,7 +6,7 @@ namespace SGuard.Exceptions;
 /// Represents an exception that occurs when a value falls within the specified range.
 /// </summary>
 [Serializable]
-public sealed class BetweenException : ArgumentException
+public sealed class BetweenException : ArgumentOutOfRangeException
 {
     private readonly string? _paramName;
 
@@ -24,7 +24,7 @@ public sealed class BetweenException : ArgumentException
     /// Initializes a new instance of the <see cref="BetweenException"/> class with a specified error message.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
-    public BetweenException(string message) : base(message) { }
+    public BetweenException(string message) : base(null, message) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BetweenException"/> class with a specified error message 
@@ -44,7 +44,7 @@ public sealed class BetweenException : ArgumentException
         [CallerArgumentExpression("value")] string? valueExpr = null,
         [CallerArgumentExpression("min")]   string? minExpr   = null,
         [CallerArgumentExpression("max")]   string? maxExpr   = null)
-        : base(BuildMessage(value, min, max, valueExpr, minExpr, maxExpr))
+        : base(null, BuildMessage(value, min, max, valueExpr, minExpr, maxExpr))
     {
         _paramName = valueExpr;
         ExceptionValues.AddTo(Data, "value", value);

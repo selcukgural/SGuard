@@ -5,7 +5,72 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] - 2026-10-16
+
+The 3.0 release, following 0.3.2. (Versions 1.0.0 to 2.1.0 of the package ID belong to an earlier, GPL-licensed line of
+the library and can't be reused.) It adds the guards people reach for first, a factory for custom exceptions, return
+values and Native AOT support, and from here on SGuard keeps a stable API under Semantic Versioning. Most code upgrades
+without changes; the [upgrade guide](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0) covers the
+rest.
+
+### Breaking changes
+
+- **`ThrowIf.*` guards return the checked value** instead of `void`: `NullOrEmpty`, `GreaterThan`,
+  `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` and `Between`. Calls compile unchanged, but this is a binary
+  breaking change: an assembly compiled against 0.x that calls them must be recompiled. It is the only binary breaking
+  change in 3.0 (30 methods, checked with ApiCompat).
+- **`GreaterThanException`, `GreaterThanOrEqualException`, `LessThanException`, `LessThanOrEqualException` and
+  `BetweenException` derive from `ArgumentOutOfRangeException`** instead of directly from `ArgumentException`.
+  `catch (ArgumentException)` still catches them, but `catch (ArgumentOutOfRangeException)` now does too, and a
+  `catch` for one of them placed after `catch (ArgumentOutOfRangeException)` no longer compiles (CS0160). Their
+  parameterless constructors have the default message of `ArgumentOutOfRangeException`.
+
+### Added
+
+- `ThrowIf.Null` and `Is.Null`: only `null` fails, unlike `NullOrEmpty`. For a nullable value type, `ThrowIf.Null`
+  returns the underlying value.
+- `ThrowIf.NullOrWhiteSpace` and `Is.NullOrWhiteSpace`.
+- `ThrowIf.OutOfRange` and `Is.OutOfRange`, which reject values outside an inclusive range: the opposite of
+  `Between`, and the range check most code wants.
+- `ThrowIf.Negative`, `NegativeOrZero` and `Zero`, and their `Is.*` versions, for any number type (`INumber<T>`).
+- `ThrowIf.Equal` and `NotEqual`, and their `Is.*` versions, with `StringComparison` overloads for strings.
+- `ThrowIf.NotDefined` and `Is.NotDefined` for enum values that their type doesn't declare.
+- `ThrowIf.LongerThan` and `ShorterThan`, and their `Is.*` versions, for string lengths. Their messages never contain
+  the string.
+- `Is.Url` (absolute `http`/`https` URLs only), `Is.CreditCard` (12 to 19 digits that pass the Luhn checksum) and
+  `Is.Match` (a regular expression with a match timeout). They return `false` for `null`.
+- A `Func<TException>` factory overload on every `ThrowIf.*` guard. The factory runs only when the guard fails, so a
+  passing guard creates no exception, and a lambda that doesn't capture variables allocates nothing.
+- New exceptions in `SGuard.Exceptions`: `NullException` (an `ArgumentNullException`), `NullOrWhiteSpaceException`,
+  and `OutOfRangeException`, `NegativeException`, `NegativeOrZeroException`, `ZeroException`, `EqualException`,
+  `NotEqualException`, `NotDefinedException`, `LongerThanException` and `ShorterThanException` (all
+  `ArgumentOutOfRangeException`s). They name the argument expressions and leave values out unless
+  `SGuardOptions.IncludeValuesInExceptions` is on, like the existing ones.
+- Nullable annotations: after `ThrowIf.NullOrEmpty(x)`, `x` and the returned value are known not to be null; `Is.Null`,
+  `Is.NullOrWhiteSpace` and the new validators are annotated with `[NotNullWhen]`; and a selector's parameter is no
+  longer nullable when its root is.
+- Roslyn analyzers in the package: SGUARD101 (`NullOrEmpty` on a number or `bool` rejects `0` or `false`), SGUARD102
+  (an exception instance is created on every call; with a code fix that turns it into a factory), SGUARD103 (constant
+  `Between` or `OutOfRange` bounds in the wrong order) and SGUARD104 (a selector that selects a whole object). See
+  [Analyzers](https://selcukgural.github.io/SGuard/docs/advanced/analyzers).
+- Package validation against 0.3.2, so an accidental breaking change can't ship.
+- Trimming and Native AOT support. A CI job runs the trimming and AOT analyzers and publishes a test app with Native AOT
+  that runs every guard.
+
+### Deprecated
+
+- The `ThrowIf.*` overloads that take `object[] constructorArgs` (`SGUARD001`) and `ExceptionActivator` (`SGUARD002`).
+  They create the exception with reflection, which the compiler can't check and which breaks under trimming and Native
+  AOT. Pass a factory instead: `() => new MyException(...)`. They will be removed in 4.0.
+
+### Changed
+
+- The `NullOrEmpty` selector overloads are marked `[RequiresUnreferencedCode]` and `[RequiresDynamicCode]`: selectors
+  don't work under Native AOT, so trimmed and AOT apps now get a warning where they call one. Nothing changes for other
+  apps.
+- An empty `Memory<T>` or `ReadOnlyMemory<T>` is detected without compiling an expression, and the bounds check of
+  `Between` no longer uses `MakeGenericType`. The bounds of a nullable struct that implements only `IComparable<T>`
+  (not `IComparable`) are no longer checked against each other; every framework type implements both.
 
 ## [0.3.2] - 2026-10-10
 

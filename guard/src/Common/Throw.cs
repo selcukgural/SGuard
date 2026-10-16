@@ -168,4 +168,72 @@ public static class Throw
     {
         throw exception;
     }
+
+    /// <summary>
+    /// Throws the exception created by <paramref name="exceptionFactory"/>. Kept out of line so that a guard calling it
+    /// stays small enough to inline, and the factory runs only when the guard fails.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The factory returned <c>null</c>.</exception>
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void From<TException>(Func<TException> exceptionFactory) where TException : Exception
+    {
+        throw exceptionFactory() ?? throw new InvalidOperationException("The exception factory returned null.");
+    }
+
+    // The helpers below create the built-in exceptions of the guards added in 3.0. They are kept out of line, like the
+    // factory above, so that the exception's construction doesn't stop a guard from being inlined.
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void NullException(string? valueExpression) => throw Exceptions.NullException.ForExpression(valueExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void NullOrWhiteSpaceException(string? value, string? valueExpression)
+        => throw new NullOrWhiteSpaceException(value, valueExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void NegativeException<T>(T value, string? valueExpression) => throw new NegativeException(value, valueExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void NegativeOrZeroException<T>(T value, string? valueExpression)
+        => throw new NegativeOrZeroException(value, valueExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void ZeroException<T>(T value, string? valueExpression) => throw new ZeroException(value, valueExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void OutOfRangeException<TValue, TMin, TMax>(TValue value, TMin min, TMax max, string? valueExpression,
+        string? minExpression, string? maxExpression)
+        => throw new OutOfRangeException(value, min, max, valueExpression, minExpression, maxExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void EqualException<T>(T lValue, T rValue, string? lValueExpression, string? rValueExpression)
+        => throw new EqualException(lValue, rValue, lValueExpression, rValueExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void NotEqualException<T>(T lValue, T rValue, string? lValueExpression, string? rValueExpression)
+        => throw new NotEqualException(lValue, rValue, lValueExpression, rValueExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void NotDefinedException<TEnum>(TEnum value, string? valueExpression) where TEnum : struct, Enum
+        => throw new NotDefinedException(value, valueExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void LongerThanException(int length, int maxLength, string? valueExpression, string? maxLengthExpression)
+        => throw new LongerThanException(length, maxLength, valueExpression, maxLengthExpression);
+
+    [DoesNotReturn]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static void ShorterThanException(int length, int minLength, string? valueExpression, string? minLengthExpression)
+        => throw new ShorterThanException(length, minLength, valueExpression, minLengthExpression);
 }

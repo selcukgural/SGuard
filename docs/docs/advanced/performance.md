@@ -228,15 +228,25 @@ automatically.
 The committed benchmarks report allocations in their `Allocated` column. In short:
 - **`Is.*` comparisons and `Is.NullOrEmpty` without a selector** don't allocate.
 - **A passing `ThrowIf.*` guard doesn't allocate** (except as noted below for selectors and exception instances). The
-  test suite checks this for the comparison, `Between` and `NullOrEmpty` guards.
+  test suite checks this for each guard, including the factory overloads. Returning the checked value costs nothing.
 - **Failing guards** allocate the exception (and throwing it is far more expensive than the allocation).
-- **Overloads that take an exception instance** allocate that instance at the call site on every call; the
-  `TException` and `constructorArgs` overloads create it only on failure.
+- **Overloads that take an exception instance** allocate that instance at the call site on every call. A factory
+  (`() => new MyException(...)`) and the `TException : new()` overloads create it only on failure; a factory that
+  doesn't capture variables allocates nothing, and one that does allocates a small closure per call.
+- **`Is.Url`** parses the string into a `Uri`, so it allocates; the other `Is.*` validators don't.
 - **Selector-based `NullOrEmpty`** allocates the expression tree built at the call site on every call (about
   0.7–0.8 KB in the [Expression Caching](../core-concepts/expression-caching#benchmarks) measurement); the compiled
   delegate is reused.
 - **Callbacks** built with `SGuardCallbacks.OnSuccess`/`OnFailure` or a capturing lambda allocate a delegate where
   they are created.
+
+## Trimming and Native AOT
+
+SGuard supports trimming and Native AOT: CI publishes a test app with Native AOT and runs every guard in it. The
+exception is `NullOrEmpty` with a selector, which compiles an expression tree at run time and reads properties with
+reflection. Under Native AOT it throws, so those overloads are marked `[RequiresUnreferencedCode]` and
+`[RequiresDynamicCode]`, and trimmed or AOT apps get warning `IL2026` or `IL3050` where they call one. Check the member
+directly instead (`ThrowIf.NullOrEmpty(order.Customer?.Email)`), which is also faster than a selector.
 
 ## Next Steps
 

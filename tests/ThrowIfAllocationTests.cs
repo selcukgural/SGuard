@@ -28,6 +28,7 @@ public sealed class ThrowIfAllocationTests
     private static readonly List<int> List = [1, 2, 3];
     private static readonly Guid Id = Guid.NewGuid();
     private static readonly string Text = "value";
+    private static readonly int? NullableInt = 3;
 
     public static TheoryData<string, Action> PassingGuards() => new()
     {
@@ -52,6 +53,44 @@ public sealed class ThrowIfAllocationTests
         { "Any list", () => ThrowIf.Any(List, x => x > 10) },
         { "All array", () => ThrowIf.All(Array, x => x > 10) },
         { "All list", () => ThrowIf.All(List, x => x > 10) },
+        { "Null", () => ThrowIf.Null(Text) },
+        { "Null nullable int", () => ThrowIf.Null(NullableInt) },
+        { "Null + callback", () => ThrowIf.Null(Text, Callback) },
+        { "Null + factory", () => ThrowIf.Null(Text, () => new InvalidOperationException()) },
+        { "NullOrWhiteSpace", () => ThrowIf.NullOrWhiteSpace(Text) },
+        { "Negative int", () => ThrowIf.Negative(1) },
+        { "Negative decimal", () => ThrowIf.Negative(1m) },
+        { "Negative double", () => ThrowIf.Negative(1d) },
+        { "Negative + factory", () => ThrowIf.Negative(1, () => new InvalidOperationException()) },
+        { "NegativeOrZero", () => ThrowIf.NegativeOrZero(1) },
+        { "Zero", () => ThrowIf.Zero(1) },
+        { "OutOfRange", () => ThrowIf.OutOfRange(5, 1, 10) },
+        { "OutOfRange decimal", () => ThrowIf.OutOfRange(5m, 1m, 10m) },
+        { "OutOfRange string", () => ThrowIf.OutOfRange("m", "a", "z", StringComparison.Ordinal) },
+        { "Equal", () => ThrowIf.Equal(1, 2) },
+        { "Equal Guid", () => ThrowIf.Equal(Id, Guid.Empty) },
+        { "NotEqual", () => ThrowIf.NotEqual(1, 1) },
+        { "Equal string", () => ThrowIf.Equal(Text, "other", StringComparison.OrdinalIgnoreCase) },
+        { "NotDefined", () => ThrowIf.NotDefined(DayOfWeek.Monday) },
+        { "LongerThan", () => ThrowIf.LongerThan(Text, 10) },
+        { "GreaterThan + factory", () => ThrowIf.GreaterThan(1, 2, () => new InvalidOperationException()) },
+        { "Between + factory", () => ThrowIf.Between(20, 1, 10, () => new InvalidOperationException()) },
+        { "NullOrEmpty + factory", () => ThrowIf.NullOrEmpty(Text, () => new InvalidOperationException()) },
+        { "Any + factory", () => ThrowIf.Any(Array, x => x > 10, () => new InvalidOperationException()) },
+        { "ShorterThan", () => ThrowIf.ShorterThan(Text, 1) },
+    };
+
+    public static TheoryData<string, Func<bool>> IsChecks() => new()
+    {
+        { "Is.Null", () => Is.Null(Text) },
+        { "Is.NullOrWhiteSpace", () => Is.NullOrWhiteSpace(Text) },
+        { "Is.Negative", () => Is.Negative(1) },
+        { "Is.Zero", () => Is.Zero(1m) },
+        { "Is.OutOfRange", () => Is.OutOfRange(5, 1, 10) },
+        { "Is.Equal", () => Is.Equal(1, 2) },
+        { "Is.NotDefined", () => Is.NotDefined(DayOfWeek.Monday) },
+        { "Is.LongerThan", () => Is.LongerThan(Text, 10) },
+        { "Is.CreditCard", () => Is.CreditCard("4111 1111 1111 1111") },
     };
 
     [OptimizedBuildTheory]
@@ -69,6 +108,27 @@ public sealed class ThrowIfAllocationTests
         for (var i = 0; i < 1000; i++)
         {
             guard();
+        }
+
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.True(allocated == 0, $"{name} allocated {allocated} bytes over 1000 calls.");
+    }
+
+    [OptimizedBuildTheory]
+    [MemberData(nameof(IsChecks))]
+    public void IsCheck_DoesNotAllocate(string name, Func<bool> check)
+    {
+        for (var i = 0; i < 100; i++)
+        {
+            check();
+        }
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+
+        for (var i = 0; i < 1000; i++)
+        {
+            check();
         }
 
         var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
