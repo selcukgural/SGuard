@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Published with Native AOT in CI and run: every guard except the NullOrEmpty selectors must work, and calling them
+         must not produce a trimming or AOT warning. -->
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <PublishAot>true</PublishAot>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <!-- The smoke test calls the obsolete APIs on purpose. -->
+        <NoWarn>$(NoWarn);SGUARD001;SGUARD002</NoWarn>
+        <!-- Native AOT pulls the ILCompiler package in the version of the installed SDK, which a lock file can't pin. This
+             project only runs in CI and isn't part of SGuard.sln. -->
+        <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+        <RestoreLockedMode>false</RestoreLockedMode>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\guard\SGuard.csproj" />
+    </ItemGroup>
+
+</Project>

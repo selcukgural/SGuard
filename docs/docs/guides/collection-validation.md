@@ -14,8 +14,9 @@ SGuard provides two powerful collection guards:
 - **`All`**: All elements match the predicate
 
 Both work with any `IEnumerable<T>` and accept a predicate (`Func<T, bool>`). `Is.Any`, `Is.All` and the `ThrowIf` overloads
-that take an exception instance also accept a `ReadOnlySpan<T>` (arrays bind to it on C# 14). A `null` source or
-predicate throws `ArgumentNullException`.
+that take an exception factory or instance also accept a `ReadOnlySpan<T>` (arrays bind to it on C# 14). A `null`
+source or predicate throws `ArgumentNullException`. Unlike the other `ThrowIf` guards, `ThrowIf.Any` and `ThrowIf.All`
+return `void`.
 
 ## Any Guard
 
@@ -103,7 +104,7 @@ public class CartValidator
         
         // Ensure no negative quantities
         ThrowIf.Any(cart.Items, i => i.Quantity <= 0,
-            new InvalidOperationException("Cart contains items with invalid quantities"));
+            () => new InvalidOperationException("Cart contains items with invalid quantities"));
         
         // Ensure at least one item is available
         if (!Is.Any(cart.Items, i => i.IsAvailable))
@@ -123,11 +124,11 @@ public void ProcessUsers(List<User> users)
     
     // Reject if any user is null
     ThrowIf.Any(users, u => u is null,
-        new ArgumentException("User list contains null entries"));
+        () => new ArgumentException("User list contains null entries"));
     
     // Reject if all users are inactive
     ThrowIf.All(users, u => !u.IsActive,
-        new InvalidOperationException("All users are inactive"));
+        () => new InvalidOperationException("All users are inactive"));
     
     // Proceed with processing...
 }
@@ -146,7 +147,7 @@ public class OrderService
         
         // Ensure no orders have invalid totals
         ThrowIf.Any(orders, o => o.Total <= 0,
-            new InvalidOperationException("One or more orders have invalid totals"));
+            () => new InvalidOperationException("One or more orders have invalid totals"));
         
         // Warn if all orders are on hold
         if (Is.All(orders, o => o.Status == OrderStatus.OnHold))
@@ -177,7 +178,7 @@ public class InventoryManager
         
         // Critical alert if all products are out of stock
         ThrowIf.All(products, p => p.Stock == 0,
-            new InvalidOperationException("All products are out of stock"));
+            () => new InvalidOperationException("All products are out of stock"));
     }
 }
 ```
@@ -236,10 +237,10 @@ public class DomainValidationException : Exception
 }
 
 ThrowIf.Any(items, i => i.IsInvalid, 
-    new DomainValidationException("Collection contains invalid items"));
+    () => new DomainValidationException("Collection contains invalid items"));
 
 ThrowIf.All(users, u => u.IsBlocked,
-    new DomainValidationException("All users are blocked"));
+    () => new DomainValidationException("All users are blocked"));
 ```
 
 ## With Callbacks

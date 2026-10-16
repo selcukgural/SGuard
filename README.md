@@ -9,7 +9,8 @@
 
 Guard clauses for .NET 8, 9 and 10. Validate arguments, domain invariants and incoming requests in one line each,
 either by throwing (`ThrowIf.*`) or by getting a `bool` back (`Is.*`). Exceptions name the failing expression, a
-passing guard costs about as much as a hand-written `if` and allocates nothing, and the package has no dependencies.
+passing guard costs about as much as a hand-written `if`, allocates nothing and returns the checked value, it works
+with trimming and Native AOT, and the package has no dependencies.
 
 ```csharp
 ThrowIf.NullOrEmpty(command, c => c.Customer.Email);
@@ -17,6 +18,8 @@ ThrowIf.NullOrEmpty(command, c => c.Customer.Email);
 ```
 
 📖 **Documentation:** [selcukgural.github.io/SGuard](https://selcukgural.github.io/SGuard/): [Quick Start](https://selcukgural.github.io/SGuard/docs/getting-started/quick-start), [`Is.*` API](https://selcukgural.github.io/SGuard/docs/api/is), [`ThrowIf.*` API](https://selcukgural.github.io/SGuard/docs/api/throwif), [performance guide](https://selcukgural.github.io/SGuard/docs/advanced/performance)
+
+⬆️ **Upgrading from 0.x?** Most code needs no changes; read [Upgrading to 3.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0) for the few things that do.
 
 ## 📦 Installation
 
@@ -32,26 +35,17 @@ using SGuard.Exceptions;  // NullOrEmptyException, BetweenException, GreaterThan
 ## ⚡ Quick start
 
 ```csharp
-public sealed class Product
+public sealed class Product(string sku, string name, decimal price, int stock)
 {
-    public Product(string sku, string name, decimal price, int stock)
-    {
-        ThrowIf.NullOrEmpty(sku);          // null or ""  -> NullOrEmptyException (ParamName = "sku")
-        ThrowIf.NullOrEmpty(name);
-        ThrowIf.LessThanOrEqual(price, 0m); // price <= 0 -> LessThanOrEqualException
-        ThrowIf.LessThan(stock, 0);         // stock < 0  -> LessThanException
-
-        (Sku, Name, Price, Stock) = (sku, name, price, stock);
-    }
-
-    public string Sku { get; }
-    public string Name { get; }
-    public decimal Price { get; }
-    public int Stock { get; }
+    public string Sku { get; } = ThrowIf.NullOrEmpty(sku);           // null or ""     -> NullOrEmptyException (ParamName = "sku")
+    public string Name { get; } = ThrowIf.NullOrWhiteSpace(name);    // null, "", "  " -> NullOrWhiteSpaceException
+    public decimal Price { get; } = ThrowIf.NegativeOrZero(price);   // price <= 0     -> NegativeOrZeroException
+    public int Stock { get; } = ThrowIf.Negative(stock);             // stock < 0      -> NegativeException
 }
 ```
 
-Read every `ThrowIf.X(a, b)` as "throw if `a` is X `b`". All built-in exceptions derive from `ArgumentException`.
+Read every `ThrowIf.X(a, b)` as "throw if `a` is X `b`". A guard that passes returns the checked value, so it can
+initialize a property, as above, or be used as a statement. All built-in exceptions derive from `ArgumentException`.
 
 ### `ThrowIf.*` or `Is.*`?
 
@@ -67,20 +61,28 @@ input that is often invalid.
 
 | Guard | `Is.*` returns `true` when | `ThrowIf.*` throws when | Example |
 |---|---|---|---|
+| `Null` | the value is null | the same | `_repository = ThrowIf.Null(repository);` |
 | `NullOrEmpty` | the value is null, empty or default | the same | `ThrowIf.NullOrEmpty(order.Lines);` |
 | `NullOrEmpty` + selector | anything on the path is null, or the selected value is empty | the same | `ThrowIf.NullOrEmpty(order, o => o.Customer.Email);` |
+| `NullOrWhiteSpace` | the string is null, empty or white space | the same | `ThrowIf.NullOrWhiteSpace(request.Name);` |
 | `GreaterThan` / `GreaterThanOrEqual` | `a > b` / `a >= b` | the same | `ThrowIf.GreaterThan(pageSize, 100);` |
-| `LessThan` / `LessThanOrEqual` | `a < b` / `a <= b` | the same | `ThrowIf.LessThanOrEqual(amount, 0m);` |
-| `Between` | `min <= value <= max` | the value is **inside** the range | `if (!Is.Between(port, 1, 65535)) ...` |
+| `LessThan` / `LessThanOrEqual` | `a < b` / `a <= b` | the same | `ThrowIf.LessThan(startsAt, now);` |
+| `OutOfRange` | `value < min` or `value > max` | the same | `ThrowIf.OutOfRange(port, 1, 65535);` |
+| `Between` | `min <= value <= max` | the value is **inside** the range | `if (Is.Between(hour, 0, 5)) ...` |
+| `Negative` / `NegativeOrZero` / `Zero` | `x < 0` / `x <= 0` / `x == 0` (any number type) | the same | `ThrowIf.NegativeOrZero(amount);` |
+| `Equal` / `NotEqual` | `a` equals / doesn't equal `b` | the same | `ThrowIf.Equal(target, source);` |
+| `NotDefined` | the enum has no member with this value | the same | `ThrowIf.NotDefined(status);` |
+| `LongerThan` / `ShorterThan` | the string has more / fewer characters | the same | `ThrowIf.LongerThan(name, 200);` |
 | `Any` / `All` | some / every element matches | the same | `ThrowIf.Any(lines, l => l.Quantity <= 0);` |
-| `Email` (`Is` only) | the string looks like an email address | — | `Is.Email(request.Email)` |
+| `Email`, `Url`, `CreditCard`, `Match` (`Is` only) | an email address; an absolute `http`/`https` URL; a Luhn-valid card number; a regex match | — | `Is.Url(request.Website)` |
 
 What counts as empty: `null`; `""` (a whitespace-only string is **not** empty); an empty array, collection, span,
 `Memory<T>` or enumerable; and the default value of a value type: `0`, `false`, `Guid.Empty`, `default(DateTime)`, the default enum
 value or any default struct (also inside a nullable, so `int? x = 0` is empty).
 
 Comparisons work with any `IComparable<T>`: numbers, `decimal`, `DateTime`, `DateOnly`, `TimeSpan`, `Version`, your own
-types. The `Is.*` comparisons and `ThrowIf.Between` have string overloads that take a `StringComparison`.
+types. The sign guards work with any number type. The `Is.*` comparisons, `OutOfRange`, `Between`, `Equal` and
+`NotEqual` have string overloads that take a `StringComparison`.
 
 ## 📝 Real-world scenarios
 
@@ -93,11 +95,10 @@ public sealed class Order
 
     public Order(Guid customerId, IReadOnlyList<OrderLine> lines)
     {
-        ThrowIf.NullOrEmpty(customerId); // Guid.Empty counts as empty
+        CustomerId = ThrowIf.NullOrEmpty(customerId); // Guid.Empty counts as empty
         ThrowIf.NullOrEmpty(lines);
-        ThrowIf.Any(lines, l => l.Quantity <= 0, new DomainException("Every order line needs a positive quantity."));
+        ThrowIf.Any(lines, l => l.Quantity <= 0, () => new DomainException("Every order line needs a positive quantity."));
 
-        CustomerId = customerId;
         _lines = [..lines];
     }
 
@@ -107,10 +108,8 @@ public sealed class Order
 
     public void ApplyDiscount(decimal percent)
     {
-        ThrowIf.LessThan(percent, 0m);
-        ThrowIf.GreaterThan(percent, 50m, new DomainException("Discounts above 50% need manager approval."));
-
-        DiscountPercent = percent;
+        ThrowIf.Negative(percent);
+        DiscountPercent = ThrowIf.GreaterThan(percent, 50m, () => new DomainException("Discounts above 50% need manager approval."));
     }
 }
 
@@ -155,6 +154,10 @@ Selectors are compiled once and cached, so a repeated check costs well under a m
 require: a selector that points at a whole object (`c => c.ShippingAddress`) only fails when that object is null or
 **all** of its properties are empty.
 
+Selectors use reflection and don't work under Native AOT; trimmed and AOT apps get a warning where they call one. There,
+check the member directly with `?.`, which behaves the same and names the whole path:
+`ThrowIf.NullOrEmpty(command.ShippingAddress?.City)`.
+
 ### Minimal API: reject bad input without exceptions
 
 User input is often invalid, so check it with `Is.*` and return a `400` instead of throwing.
@@ -167,10 +170,10 @@ app.MapGet("/products", (string? term, int page, int pageSize) =>
     if (Is.LessThan(page, 1))
         errors[nameof(page)] = ["Page starts at 1."];
 
-    if (!Is.Between(pageSize, 1, 100))
+    if (Is.OutOfRange(pageSize, 1, 100))
         errors[nameof(pageSize)] = ["Page size must be between 1 and 100."];
 
-    if (!Is.NullOrEmpty(term) && Is.GreaterThan(term!.Length, 200))
+    if (term is not null && Is.LongerThan(term, 200))
         errors[nameof(term)] = ["Search term is too long."];
 
     return errors.Count > 0
@@ -191,7 +194,7 @@ public sealed record SubscribeRequest(string? Email);
 ```csharp
 builder.Services.AddOptions<SmtpOptions>()
     .Bind(builder.Configuration.GetSection("Smtp"))
-    .Validate(o => !Is.NullOrEmpty(o.Host), "Smtp:Host is required.")
+    .Validate(o => !Is.NullOrWhiteSpace(o.Host), "Smtp:Host is required.")
     .Validate(o => Is.Between(o.Port, 1, 65535), "Smtp:Port must be between 1 and 65535.")
     .Validate(o => Is.Between(o.Timeout, TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(2)), "Smtp:Timeout is out of range.")
     .ValidateOnStart();
@@ -232,7 +235,8 @@ public sealed record PaymentEvent(Guid Id, decimal Amount, string Currency);
 ### Web API: turn guard exceptions into `400 Bad Request`
 
 Built-in exceptions derive from `ArgumentException` and set `ParamName` to the failing expression, so one handler maps
-them all.
+them all. (The range and comparison exceptions derive from `ArgumentOutOfRangeException`, `NullException` from
+`ArgumentNullException`; both are `ArgumentException`s.)
 
 ```csharp
 public sealed class ArgumentExceptionHandler : IExceptionHandler
@@ -263,43 +267,44 @@ app.UseExceptionHandler();
 
 ### Your own exception types
 
-Every `ThrowIf.*` guard except the span `NullOrEmpty` has an overload that takes an exception instance.
-`NullOrEmpty`, `Between`, `GreaterThan`, `GreaterThanOrEqual` and `LessThanOrEqual` also take an exception type, created
-with its parameterless constructor or with constructor arguments.
+Every `ThrowIf.*` guard takes a factory that creates your exception. It runs only when the guard fails, so a passing
+guard creates nothing, and a lambda that doesn't capture variables allocates nothing either:
 
 ```csharp
-ThrowIf.GreaterThan(amount, balance, new InsufficientFundsException(accountId));             // an instance
+ThrowIf.GreaterThan(amount, balance, () => new InsufficientFundsException(accountId));       // a factory
 ThrowIf.GreaterThan<int, int, RateLimitExceededException>(requestsThisMinute, limit);        // new()
-ThrowIf.NullOrEmpty<string?, ArgumentException>(apiKey, ["An API key is required.", "apiKey"]); // constructor arguments
+ThrowIf.GreaterThan(amount, balance, new InsufficientFundsException(accountId));             // an instance
 ```
 
-The instance overloads create the exception before the check, even when the guard passes. On a hot path, prefer the
-type overloads, which create it only when they throw.
+The guards that existed before 3.0 also take an exception instance, which is created on every call, also when the
+guard passes: prefer a factory. The overloads that took constructor arguments as an `object[]` are obsolete
+(`SGUARD001`); see [Upgrading to 3.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0#SGUARD001).
 
 ## ⚠️ Things that surprise people
 
 - **`ThrowIf.Between` throws when the value is *inside* the range.** To reject values outside a range, use
-  `if (!Is.Between(...))` or a `ThrowIf.LessThan` plus `ThrowIf.GreaterThan` pair:
+  `ThrowIf.OutOfRange`:
 
   ```csharp
-  ThrowIf.LessThan(value, min);    // throws if value < min
-  ThrowIf.GreaterThan(value, max); // throws if value > max
+  ThrowIf.OutOfRange(value, min, max); // throws if value < min or value > max
   ```
 
   `min` and `max` themselves pass, like the inclusive `Between`.
 - **`GreaterThan` and `LessThan` are strict** (`>`, `<`): `ThrowIf.GreaterThan(10, 10)` doesn't throw. Use
   `GreaterThanOrEqual` / `LessThanOrEqual` for `>=` / `<=`.
-- **Both bounds of `Between` are inclusive**, and `min > max` throws `ArgumentException`.
-- **Whitespace is not empty**: `ThrowIf.NullOrEmpty("   ")` passes. Trim first, or use a selector: `u => u.Name.Trim()`.
+- **Both bounds of `Between` and `OutOfRange` are inclusive**, and `min > max` throws `ArgumentException`.
+- **`NullOrEmpty` treats `0`, `false` and `Guid.Empty` as empty.** When they are valid values, use `ThrowIf.Null` or a
+  sign guard (`ThrowIf.Negative`).
+- **Whitespace is not empty**: `ThrowIf.NullOrEmpty("   ")` passes. Use `ThrowIf.NullOrWhiteSpace`.
 - **`NaN` never passes a comparison**: `Is.*` returns `false` and `ThrowIf.*` throws. So
-  `if (Is.GreaterThan(x, max)) reject();` lets `NaN` through; use `ThrowIf.*` or `!Is.Between(...)` for floating-point
-  input.
+  `if (Is.GreaterThan(x, max)) reject();` lets `NaN` through; use `ThrowIf.*` or `Is.OutOfRange(...)` for
+  floating-point input.
 - **A callback's `Success` means the method returned `true`.** For `Is.*` that's the result
   (`Is.NullOrEmpty(null)` reports `Success`); for `ThrowIf.*` it means the guard didn't throw.
 - **Exceptions thrown by a callback are swallowed**, so a callback can't break validation. Don't put work that must not
   be lost (an audit record) in a callback.
 - **`Is.*` still throws for invalid arguments**: a `null` operand, predicate or source throws `ArgumentNullException`,
-  and `Is.Email` throws for `null` or `""`.
+  and `Is.Email` throws for `null` or `""`. The newer `Is.Url`, `Is.CreditCard` and `Is.Match` return `false` for them.
 - **A selector pointing at an object reads all of its public properties**, so lazy-loading proxies load and getters run.
   Point it at the scalar member you need (`o => o.Customer.Email`). Framework classes such as `Uri` are only checked
   for null.
@@ -347,9 +352,24 @@ Results for every guard, on .NET 8 and .NET 10 and with allocations, are in
 |---|---|---|
 | Passing guard (`ThrowIf.*`, `Is.*`) | ~1 ns / ~1–3 ns | none |
 | Failing `ThrowIf.*` guard (throw + catch) | ~2 µs / ~13 µs | the exception |
+| Passing guard with a factory (`() => new MyException()`) | the same as without | none |
 | Cached selector (`ThrowIf.NullOrEmpty(order, o => o.Customer.Name)`) | ~0.2–0.5 µs / ~0.3–0.7 µs | the expression tree built at the call site |
 
 See the [performance guide](https://selcukgural.github.io/SGuard/docs/advanced/performance) for details.
+
+## 🔎 Analyzers
+
+The package includes Roslyn analyzers that flag guard calls that don't do what they look like they do: `NullOrEmpty`
+on a number (it rejects `0`), an exception instance created on every call (with a code fix that turns it into a
+factory), swapped `Between`/`OutOfRange` bounds, and a selector that selects a whole object. See
+[Analyzers](https://selcukgural.github.io/SGuard/docs/advanced/analyzers).
+
+## 🪶 Trimming and Native AOT
+
+Every guard works in trimmed and Native AOT apps; CI publishes a test app with Native AOT and runs each guard in it. The
+one exception is `NullOrEmpty` with a selector, which compiles an expression at run time: those overloads are marked
+`[RequiresUnreferencedCode]` and `[RequiresDynamicCode]`, so you get a warning where you call one. Check the member
+directly instead: `ThrowIf.NullOrEmpty(order.Customer?.Email)`.
 
 ## 💬 Community
 
@@ -374,3 +394,4 @@ MIT. See the [LICENSE](LICENSE) file for details.
 - [NuGet Package](https://www.nuget.org/packages/SGuard)
 - [Releases](https://github.com/selcukgural/sguard/releases)
 - [Changelog](Changelog.md)
+- [Upgrading to 3.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0)

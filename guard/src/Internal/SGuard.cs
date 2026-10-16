@@ -181,12 +181,16 @@ internal static class SGuard
     /// Whether <see cref="Comparer{T}.Default"/> can compare two values of <typeparamref name="T"/>. A static readonly field,
     /// so the JIT treats it as a constant.
     /// </summary>
+    /// <remarks>
+    /// Checked without <see cref="Type.MakeGenericType"/>, which Native AOT may not support. The cost is that the bounds of
+    /// a nullable struct that implements only <see cref="IComparable{T}"/>, and not <see cref="IComparable"/>, aren't
+    /// checked against each other; every framework type implements both.
+    /// </remarks>
     private static class Comparable<T>
     {
-        public static readonly bool Value = IsComparable(Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T));
-
-        private static bool IsComparable(Type type)
-            => typeof(IComparable<>).MakeGenericType(type).IsAssignableFrom(type) || typeof(IComparable).IsAssignableFrom(type);
+        public static readonly bool Value =
+            typeof(IComparable<T>).IsAssignableFrom(typeof(T)) ||
+            typeof(IComparable).IsAssignableFrom(Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T));
     }
 
     /// <summary>

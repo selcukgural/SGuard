@@ -4,9 +4,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <PackageVersion>0.3.2</PackageVersion>
-        <AssemblyVersion>1.0.0</AssemblyVersion>
-        <FileVersion>1.0.0</FileVersion>
+        <PackageVersion>3.0.0</PackageVersion>
+        <AssemblyVersion>3.0.0</AssemblyVersion>
+        <FileVersion>3.0.0</FileVersion>
         <PackageProjectUrl>https://selcukgural.github.io/SGuard/</PackageProjectUrl>
         <RepositoryUrl>https://github.com/selcukgural/sguard</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -23,7 +23,22 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <!-- Compares the public API with the last release on every pack, so a breaking change can't ship by accident.
+             Intentional breaks are listed in CompatibilitySuppressions.xml; move the baseline forward after each release. -->
+        <EnablePackageValidation>true</EnablePackageValidation>
+        <PackageValidationBaselineVersion>0.3.2</PackageValidationBaselineVersion>
     </PropertyGroup>
+    <!-- Trimming and Native AOT. SGuard supports both; the APIs that can't (NullOrEmpty selectors) say so with
+         RequiresUnreferencedCode and RequiresDynamicCode, so an app sees a warning where it calls them. The analyzers ship
+         in a package whose version follows the installed SDK and so can't be pinned in packages.lock.json: the CI "aot"
+         job runs them with -p:SGuardAotAnalysis=true and publishes SGuard.AotSmoke with Native AOT. -->
+    <PropertyGroup Condition="'$(SGuardAotAnalysis)' == 'true'">
+        <IsAotCompatible>true</IsAotCompatible>
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- What IsAotCompatible sets, so that trimming apps also trim SGuard in normal builds. -->
+        <AssemblyMetadata Include="IsTrimmable" Value="True" />
+    </ItemGroup>
     <ItemGroup>
         <InternalsVisibleTo Include="SGuard.Tests" />
     </ItemGroup>
@@ -35,6 +50,14 @@
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
         </None>
+    </ItemGroup>
+    <!-- The analyzers and code fixes ship inside this package, so they need no package of their own. They are built with
+         SGuard but not referenced by it. -->
+    <ItemGroup>
+        <ProjectReference Include="..\SGuard.Analyzers\SGuard.Analyzers.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+        <ProjectReference Include="..\SGuard.Analyzers.CodeFixes\SGuard.Analyzers.CodeFixes.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+        <None Include="..\SGuard.Analyzers\bin\$(Configuration)\netstandard2.0\SGuard.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <None Include="..\SGuard.Analyzers.CodeFixes\bin\$(Configuration)\netstandard2.0\SGuard.Analyzers.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup>
     <ItemGroup>
         <None Include="../README.md" Pack="true" PackagePath="\" />

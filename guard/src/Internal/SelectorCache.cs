@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -18,6 +19,8 @@ namespace SGuard;
 /// the compiled code and are keyed by value. A selector containing a nested lambda, a block, an invocation or a member or list initializer is not
 /// cacheable and is compiled on every call.
 /// </remarks>
+[RequiresUnreferencedCode(AotMessages.Selector)]
+[RequiresDynamicCode(AotMessages.Selector)]
 internal static class SelectorCache
 {
     /// <summary>

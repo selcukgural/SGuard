@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Roslyn analyzers for SGuard; the code fixes are in SGuard.Analyzers.CodeFixes, because the command-line compiler
+         doesn't load Microsoft.CodeAnalysis.Workspaces. Both ship inside the SGuard package (analyzers/dotnet/cs), so they
+         need no package of their own. netstandard2.0 and Roslyn 4.8 (the .NET 8 SDK and Visual Studio 17.8) keep them
+         loadable by every compiler that can build SGuard's target frameworks. -->
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <IsRoslynComponent>true</IsRoslynComponent>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <RootNamespace>SGuard.Analyzers</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+        <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="SGuard.Analyzers.CodeFixes" />
+        <InternalsVisibleTo Include="SGuard.Analyzers.Tests" />
+    </ItemGroup>
+
+</Project>

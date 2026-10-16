@@ -11,6 +11,22 @@ updates:
       nuget:
         patterns: ["*"]
 
+  # The analyzers build against the oldest Roslyn that SGuard supports (4.8, the .NET 8 SDK), so that newer compilers
+  # aren't required to load them: Roslyn itself stays where it is.
+  - package-ecosystem: "nuget"
+    directories:
+      - "/SGuard.Analyzers"
+      - "/SGuard.Analyzers.CodeFixes"
+      - "/SGuard.Analyzers.Tests"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "Microsoft.CodeAnalysis.CSharp"
+      - dependency-name: "Microsoft.CodeAnalysis.CSharp.Workspaces"
+    groups:
+      analyzers:
+        patterns: ["*"]
+
   - package-ecosystem: "npm"
     directory: "/docs"
     schedule:

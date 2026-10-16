@@ -6,7 +6,7 @@ namespace SGuard.Exceptions;
 /// Represents an exception that is thrown when a value is less than a specified value.
 /// </summary>
 [Serializable]
-public sealed class LessThanException : ArgumentException
+public sealed class LessThanException : ArgumentOutOfRangeException
 {
     private readonly string? _paramName;
 
@@ -24,7 +24,7 @@ public sealed class LessThanException : ArgumentException
     /// Initializes a new instance of the <see cref="LessThanException"/> class with a specified error message.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
-    public LessThanException(string message) : base(message) { }
+    public LessThanException(string message) : base(null, message) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LessThanException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
@@ -41,7 +41,7 @@ public sealed class LessThanException : ArgumentException
         object? right,
         [CallerArgumentExpression("left")]  string? leftExpr  = null,
         [CallerArgumentExpression("right")] string? rightExpr = null)
-        : base(BuildMessage(left, right, leftExpr, rightExpr))
+        : base(null, BuildMessage(left, right, leftExpr, rightExpr))
     {
         _paramName = leftExpr;
         ExceptionValues.AddTo(Data, "left", left);

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace SGuard;
@@ -11,6 +12,7 @@ namespace SGuard;
 /// It ensures that the created exception is of the expected type and provides
 /// detailed error messages when the creation fails.
 /// </remarks>
+[Obsolete(Obsoletions.ExceptionActivatorMessage, DiagnosticId = Obsoletions.ExceptionActivatorDiagnosticId, UrlFormat = Obsoletions.UrlFormat)]
 public static class ExceptionActivator
 {
     /// <summary>
@@ -29,7 +31,8 @@ public static class ExceptionActivator
     /// Thrown if the instance could not be created, or if no constructor or more than one constructor matches the provided
     /// arguments (for example <c>null</c> arguments that fit several constructors).
     /// </exception>
-    public static TException Create<TException>(object?[]? args) where TException : Exception
+    public static TException Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TException>(object?[]? args)
+        where TException : Exception
     {
         try
         {

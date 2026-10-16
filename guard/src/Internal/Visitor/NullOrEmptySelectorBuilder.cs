@@ -18,6 +18,8 @@ namespace SGuard;
 /// evaluated once. Other expressions, such as method arguments or the operands of <c>+</c>, are evaluated as written and
 /// keep their types.
 /// </remarks>
+[RequiresUnreferencedCode(AotMessages.Selector)]
+[RequiresDynamicCode(AotMessages.Selector)]
 internal static class NullOrEmptySelectorBuilder
 {
     // Static caches to avoid repeated reflection/interface work

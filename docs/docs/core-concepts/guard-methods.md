@@ -15,7 +15,16 @@ Fail fast by throwing informative exceptions when validation fails.
 ```csharp
 ThrowIf.NullOrEmpty(user.Email);
 ThrowIf.LessThan(age, 0);
-ThrowIf.Between(value, min, max); // Throws if value IS between min and max
+ThrowIf.OutOfRange(port, 1, 65535); // Throws if port is outside 1..65535
+```
+
+A passing guard returns the checked value, so it can initialize a field or property:
+
+```csharp
+public sealed class Customer(string email)
+{
+    public string Email { get; } = ThrowIf.NullOrWhiteSpace(email);
+}
 ```
 
 **When to use:**
@@ -50,31 +59,40 @@ bool isValid = Is.LessThan(a, b);
   never considered empty on its own; its properties are not inspected.
 - **Selectors**: Check a member of an object (e.g., `ThrowIf.NullOrEmpty(order, o => o.Customer.Name)`). A `null`
   anywhere on the path counts as empty. When the selected member is itself a complex object, it counts as empty only
-  if **all** of its readable properties are null or empty.
+  if **all** of its readable properties are null or empty. Selectors don't work under Native AOT.
+- **`Null`**: Checks for `null` only; empty strings and collections, `0` and `false` pass. A nullable value type is
+  unwrapped: `int count = ThrowIf.Null(maybeCount);`.
+- **`NullOrWhiteSpace`**: Checks for `null`, `""` and strings of white space only.
 
 ```csharp
 ThrowIf.NullOrEmpty(str);
 ThrowIf.NullOrEmpty(list);
 ThrowIf.NullOrEmpty(obj, x => x.Property);
+ThrowIf.Null(repository);
+ThrowIf.NullOrWhiteSpace(displayName);
 
 bool isEmpty = Is.NullOrEmpty(collection);
 ```
 
 ### Comparison Guards
 
-All comparison guards are generic (`TLeft : IComparable<TRight>`). Overloads that take a `StringComparison` exist
-for `Is.LessThan`, `Is.LessThanOrEqual`, `Is.GreaterThan`, `Is.GreaterThanOrEqual`, `Is.Between` and
-`ThrowIf.Between` only; the other `ThrowIf.*` comparisons have no `StringComparison` overload.
+All comparison guards are generic (`TLeft : IComparable<TRight>`). `Is.*` comparisons, `OutOfRange`, `Between`,
+`Equal` and `NotEqual` have overloads that take a `StringComparison`; the four `ThrowIf` relational guards don't.
 
 - **`LessThan`**: `value < other`
 - **`LessThanOrEqual`**: `value <= other`
 - **`GreaterThan`**: `value > other`
 - **`GreaterThanOrEqual`**: `value >= other`
-- **`Between`**: Inclusive range check (`min <= value <= max`)
+- **`OutOfRange`**: outside an inclusive range (`value < min || value > max`)
+- **`Between`**: inside an inclusive range (`min <= value <= max`)
+- **`Negative`**, **`NegativeOrZero`**, **`Zero`**: the sign of any number type
+- **`Equal`**, **`NotEqual`**: equality with `EqualityComparer<T>.Default`
 
 ```csharp
 ThrowIf.LessThan(age, 0);
-ThrowIf.Between(value, 10, 20); // Throws if 10 <= value <= 20
+ThrowIf.OutOfRange(score, 0, 100);  // Throws if score < 0 or score > 100
+ThrowIf.Between(value, 10, 20);     // Throws if 10 <= value <= 20
+ThrowIf.NegativeOrZero(quantity);   // Throws if quantity <= 0
 
 bool inRange = Is.Between(score, 0, 100);
 bool isLess = Is.LessThan("apple", "banana", StringComparison.Ordinal);
@@ -83,9 +101,23 @@ bool isLess = Is.LessThan("apple", "banana", StringComparison.Ordinal);
 The left operand's type decides the comparison, so literals must match it: for a `decimal` use `0m`, not `0`
 (`decimal` does not implement `IComparable<int>`).
 
-**NaN:** if any operand is a floating-point NaN (`double`, `float`, `Half`), `Is.*` comparisons return `false` and
-`ThrowIf.*` comparisons throw. A check written as `if (Is.GreaterThan(x, max)) reject();` therefore lets NaN
-through; prefer `ThrowIf.*` or `!Is.Between(x, min, max)` for bound checks.
+**NaN:** if any operand is a floating-point NaN (`double`, `float`, `Half`, `NFloat`), `Is.*` comparisons return
+`false` and `ThrowIf.*` comparisons throw. A check written as `if (Is.GreaterThan(x, max)) reject();` therefore lets
+NaN through; prefer `ThrowIf.*` or `Is.OutOfRange(x, min, max)` for bound checks.
+
+### Strings and Enums
+
+- **`LongerThan`**, **`ShorterThan`**: the length of a string. The message never contains the string.
+- **`NotDefined`**: an enum value that its type doesn't declare, such as `(OrderStatus)42`.
+- **`Is.Email`**, **`Is.Url`** (`http`/`https` only), **`Is.CreditCard`** (Luhn) and **`Is.Match`** (a regular
+  expression): input validators, `Is.*` only.
+
+```csharp
+Name = ThrowIf.LongerThan(name, 200);
+var status = ThrowIf.NotDefined(request.Status);
+
+if (!Is.Url(request.Website)) errors["website"] = ["Enter an http or https address."];
+```
 
 ### Collection Guards
 
@@ -117,11 +149,13 @@ Is.Between(1, 1, 10);   // true (min is allowed)
 Is.Between(10, 1, 10);  // true (max is allowed)
 ```
 
-For **`ThrowIf.Between`**, it throws if the value **is** within the range:
+For **`ThrowIf.Between`**, it throws if the value **is** within the range; `ThrowIf.OutOfRange` is its opposite:
 
 ```csharp
-ThrowIf.Between(5, 1, 10);  // Throws (5 is in range)
-ThrowIf.Between(0, 1, 10);  // Does NOT throw (0 is outside range)
+ThrowIf.Between(5, 1, 10);     // Throws (5 is in range)
+ThrowIf.Between(0, 1, 10);     // Does NOT throw (0 is outside range)
+ThrowIf.OutOfRange(0, 1, 10);  // Throws (0 is outside range)
+ThrowIf.OutOfRange(10, 1, 10); // Does NOT throw (max is allowed)
 ```
 
 ### CallerArgumentExpression
@@ -134,7 +168,8 @@ ThrowIf.NullOrEmpty(user.Email);
 // ex.ParamName == "user.Email"
 ```
 
-The built-in exceptions derive from `ArgumentException`. Messages name the expressions but leave out the checked
+The built-in exceptions derive from `ArgumentException` (the range and comparison ones through
+`ArgumentOutOfRangeException`, `NullException` through `ArgumentNullException`). Messages name the expressions but leave out the checked
 values unless you enable `SGuardOptions.IncludeValuesInExceptions` (see
 [Custom Exceptions](./custom-exceptions#including-values-in-messages)).
 
