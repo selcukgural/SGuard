@@ -32,6 +32,13 @@ using SGuard;             // ThrowIf, Is, SGuardCallbacks, SGuardOptions
 using SGuard.Exceptions;  // NullOrEmptyException, BetweenException, GreaterThanException, ...
 ```
 
+Companion packages:
+
+- [SGuard.AspNetCore](https://github.com/selcukgural/SGuard.AspNetCore): returns guard failures from ASP.NET Core as
+  `400 Bad Request` validation problem details.
+- [SGuard.DataAnnotations](https://github.com/selcukgural/SGuard.DataAnnotations): extra validation attributes
+  (collections, conditional and comparison rules) and `ThrowIf`/`Is` checks for whole objects.
+
 ## ⚡ Quick start
 
 ```csharp
@@ -234,25 +241,41 @@ public sealed record PaymentEvent(Guid Id, decimal Amount, string Currency);
 
 ### Web API: turn guard exceptions into `400 Bad Request`
 
-Built-in exceptions derive from `ArgumentException` and set `ParamName` to the failing expression, so one handler maps
-them all. (The range and comparison exceptions derive from `ArgumentOutOfRangeException`, `NullException` from
-`ArgumentNullException`; both are `ArgumentException`s.)
+[SGuard.AspNetCore](https://github.com/selcukgural/SGuard.AspNetCore) does this for you. It returns guard failures as
+validation problem details keyed by the member that failed (`command.Quantity` becomes `Quantity`), with a fixed message
+per guard, so neither your source expressions nor checked values reach the client:
+
+```bash
+dotnet add package SGuard.AspNetCore
+```
 
 ```csharp
-public sealed class ArgumentExceptionHandler : IExceptionHandler
+builder.Services.AddSGuardProblemDetails();
+// ...
+app.UseExceptionHandler();
+```
+
+To write the handler yourself: built-in exceptions derive from `ArgumentException` and set `ParamName` to the failing
+expression, so one handler maps them all. (The range and comparison exceptions derive from
+`ArgumentOutOfRangeException`, `NullException` from `ArgumentNullException`; both are `ArgumentException`s.) Keep
+`Message` and `ParamName` out of the response: they are written for developers, name expressions from your source
+code, and include the checked values when `SGuardOptions.IncludeValuesInExceptions` is on. Log them instead.
+
+```csharp
+public sealed class ArgumentExceptionHandler(ILogger<ArgumentExceptionHandler> logger) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
     {
         if (exception is not ArgumentException argument)
             return false;
 
+        logger.LogInformation(argument, "Rejected an invalid request ({Param})", argument.ParamName);
+
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         await context.Response.WriteAsJsonAsync(new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "Invalid request",
-            Detail = argument.Message,
-            Extensions = { ["param"] = argument.ParamName } // e.g. "c => c.Customer.Email"
+            Title = "Invalid request"
         }, ct);
 
         return true;
@@ -392,6 +415,7 @@ MIT. See the [LICENSE](LICENSE) file for details.
 
 - [Documentation](https://selcukgural.github.io/SGuard/)
 - [NuGet Package](https://www.nuget.org/packages/SGuard)
+- [SGuard.AspNetCore](https://github.com/selcukgural/SGuard.AspNetCore) and [SGuard.DataAnnotations](https://github.com/selcukgural/SGuard.DataAnnotations)
 - [Releases](https://github.com/selcukgural/sguard/releases)
 - [Changelog](Changelog.md)
 - [Upgrading to 3.0](https://selcukgural.github.io/SGuard/docs/migration/upgrading-to-3.0)
